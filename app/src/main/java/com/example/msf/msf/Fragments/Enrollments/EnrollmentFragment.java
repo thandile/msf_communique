@@ -1,7 +1,6 @@
-package com.example.msf.msf.Fragments;
+package com.example.msf.msf.Fragments.Enrollments;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;

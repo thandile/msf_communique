@@ -15,13 +15,23 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.example.msf.msf.Fragments.AppointmentFragment;
-import com.example.msf.msf.Fragments.EnrollmentFragment;
-import com.example.msf.msf.Fragments.PatientFragment;
+import com.example.msf.msf.Fragments.AppointmentFragments.AppointmentFragment;
+import com.example.msf.msf.Fragments.AppointmentFragments.AppointmentInfoFragment;
+import com.example.msf.msf.Fragments.AppointmentFragments.CreateAppointmentFragment;
+import com.example.msf.msf.Fragments.AppointmentFragments.UpdateAppointmentFragment;
+import com.example.msf.msf.Fragments.Counselling.CounsellingFragment;
+import com.example.msf.msf.Fragments.Counselling.CreateCounsellingFragment;
+import com.example.msf.msf.Fragments.Enrollments.CreateEnrollmentFragment;
+import com.example.msf.msf.Fragments.Enrollments.EnrollmentFragment;
+import com.example.msf.msf.Fragments.PatientFragments.CreatePatientFragment;
+import com.example.msf.msf.Fragments.PatientFragments.PatientFragment;
+import com.example.msf.msf.Fragments.AppointmentFragments.AppointmentInfoFragment;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
-        EnrollmentFragment.OnFragmentInteractionListener{
+        EnrollmentFragment.OnFragmentInteractionListener,
+        AppointmentInfoFragment.OnFragmentInteractionListener,
+        UpdateAppointmentFragment.OnFragmentInteractionListener{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,15 +39,6 @@ public class HomeActivity extends AppCompatActivity
         setContentView(R.layout.activity_home);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -89,26 +90,76 @@ public class HomeActivity extends AppCompatActivity
 
         if (id == R.id.nav_camera) {
             // Handle the camera action
+            CreatePatientFragment createPatientFragment = new CreatePatientFragment();
+            FragmentManager manager = getSupportFragmentManager();
+            manager.beginTransaction().replace(R.id.rel_layout_for_frag,
+                    createPatientFragment,
+                    createPatientFragment.getTag())
+                    .addToBackStack(null)
+                    .commit();
+        }
+        else if (id == R.id.nav_gallery) {
+            CreateAppointmentFragment createAppointmentFragment = new CreateAppointmentFragment();
+            FragmentManager manager = getSupportFragmentManager();
+            manager.beginTransaction().replace(R.id.rel_layout_for_frag,
+                    createAppointmentFragment,
+                    createAppointmentFragment.getTag())
+                    .addToBackStack(null)
+                    .commit();
+        }
+        else if (id == R.id.nav_slideshow) {
+            CreateCounsellingFragment createCounsellingFragment = new CreateCounsellingFragment();
+            FragmentManager manager = getSupportFragmentManager();
+            manager.beginTransaction().replace(R.id.rel_layout_for_frag,
+                    createCounsellingFragment,
+                    createCounsellingFragment.getTag())
+                    .addToBackStack(null)
+                    .commit();
+        }
+        else if (id == R.id.nav_manage) {
+            CreateEnrollmentFragment createEnrollmentFragment = new CreateEnrollmentFragment();
+            FragmentManager manager = getSupportFragmentManager();
+            manager.beginTransaction().replace(R.id.rel_layout_for_frag,
+                    createEnrollmentFragment,
+                    createEnrollmentFragment.getTag())
+                    .addToBackStack(null)
+                    .commit();
+        }
+        else if (id == R.id.nav_patient_list){
             PatientFragment patientFragment = new PatientFragment();
             FragmentManager manager = getSupportFragmentManager();
             manager.beginTransaction().replace(R.id.rel_layout_for_frag,
                     patientFragment,
-                    patientFragment.getTag()).commit();
-        } else if (id == R.id.nav_gallery) {
+                    patientFragment.getTag())
+                    .addToBackStack(null)
+                    .commit();
+        }
+        else if (id == R.id.nav_appointment_list){
             AppointmentFragment appointmentFragment = new AppointmentFragment();
             FragmentManager manager = getSupportFragmentManager();
             manager.beginTransaction().replace(R.id.rel_layout_for_frag,
                     appointmentFragment,
-                    appointmentFragment.getTag()).commit();
-        } else if (id == R.id.nav_slideshow) {
-            EnrollmentFragment enrollmentFragment = new EnrollmentFragment().newInstance("data1","data2");
+                    appointmentFragment.getTag())
+                    .addToBackStack(null)
+                    .commit();
+        }
+        else if (id == R.id.nav_counselling_list){
+            CounsellingFragment counsellingFragment = new CounsellingFragment();
+            FragmentManager manager = getSupportFragmentManager();
+            manager.beginTransaction().replace(R.id.rel_layout_for_frag,
+                    counsellingFragment,
+                    counsellingFragment.getTag())
+                    .addToBackStack(null)
+                    .commit();
+        }
+        else if (id == R.id.nav_enrollment_list){
+            EnrollmentFragment enrollmentFragment = new EnrollmentFragment();
             FragmentManager manager = getSupportFragmentManager();
             manager.beginTransaction().replace(R.id.rel_layout_for_frag,
                     enrollmentFragment,
-                    enrollmentFragment.getTag()).commit();
-
-        } else if (id == R.id.nav_manage) {
-
+                    enrollmentFragment.getTag())
+                    .addToBackStack(null)
+                    .commit();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -118,6 +169,10 @@ public class HomeActivity extends AppCompatActivity
 
     @Override
     public void onFragmentInteraction(String data) {
-        Toast.makeText(this, data, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onFragmentInteraction(String[] data) {
+
     }
 }

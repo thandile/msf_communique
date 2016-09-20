@@ -30,4 +30,14 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Small Text"
+        android:id="@+id/idTV"
+        android:layout_alignBottom="@+id/appTitleTV"
+        android:layout_alignLeft="@+id/dateTV"
+        android:layout_alignStart="@+id/dateTV" />
+
 </RelativeLayout>

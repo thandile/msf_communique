@@ -1,13 +1,18 @@
-package com.example.msf.msf.Fragments;
+package com.example.msf.msf.Fragments.AppointmentFragments;
 
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.amigold.fundapter.BindDictionary;
@@ -15,7 +20,6 @@ import com.amigold.fundapter.FunDapter;
 import com.amigold.fundapter.extractors.StringExtractor;
 import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.Deserializers.Appointment;
-import com.example.msf.msf.API.Deserializers.Patients;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.R;
 
@@ -35,7 +39,6 @@ import retrofit.mime.TypedByteArray;
 public class AppointmentFragment extends Fragment {
     private final String TAG = this.getClass().getSimpleName();
     ListView appointmentLV;
-
     public AppointmentFragment() {
         // Required empty public constructor
     }
@@ -47,9 +50,26 @@ public class AppointmentFragment extends Fragment {
         View view  = inflater.inflate(R.layout.fragment_appointment, container, false);
         appointmentsGet();
         appointmentLV = (ListView) view.findViewById(R.id.appointmentLV);
+        appointmentLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
+                TextView idTV = (TextView) view.findViewById(R.id.idTV);
+                String id = idTV.getText().toString().split(" ")[1];
+                Log.e(TAG, id.toString());
+                AppointmentInfoFragment appointmentListFragment = new AppointmentInfoFragment().newInstance(id);
+                FragmentManager manager = getActivity().getSupportFragmentManager();
+
+                manager.beginTransaction()
+                        .replace(R.id.rel_layout_for_frag, appointmentListFragment,
+                                appointmentListFragment.getTag())
+                        .addToBackStack(null)
+                        .commit();
+                //intent.putExtra(EXTRA_MESSAGE,id);
+                //startActivity(intent);
+            }
+        });
         return view;
-
     }
 
     public void appointmentsGet(){
@@ -100,6 +120,13 @@ public class AppointmentFragment extends Fragment {
                             @Override
                             public String getStringValue(Appointment appointment, int position) {
                                 return appointment.getDate();
+                            }
+                        });
+
+                        dictionary.addStringField(R.id.idTV, new StringExtractor<Appointment>() {
+                            @Override
+                            public String getStringValue(Appointment appointment, int position) {
+                                return "ID: "+appointment.getId();
                             }
                         });
                         FunDapter adapter = new FunDapter(AppointmentFragment.this.getActivity(),

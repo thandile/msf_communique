@@ -1,4 +1,4 @@
-package com.example.msf.msf.Fragments;
+package com.example.msf.msf.Fragments.PatientFragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
