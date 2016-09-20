@@ -1,13 +1,146 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.msf.msf.Fragments.PatientFragments.PatientInfoFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="10dip"
+        android:weightSum="1">
 
-</FrameLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="First name"
+            android:id="@+id/textView6"
+            android:textStyle="bold"
+            android:textSize="20dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/first_nameTV"/>
+
+        <TextView
+            android:layout_width="104dp"
+            android:layout_height="wrap_content"
+            android:text="Last name"
+            android:id="@+id/textView8"
+            android:layout_below="@+id/textView6"
+            android:layout_marginRight="171dp"
+            android:layout_marginEnd="171dp"
+            android:textStyle="bold"
+            android:textSize="20dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp" />
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/last_nameTV" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Birth date"
+            android:id="@+id/textView7"
+            android:layout_below="@+id/textView8"
+            android:layout_marginRight="171dp"
+            android:layout_marginEnd="171dp"
+            android:textStyle="bold"
+            android:textSize="20dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/dobTV" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Contact number"
+            android:id="@+id/textView9"
+            android:textStyle="bold"
+            android:textSize="20dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/contactTV" />
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Home address"
+            android:id="@+id/textView14"
+            android:textStyle="bold"
+            android:textSize="20dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/addressTV" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Reference health centre"
+            android:id="@+id/textView16"
+            android:textStyle="bold"
+            android:textSize="20dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/health_centreTV" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal" >
+
+
+            <Button android:id="@+id/editBtn"
+                android:text="Edit"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="50dp"
+                android:background="#ff6347"
+                android:textColor="#fff"
+                android:textSize="15dp"
+                android:clickable="true"
+                android:layout_marginLeft="20dp" />
+
+            <Button android:id="@+id/delBtn"
+                android:text="Delete"
+                android:layout_marginTop="20dip"
+                android:background="#ff6347"
+                android:textColor="#fff"
+                android:textSize="15dp"
+                android:layout_height="wrap_content"
+                android:layout_width="120dp"
+                android:clickable="true"
+                android:layout_margin="50dp"
+                android:layout_marginLeft="60dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>

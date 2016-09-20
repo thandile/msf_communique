@@ -2,7 +2,6 @@ package com.example.msf.msf.Fragments.AppointmentFragments;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -103,7 +102,7 @@ public class AppointmentInfoFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_appointment_info2, container, false);
         edit = (Button) view.findViewById(R.id.editButton);
         delete = (Button) view.findViewById(R.id.delBtn);
-        appoinmentGet(Long.parseLong(id));
+        appointmentGet(Long.parseLong(id));
         notesTV = (TextView) view.findViewById(R.id.notesTV);
         appointmentTypeTV = (TextView) view.findViewById(R.id.appointmentTitleTV);
         dateTV = (TextView) view.findViewById(R.id.dateTV);
@@ -157,7 +156,7 @@ public class AppointmentInfoFragment extends Fragment {
     }
 
 
-    public void appoinmentGet(long patientID){
+    public void appointmentGet(long patientID){
         final List<String> patientList = new ArrayList<String>();
         Interface communicatorInterface = Auth.getInterface();
         Callback<Appointment> callback = new Callback<Appointment>() {
@@ -193,7 +192,7 @@ public class AppointmentInfoFragment extends Fragment {
         communicatorInterface.getAppointment(patientID,callback);
     }
 
-    public List<String> patientGet(long patientID){
+    public void patientGet(long patientID){
         final List<String> patientList = new ArrayList<String>();
         Interface communicatorInterface = Auth.getInterface();
         Callback<PatientResponse> callback = new Callback<PatientResponse>() {
@@ -226,8 +225,6 @@ public class AppointmentInfoFragment extends Fragment {
             }
         };
         communicatorInterface.getPatient(patientID,callback);
-
-        return patientList;
     }
 
     public void userGet(long userID){
@@ -270,7 +267,6 @@ public class AppointmentInfoFragment extends Fragment {
             }
         });
 
-
     }
 
     public void editListener() {
@@ -312,17 +308,15 @@ public class AppointmentInfoFragment extends Fragment {
 
     @Subscribe
     public void onServerEvent(ServerEvent serverEvent){
-        //prgDialog.hide();
+        prgDialog.hide();
         Toast.makeText(AppointmentInfoFragment.this.getActivity(), "You have successfully deleted an appointment", Toast.LENGTH_LONG).show();
-        //Intent intent = new Intent(context, AppointmentListActivity.class);
-        //startActivity(intent);
-        /**Toast.makeText(this, "You have successfully deleted a patientTV", Toast.LENGTH_LONG).show();
-         Intent intent = new Intent(context, AppointmentListActivity.class);
-         startActivity(intent);
-         /**patient_fname.setText("");
-         patient_sname.setText("");
-         patient_currFacility.setText("");
-         patient_dob.setText("");**/
+        appointmentTypeTV.setText("");
+        notesTV.setText("");
+        dateTV.setText("");
+        startTimeTV.setText("");
+        endTimeTV.setText("");
+        ownerTV.setText("");
+        patientTV.setText("");
     }
 
     @Subscribe

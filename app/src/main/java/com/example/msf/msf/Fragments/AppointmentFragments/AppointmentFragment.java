@@ -1,9 +1,7 @@
 package com.example.msf.msf.Fragments.AppointmentFragments;
 
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
@@ -47,6 +45,7 @@ public class AppointmentFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         View view  = inflater.inflate(R.layout.fragment_appointment, container, false);
         appointmentsGet();
         appointmentLV = (ListView) view.findViewById(R.id.appointmentLV);
@@ -103,13 +102,13 @@ public class AppointmentFragment extends Fragment {
                         }
                         Log.d(TAG, appointmentList.toString());
                         BindDictionary<Appointment> dictionary = new BindDictionary<>();
-                        dictionary.addStringField(R.id.appTitleTV, new StringExtractor<Appointment>() {
+                        dictionary.addStringField(R.id.titleTV, new StringExtractor<Appointment>() {
                             @Override
                             public String getStringValue(Appointment appointment, int position) {
                                 return appointment.getTitle();
                             }
                         });
-                        dictionary.addStringField(R.id.appOwnerTV, new StringExtractor<Appointment>() {
+                        dictionary.addStringField(R.id.personTV, new StringExtractor<Appointment>() {
                             @Override
                             public String getStringValue(Appointment appointment, int position) {
                                 return ""+appointment.getOwner();
@@ -135,6 +134,18 @@ public class AppointmentFragment extends Fragment {
                         appointmentLV.setAdapter(adapter);
                     }
                     else{
+                        BindDictionary<Appointment> dictionary = new BindDictionary<>();
+                        dictionary.addStringField(R.id.titleTV, new StringExtractor<Appointment>() {
+                            @Override
+                            public String getStringValue(Appointment appointment, int position) {
+                                return "No Scheduled appointments";
+                            }
+                        });
+
+                        FunDapter adapter = new FunDapter(AppointmentFragment.this.getActivity(),
+                                appointmentList,
+                                R.layout.appointment_list_layout, dictionary);
+                        appointmentLV.setAdapter(adapter);
                         Toast.makeText(AppointmentFragment.this.getActivity(),
                                 "No Scheduled appointments", Toast.LENGTH_LONG).show();
                         //appointmentList.add("No scheduled appointments.");

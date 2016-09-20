@@ -2,11 +2,14 @@ package com.example.msf.msf.Fragments.PatientFragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.amigold.fundapter.BindDictionary;
 import com.amigold.fundapter.FunDapter;
@@ -15,6 +18,7 @@ import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.Deserializers.Patients;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.API.PatientsDeserialiser;
+import com.example.msf.msf.Fragments.AppointmentFragments.AppointmentInfoFragment;
 import com.example.msf.msf.R;
 
 import org.json.JSONArray;
@@ -49,6 +53,22 @@ public class PatientFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_patient, container, false);
         patientsGet();
         patientLv = (ListView) view.findViewById(R.id.patientLV);
+        patientLv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                TextView idTV = (TextView) view.findViewById(R.id.idTV);
+                String id = idTV.getText().toString().split(" ")[1];
+                Log.e(TAG, id.toString());
+                PatientInfoFragment patientInfoFragment = new PatientInfoFragment().newInstance(id);
+                FragmentManager manager = getActivity().getSupportFragmentManager();
+
+                manager.beginTransaction()
+                        .replace(R.id.rel_layout_for_frag, patientInfoFragment,
+                                patientInfoFragment.getTag())
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
         return view;
     }
 
@@ -84,21 +104,27 @@ public class PatientFragment extends Fragment {
                     }
                     Log.d(TAG, patientList.toString());
                     BindDictionary<Patients> dictionary = new BindDictionary<>();
-                    dictionary.addStringField(R.id.appTitleTV, new StringExtractor<Patients>() {
+                    dictionary.addStringField(R.id.titleTV, new StringExtractor<Patients>() {
                         @Override
                         public String getStringValue(Patients patient, int position) {
                             return patient.getFirst_name();
                         }
                     });
-                    dictionary.addStringField(R.id.appOwnerTV, new StringExtractor<Patients>() {
+                    dictionary.addStringField(R.id.personTV, new StringExtractor<Patients>() {
                         @Override
                         public String getStringValue(Patients patient, int position) {
-                            return patient.getContact_number();
+                            return "Contact: " +patient.getContact_number();
+                        }
+                    });
+                    dictionary.addStringField(R.id.idTV, new StringExtractor<Patients>() {
+                        @Override
+                        public String getStringValue(Patients patient, int position) {
+                            return "ID: "+patient.getId();
                         }
                     });
 
                     FunDapter adapter = new FunDapter(PatientFragment.this.getActivity(), patientList,
-                            R.layout.patient_list_layout, dictionary);
+                            R.layout.list_layout, dictionary);
                     patientLv.setAdapter(adapter);
 
                 }

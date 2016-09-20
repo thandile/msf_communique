@@ -89,6 +89,8 @@ public class LoginActivity extends AppCompatActivity {
             public void success(List<PatientsDeserialiser> serverResponse, Response response2) {
                 navigateToHomeActivity();
                 prgDialog.hide();
+                usernameET.setText("");
+                pwdET.setText("");
             }
 
             @Override

@@ -26,12 +26,16 @@ import com.example.msf.msf.Fragments.Enrollments.EnrollmentFragment;
 import com.example.msf.msf.Fragments.PatientFragments.CreatePatientFragment;
 import com.example.msf.msf.Fragments.PatientFragments.PatientFragment;
 import com.example.msf.msf.Fragments.AppointmentFragments.AppointmentInfoFragment;
+import com.example.msf.msf.Fragments.PatientFragments.PatientInfoFragment;
+import com.example.msf.msf.Fragments.PatientFragments.UpdatePatientFragment;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         EnrollmentFragment.OnFragmentInteractionListener,
         AppointmentInfoFragment.OnFragmentInteractionListener,
-        UpdateAppointmentFragment.OnFragmentInteractionListener{
+        UpdateAppointmentFragment.OnFragmentInteractionListener,
+        PatientInfoFragment.OnFragmentInteractionListener,
+        UpdatePatientFragment.OnFragmentInteractionListener{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
