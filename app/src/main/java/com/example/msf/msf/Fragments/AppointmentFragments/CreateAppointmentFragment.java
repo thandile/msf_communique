@@ -99,7 +99,7 @@ public class CreateAppointmentFragment extends Fragment {
                     for (int i = 0; i < jsonarray.length(); i++) {
                         JSONObject jsonobject = jsonarray.getJSONObject(i);
                         String id = jsonobject.getString("id");
-                        String fullName = jsonobject.getString("first_name")+" " +
+                        String fullName = jsonobject.getString("other_names")+" " +
                                 jsonobject.getString("last_name");
                         patientList.add(id+": "+fullName);
                     }
@@ -200,6 +200,13 @@ public class CreateAppointmentFragment extends Fragment {
         Toast.makeText(CreateAppointmentFragment.this.getActivity(),
                 "You have successfully added a created a new appointment",
                 Toast.LENGTH_LONG).show();
+        patientNames.setText("");
+        String[] owner = String.valueOf(users.getSelectedItem()).split(":");
+        notesET.setText("");
+        dateET.setText("");
+        appointmentTypeET.setText("");
+        String endTime = endTimeEI.getText().toString();
+        String startTime = startTimeET.getText().toString();
 
         //patientNames.setText("");
         //notesTV.setText("");

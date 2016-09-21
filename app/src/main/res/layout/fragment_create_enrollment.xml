@@ -68,7 +68,7 @@
         android:ems="10"
         android:id="@+id/enrollmentDate" />
 
-    <TextView
+        <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Comment"

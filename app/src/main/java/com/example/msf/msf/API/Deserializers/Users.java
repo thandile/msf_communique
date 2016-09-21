@@ -8,29 +8,38 @@ import java.io.Serializable;
 /**
  * Created by Thandile on 2016/07/27.
  */
-public class PatientResponse implements Serializable {
+public class Users implements Serializable {
 
     @SerializedName("id")
-    private String id;
-    @SerializedName("first_name")
+    private int id;
+    @SerializedName("username")
     private String username;
     @SerializedName("message")
     private String message;
     @SerializedName("response_code")
     private int responseCode;
 
-    public PatientResponse(String id, String username, String message, int responseCode){
+    public Users(int id, String username, String message, int responseCode){
         this.id = id;
         this.username = username;
         this.message = message;
         this.responseCode = responseCode;
     }
 
-    public String getId() {
+    public Users(int id, String username){
+        this.id = id;
+        this.username = username;
+    }
+
+    public Users(){
+
+    }
+
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 

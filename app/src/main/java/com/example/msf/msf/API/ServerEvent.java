@@ -8,26 +8,26 @@ import com.example.msf.msf.API.Deserializers.*;
  * Created by Thandile on 2016/07/27.
  */
 public class ServerEvent {
-    private PatientResponse PatientResponse;
+    private Users Users;
     private PilotsDeserializer PilotsDeserializer;
     private PatientsDeserialiser PatientsDeserialiser;
     private AddPilotResponse AddPilotResponse;
-    private AddEnrollmentResponse AddEnrollmentResponse;
+    private Enrollment Enrollment;
     private SessionDeserialiser SessionDeserialiser;
     private AddCounsellingResponse AddCounsellingResponse;
     private Appointment Appointment;
 
     /*************/
-    public ServerEvent(PatientResponse PatientResponse) {
-        this.PatientResponse = PatientResponse;
+    public ServerEvent(Users Users) {
+        this.Users = Users;
     }
 
-    public PatientResponse getPatientResponse() {
-        return PatientResponse;
+    public Users getUsers() {
+        return Users;
     }
 
-    public void setPatientResponse(PatientResponse PatientResponse) {
-        this.PatientResponse = PatientResponse;
+    public void setUsers(Users Users) {
+        this.Users = Users;
     }
 
 
@@ -88,16 +88,16 @@ public class ServerEvent {
     /*************/
 
 
-    public ServerEvent(AddEnrollmentResponse AddEnrollmentResponse) {
-        this.AddEnrollmentResponse = AddEnrollmentResponse;
+    public ServerEvent(Enrollment Enrollment) {
+        this.Enrollment = Enrollment;
     }
 
-    public AddEnrollmentResponse getAddEnrollmentResponse() {
-        return AddEnrollmentResponse;
+    public Enrollment getEnrollment() {
+        return Enrollment;
     }
 
-    public void setAddEnrollmentResponse(AddEnrollmentResponse AddEnrollmentResponse) {
-        this.AddEnrollmentResponse = AddEnrollmentResponse;
+    public void setEnrollment(Enrollment Enrollment) {
+        this.Enrollment = Enrollment;
     }
 
     /*************/

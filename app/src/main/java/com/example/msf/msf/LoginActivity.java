@@ -9,24 +9,14 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.msf.msf.API.Auth;
-import com.example.msf.msf.API.BusProvider;
-import com.example.msf.msf.API.Deserializers.PatientResponse;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.API.PatientsDeserialiser;
-import com.example.msf.msf.API.ServerEvent;
-import com.squareup.otto.Produce;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +24,6 @@ import java.util.List;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
-import retrofit.mime.TypedByteArray;
 
 public class LoginActivity extends AppCompatActivity {
     // Progress Dialog Object
@@ -50,7 +39,7 @@ public class LoginActivity extends AppCompatActivity {
     public static String password;
     Context context = this;
     private final String TAG = this.getClass().getSimpleName();
-    public static final String SERVER_URL =  "https://radiant-cliffs-27013.herokuapp.com/api/";
+    public static final String SERVER_URL =  "https://drtbdemo.herokuapp.com/api/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,8 +78,8 @@ public class LoginActivity extends AppCompatActivity {
             public void success(List<PatientsDeserialiser> serverResponse, Response response2) {
                 navigateToHomeActivity();
                 prgDialog.hide();
-                usernameET.setText("");
-                pwdET.setText("");
+                //usernameET.setText("");
+                //pwdET.setText("");
             }
 
             @Override

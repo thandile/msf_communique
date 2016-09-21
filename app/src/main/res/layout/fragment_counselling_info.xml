@@ -15,7 +15,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Session Type"
-            android:id="@+id/textView4"
+            android:id="@+id/textview25"
             android:textStyle="bold"
             android:textSize="20dp"
             android:paddingTop="10dp"
@@ -25,7 +25,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text=""
-            android:id="@+id/textView15" />
+            android:id="@+id/sessionTypeTv" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -41,7 +41,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text=""
-            android:id="@+id/textView17" />
+            android:id="@+id/patient" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -57,7 +57,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text=""
-            android:id="@+id/textView18" />
+            android:id="@+id/notesTV" />
 
         <LinearLayout
             android:layout_width="match_parent"

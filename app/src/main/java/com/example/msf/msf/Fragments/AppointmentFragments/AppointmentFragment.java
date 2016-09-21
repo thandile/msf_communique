@@ -18,6 +18,7 @@ import com.amigold.fundapter.FunDapter;
 import com.amigold.fundapter.extractors.StringExtractor;
 import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.Deserializers.Appointment;
+import com.example.msf.msf.API.Deserializers.Users;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.R;
 
@@ -96,7 +97,7 @@ public class AppointmentFragment extends Fragment {
 
                             appointment = new Appointment(id, date, owner, patient, startTime, title,
                                     notes, endTime);
-
+                            //userGet(owner);
                             appointmentList.add(appointment);
 
                         }
@@ -150,8 +151,6 @@ public class AppointmentFragment extends Fragment {
                                 "No Scheduled appointments", Toast.LENGTH_LONG).show();
                         //appointmentList.add("No scheduled appointments.");
                     }
-
-
                    //appointmentLV.setAdapter(adapter);
                 }
                 catch (JSONException e){
@@ -168,6 +167,48 @@ public class AppointmentFragment extends Fragment {
             }
         };
         communicatorInterface.getAppointments(callback);
+    }
+
+    public void userGet(long userID){
+        final ArrayList<Users> userList = new ArrayList<Users>();
+        final Interface communicatorInterface = Auth.getInterface();
+        Callback<Users> callback = new Callback<Users>() {
+            @Override
+            public void success(Users serverResponse, Response response2) {
+                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
+                try{
+                    Users user = new Users();
+                    JSONObject jsonObject = new JSONObject(resp);
+                    int id = Integer.parseInt(jsonObject.getString("id"));
+                    final String username = jsonObject.getString("username");
+                    user = new Users(id, username);
+                    userList.add(user);
+                    BindDictionary<Users> dictionary = new BindDictionary<>();
+                    dictionary.addStringField(R.id.personTV, new StringExtractor<Users>() {
+                        @Override
+                        public String getStringValue(Users user, int position) {
+                            return ""+user.getUsername();
+                        }
+                    });
+                    FunDapter adapter = new FunDapter(AppointmentFragment.this.getActivity(),
+                            userList,
+                            R.layout.appointment_list_layout, dictionary);
+                    appointmentLV.setAdapter(adapter);
+                }
+                catch (JSONException e){
+                    System.out.print("unsuccessful");
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                if(error != null ){
+                    Log.e(TAG, error.getMessage());
+                    error.printStackTrace();
+                }
+            }
+        };
+        communicatorInterface.getUser(userID, callback);
     }
 
 }

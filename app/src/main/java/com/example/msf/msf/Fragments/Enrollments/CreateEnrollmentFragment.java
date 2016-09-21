@@ -93,7 +93,7 @@ public class CreateEnrollmentFragment extends Fragment {
                     for (int i = 0; i < jsonarray.length(); i++) {
                         JSONObject jsonobject = jsonarray.getJSONObject(i);
                         String id = jsonobject.getString("id");
-                        String fullName = jsonobject.getString("first_name")+" "
+                        String fullName = jsonobject.getString("other_names")+" "
                                 +jsonobject.getString("last_name");
                         patientList.add(id+": "+fullName);
                     }

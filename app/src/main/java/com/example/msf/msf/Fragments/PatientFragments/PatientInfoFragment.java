@@ -16,7 +16,7 @@ import android.widget.Toast;
 import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.BusProvider;
 import com.example.msf.msf.API.Communicator;
-import com.example.msf.msf.API.Deserializers.PatientResponse;
+import com.example.msf.msf.API.Deserializers.Users;
 import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.API.ServerEvent;
@@ -48,7 +48,7 @@ public class PatientInfoFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private Communicator communicator;
     Button delete, edit;
-    TextView first_name, last_name, contact, dob, health_centre, address;
+    TextView first_name, last_name, contact, dob, health_centre, address, sex, outcome, startDate;
     private final String TAG = this.getClass().getSimpleName();
     // Progress Dialog Object
     ProgressDialog prgDialog;
@@ -103,6 +103,9 @@ public class PatientInfoFragment extends Fragment {
         dob = (TextView) view.findViewById(R.id.dobTV);
         health_centre = (TextView) view.findViewById(R.id.health_centreTV);
         address = (TextView) view.findViewById(R.id.addressTV);
+        sex = (TextView) view.findViewById(R.id.sexTV);
+        outcome = (TextView) view.findViewById(R.id.outcomeTV);
+        startDate = (TextView) view.findViewById(R.id.start_dateTV);
         delete = (Button) view.findViewById(R.id.delBtn);
         edit = (Button) view.findViewById(R.id.editBtn);
         communicator = new Communicator();
@@ -153,14 +156,15 @@ public class PatientInfoFragment extends Fragment {
     public void patientGet(long patientID){
         final List<String> patientList = new ArrayList<String>();
         Interface communicatorInterface = Auth.getInterface();
-        Callback<PatientResponse> callback = new Callback<PatientResponse>() {
+        Callback<Users> callback = new Callback<Users>() {
             @Override
-            public void success(PatientResponse serverResponse, Response response2) {
+            public void success(Users serverResponse, Response response2) {
                 String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
                 try{
+
                     JSONObject jsonobject = new JSONObject(resp);
                     Log.d(TAG, "ID: "+ jsonobject.getString("id"));
-                    first_name.setText(jsonobject.getString("first_name"));
+                    first_name.setText(jsonobject.getString("other_names"));
                     last_name.setText(jsonobject.getString("last_name"));
                     if (!jsonobject.getString("contact_number").equals("null")) {
                         contact.setText(jsonobject.getString("contact_number")); }
@@ -170,10 +174,12 @@ public class PatientInfoFragment extends Fragment {
                         health_centre.setText(jsonobject.getString("reference_health_centre"));}
                     if (!jsonobject.getString("location").equals("null")) {
                         address.setText(jsonobject.getString("location")); }
-                    /**contact.setText(jsonObject.getString("contact_number"));
-                     dob.setText(jsonObject.getString("birth_date"));
-                     health_centre.setText(jsonObject.getString("reference_health_centre"));
-                     address.setText(jsonObject.getString("location"));**/
+                    if (!jsonobject.getString("treatment_start_date").equals("null")) {
+                        startDate.setText(jsonobject.getString("treatment_start_date")); }
+                    if (!jsonobject.getString("interim_outcome").equals("null")) {
+                        outcome.setText(jsonobject.getString("interim_outcome"));}
+                    if (!jsonobject.getString("sex").equals("null")) {
+                        sex.setText(jsonobject.getString("sex"));}
                 }
                 catch (JSONException e){
                     System.out.print("unsuccessful");
@@ -210,7 +216,9 @@ public class PatientInfoFragment extends Fragment {
                 Log.e(TAG, id.toString());
                 String[] patientInfo = {first_name.getText().toString(),
                         last_name.getText().toString(), health_centre.getText().toString(),
-                        dob.getText().toString(), id};
+                        dob.getText().toString(), id, sex.getText().toString(),
+                        outcome.getText().toString(), startDate.getText().toString(),
+                        address.getText().toString(), health_centre.getText().toString()};
                 UpdatePatientFragment updatePatientFragment =
                         new UpdatePatientFragment().newInstance(patientInfo);
                 FragmentManager manager = getActivity().getSupportFragmentManager();
@@ -240,11 +248,15 @@ public class PatientInfoFragment extends Fragment {
         prgDialog.hide();
         Toast.makeText(PatientInfoFragment.this.getActivity(),
                 "You have successfully deleted a patient", Toast.LENGTH_LONG).show();
-
-        /**patient_fname.setText("");
-         patient_sname.setText("");
-         patient_currFacility.setText("");
-         patient_dob.setText("");**/
+        first_name.setText("");
+        last_name.setText("");
+        health_centre.setText("");
+        dob.setText("");
+        sex.setText("");
+        outcome.setText("");
+        startDate.setText("");
+        address.setText("");
+        health_centre.setText("");
     }
 
     @Subscribe

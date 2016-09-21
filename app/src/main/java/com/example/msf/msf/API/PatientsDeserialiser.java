@@ -1,6 +1,5 @@
 package com.example.msf.msf.API;
 
-import com.example.msf.msf.API.Deserializers.PatientResponse;
 import com.example.msf.msf.API.Deserializers.PilotProgramsResponse;
 
 import java.util.List;

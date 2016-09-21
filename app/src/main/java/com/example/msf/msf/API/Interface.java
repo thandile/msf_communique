@@ -1,10 +1,10 @@
 package com.example.msf.msf.API;
 
 import com.example.msf.msf.API.Deserializers.AddCounsellingResponse;
-import com.example.msf.msf.API.Deserializers.AddEnrollmentResponse;
+import com.example.msf.msf.API.Deserializers.Enrollment;
 import com.example.msf.msf.API.Deserializers.AddPilotResponse;
 import com.example.msf.msf.API.Deserializers.Appointment;
-import com.example.msf.msf.API.Deserializers.PatientResponse;
+import com.example.msf.msf.API.Deserializers.Users;
 import com.example.msf.msf.API.Deserializers.SessionDeserialiser;
 
 import java.util.List;
@@ -28,28 +28,44 @@ public interface Interface {
     @GET("/programs/")
     void getPilots(Callback<List<PilotsDeserializer>> serverResponseCallback);
 
+    @GET("/programs/{id}")
+    void getPilot(@Path("id") long pilotID,
+                   Callback<PilotsDeserializer> serverResponseCallback);
+
     @GET("/patients/")
     void getPatients(Callback<List<PatientsDeserialiser>> serverResponseCallback);
 
     @GET("/patients/{id}/")
     void getPatient(@Path("id") long patientID,
-                    Callback<PatientResponse> serverResponseCallback);
+                    Callback<Users> serverResponseCallback);
 
     @GET("/enrollments/")
-    void getEnrollments(Callback<List<PatientsDeserialiser>> serverResponseCallback);
+    void getEnrollments(Callback<List<Enrollment>> serverResponseCallback);
+
+    @GET("/enrollments/{id}")
+    void getEnrollment(@Path("id") long id,
+                        Callback<Enrollment> serverResponseCallback);
 
     @GET("/users/")
     void getUsers(Callback<List<PatientsDeserialiser>> serverResponseCallback);
 
     @GET("/users/{id}")
     void getUser(@Path("id") long userID,
-                 Callback<PatientResponse> serverResponseCallback);
+                 Callback<Users> serverResponseCallback);
 
     @GET("/session/")
     void getSessions(Callback<List<SessionDeserialiser>> serverResponseCallback);
 
+    @GET("/session/{id}")
+    void getSession(@Path("id") long sessionTypeID,
+            Callback<SessionDeserialiser> serverResponseCallback);
+
     @GET("/counselling/")
-    void getCounselling(Callback<List<SessionDeserialiser>> serverResponseCallback);
+    void getCounselling(Callback<List<AddCounsellingResponse>> serverResponseCallback);
+
+    @GET("/counselling/{id}")
+    void getCounsellingSession(@Path("id") long counsellingID,
+            Callback<AddCounsellingResponse> serverResponseCallback);
 
     @GET("/appointments/")
     void getAppointments(Callback<List<Appointment>> serverResponseCallback);
@@ -71,7 +87,7 @@ public interface Interface {
                          @Field("comment") String comment,
                          @Field("program") String program,
                          @Field("date_enrolled") String date,
-                         Callback<AddEnrollmentResponse> serverResponseCallback);
+                         Callback<Enrollment> serverResponseCallback);
 
     @FormUrlEncoded
     @POST("/counselling/")
@@ -82,11 +98,12 @@ public interface Interface {
 
     @FormUrlEncoded
     @POST("/patients/")
-    void postData(@Field("first_name") String firstName,
+    void postData(@Field("other_names") String firstName,
                   @Field("last_name") String lastName,
                   @Field("birth_date") String dob,
-                  @Field("reference_health_centre ") String facility,
-                  Callback<PatientResponse> serverResponseCallback);
+                  @Field("reference_health_centre") String facility,
+                  @Field("sex") String sex,
+                  Callback<Users> serverResponseCallback);
 
     @FormUrlEncoded
     @POST("/appointments/")
@@ -97,16 +114,16 @@ public interface Interface {
                           @Field("title") String appointmentType,
                           @Field("end_time") String endTime,
                           @Field("start_time") String startTime,
-                          Callback<AddEnrollmentResponse> serverResponseCallback);
+                          Callback<Enrollment> serverResponseCallback);
 
     @Multipart
     @PUT("/patients/{id}/")
     void updatePatient(@Path("id") long patientID,
-                       @Part("first_name") String firstName,
+                       @Part("other_names") String firstName,
                        @Part("last_name") String lastName,
                        @Part("birth_date") String dob,
                        @Part("reference_health_centre ") String facility,
-                       Callback<PatientResponse> callback);
+                       Callback<Users> callback);
 
     @Multipart
     @PUT("/appointments/{id}/")
@@ -128,17 +145,17 @@ public interface Interface {
                            Callback<AddCounsellingResponse> serverResponseCallback);
 
     @Multipart
-    @PUT("/enrollments/")
+    @PUT("/enrollments/{id}")
     void updateEnrollments(@Path("id") long enrollmentID,
                            @Part("patient") String patient,
                            @Part("comment") String comment,
                            @Part("program") String program,
                            @Part("date_enrolled") String date,
-                           Callback<AddEnrollmentResponse> serverResponseCallback);
+                           Callback<Enrollment> serverResponseCallback);
 
     @DELETE("/patients/{id}/")
     void deletePatient(@Path("id") long patientID,
-                       Callback<PatientResponse> callback);
+                       Callback<Users> callback);
 
     @DELETE("/appointments/{id}/")
     void deleteAppointment(@Path("id") long appointmentID,
@@ -146,9 +163,9 @@ public interface Interface {
 
     @DELETE("/counselling/{id}/")
     void deleteSession(@Path("id") long sessionID,
-                       Callback<PatientResponse> callback);
+                       Callback<Users> callback);
 
-    @DELETE("/enrollment/{id}/")
+    @DELETE("/enrollments/{id}/")
     void deleteEnrollment(@Path("id") long enrollmentID,
-                          Callback<PatientResponse> callback);
+                          Callback<Enrollment> callback);
 }

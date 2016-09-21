@@ -1,7 +1,7 @@
 package com.example.msf.msf.API;
 import android.util.Log;
 
-import com.example.msf.msf.API.Deserializers.PatientResponse;
+import com.example.msf.msf.API.Deserializers.Users;
 import com.example.msf.msf.API.Deserializers.*;
 //import com.example.msf.msf.HomeActivity;
 import com.squareup.otto.Produce;
@@ -30,12 +30,12 @@ public class Communicator {
     List<String> patientNames = new ArrayList<String>();
 
 
-    public void patientPost(String firstName, String lastName, String facility, String dob){
+    public void patientPost(String firstName, String lastName, String facility, String dob, String sex){
         Interface communicatorInterface = Auth.getInterface();
-        Callback<PatientResponse> callback = new Callback<PatientResponse>() {
+        Callback<Users> callback = new Callback<Users>() {
 
             @Override
-            public void success(PatientResponse serverResponse, Response response2) {
+            public void success(Users serverResponse, Response response2) {
                 if(serverResponse.getResponseCode() == 0){
                     BusProvider.getInstance().post(produceServerEvent(serverResponse));
                 }else{
@@ -53,7 +53,7 @@ public class Communicator {
                 BusProvider.getInstance().post(produceErrorEvent(-200,error.getMessage()));
             }
         };
-        communicatorInterface.postData(firstName, lastName, dob, facility, callback);
+        communicatorInterface.postData(firstName, lastName, dob, facility, sex, callback);
     }
 
 
@@ -155,10 +155,10 @@ public class Communicator {
 
     public void enrollmentPost(String patient, String comment, String program, String date){
         Interface communicatorInterface = Auth.getInterface();
-        Callback<AddEnrollmentResponse> callback = new Callback<AddEnrollmentResponse>() {
+        Callback<Enrollment> callback = new Callback<Enrollment>() {
 
             @Override
-            public void success(AddEnrollmentResponse serverResponse, Response response2) {
+            public void success(Enrollment serverResponse, Response response2) {
                 if(serverResponse.getResponseCode() == 0){
                     BusProvider.getInstance().post(produceEnrollmentServerEvent(serverResponse));
                 }else{
@@ -182,10 +182,10 @@ public class Communicator {
     public void appointmentPost(String patientId, String owner, String notes, String date,
                                 String appointmentType, String endTime, String startTime){
         Interface communicatorInterface = Auth.getInterface();
-        Callback<AddEnrollmentResponse> callback = new Callback<AddEnrollmentResponse>() {
+        Callback<Enrollment> callback = new Callback<Enrollment>() {
 
             @Override
-            public void success(AddEnrollmentResponse serverResponse, Response response2) {
+            public void success(Enrollment serverResponse, Response response2) {
                 if(serverResponse.getResponseCode() == 0){
                     BusProvider.getInstance().post(produceEnrollmentServerEvent(serverResponse));
                 }else{
@@ -237,10 +237,10 @@ public class Communicator {
 
     public void patientUpdate(long id, String firstName, String lastName, String facility, String dob){
         Interface communicatorInterface = Auth.getInterface();
-        Callback<PatientResponse> callback = new Callback<PatientResponse>() {
+        Callback<Users> callback = new Callback<Users>() {
 
             @Override
-            public void success(PatientResponse serverResponse, Response response2) {
+            public void success(Users serverResponse, Response response2) {
                 if(serverResponse.getResponseCode() == 0){
                     BusProvider.getInstance().post(produceServerEvent(serverResponse));
                 }else{
@@ -264,9 +264,9 @@ public class Communicator {
 
     public void patientDelete(final long patientId){
         Interface communicatorInterface = Auth.getInterface();
-        Callback<PatientResponse> callback = new Callback<PatientResponse>() {
+        Callback<Users> callback = new Callback<Users>() {
             @Override
-            public void success(PatientResponse serverResponse, Response response2) {
+            public void success(Users serverResponse, Response response2) {
                 ///if(serverResponse.getResponseCode() == 0){
                     BusProvider.getInstance().post(produceServerEvent(serverResponse));
                 /**}else{
@@ -344,15 +344,69 @@ public class Communicator {
                 appointmentType, endTime, startTime, callback);
     }
 
+    public void enrollmentDelete(final long enrollmentID){
+        Interface communicatorInterface = Auth.getInterface();
+        Callback<Enrollment> callback = new Callback<Enrollment>() {
+            @Override
+            public void success(Enrollment serverResponse, Response response2) {
+                //if(serverResponse.getResponseCode() == 0){
+                BusProvider.getInstance().post(produceEnrollmentServerEvent(serverResponse));
+                // }else{
+                //  BusProvider.getInstance().post(produceErrorEvent(serverResponse.getResponseCode(),
+                // serverResponse.getMessage()));
+                // }**/
+                Log.d(TAG,"Success, enrollment deleted "+ enrollmentID);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                if(error != null ){
+                    Log.e(TAG, error.getMessage());
+                    error.printStackTrace();
+                }
+                BusProvider.getInstance().post(produceErrorEvent(-200,error.getMessage()));
+            }
+        };
+        communicatorInterface.deleteEnrollment(enrollmentID, callback);
+    }
+
+    public void enrollmentUpdate(long enrollmentID, String patient, String comment,
+                                  String program, String date){
+        Interface communicatorInterface = Auth.getInterface();
+        Callback<Enrollment> callback = new Callback<Enrollment>() {
+
+            @Override
+            public void success(Enrollment serverResponse, Response response2) {
+                if(serverResponse.getResponseCode() == 0){
+                    BusProvider.getInstance().post(produceEnrollmentServerEvent(serverResponse));
+                }else{
+                    BusProvider.getInstance().post(produceErrorEvent(serverResponse.getResponseCode(),
+                            serverResponse.getMessage()));
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                if(error != null ){
+                    Log.e(TAG, error.getMessage());
+                    error.printStackTrace();
+                }
+                BusProvider.getInstance().post(produceErrorEvent(-200,error.getMessage()));
+            }
+        };
+        communicatorInterface.updateEnrollments(enrollmentID, patient, comment, program, date, callback);
+    }
+
+
 
     @Produce
-    public ServerEvent produceServerEvent(PatientResponse PatientResponse) {
-        return new ServerEvent(PatientResponse);
+    public ServerEvent produceServerEvent(Users Users) {
+        return new ServerEvent(Users);
     }
 
     @Produce
-    public ServerEvent produceEnrollmentServerEvent(AddEnrollmentResponse AddEnrollmentResponse) {
-        return new ServerEvent(AddEnrollmentResponse);
+    public ServerEvent produceEnrollmentServerEvent(Enrollment Enrollment) {
+        return new ServerEvent(Enrollment);
     }
 
     @Produce

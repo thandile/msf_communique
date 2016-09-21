@@ -3,20 +3,24 @@
 
     <group android:checkableBehavior="single">
         <item
+            android:id="@+id/nav_home"
+            android:icon="@drawable/ic_home"
+            android:title="Home" />
+        <item
             android:id="@+id/nav_camera"
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@drawable/ic_patient"
             android:title="Register Patient" />
         <item
             android:id="@+id/nav_gallery"
-            android:icon="@drawable/ic_menu_gallery"
+            android:icon="@drawable/ic_appointment"
             android:title="Create Appointments" />
         <item
             android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
+            android:icon="@drawable/ic_counsel"
             android:title="Record Counselling Session" />
         <item
             android:id="@+id/nav_manage"
-            android:icon="@drawable/ic_menu_manage"
+            android:icon="@drawable/ic_enrol"
             android:title="Record Pilot Enrollments" />
     </group>
 
@@ -24,19 +28,19 @@
         <menu>
             <item
                 android:id="@+id/nav_patient_list"
-                android:icon="@drawable/ic_menu_gallery"
+                android:icon="@drawable/ic_info"
                 android:title="Patients" />
             <item
                 android:id="@+id/nav_appointment_list"
-                android:icon="@drawable/ic_menu_gallery"
+                android:icon="@drawable/ic_info"
                 android:title="Appointments" />
             <item
                 android:id="@+id/nav_counselling_list"
-                android:icon="@drawable/ic_menu_gallery"
+                android:icon="@drawable/ic_info"
                 android:title="Counselling" />
             <item
                 android:id="@+id/nav_enrollment_list"
-                android:icon="@drawable/ic_menu_gallery"
+                android:icon="@drawable/ic_info"
                 android:title="Enrollments" />
         </menu>
     </item>

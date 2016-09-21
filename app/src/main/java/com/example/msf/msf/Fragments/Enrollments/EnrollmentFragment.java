@@ -1,110 +1,209 @@
 package com.example.msf.msf.Fragments.Enrollments;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.amigold.fundapter.BindDictionary;
+import com.amigold.fundapter.FunDapter;
+import com.amigold.fundapter.extractors.StringExtractor;
+import com.example.msf.msf.API.Auth;
+import com.example.msf.msf.API.Deserializers.Enrollment;
+import com.example.msf.msf.API.Deserializers.Users;
+import com.example.msf.msf.API.Interface;
+import com.example.msf.msf.Fragments.AppointmentFragments.AppointmentInfoFragment;
 import com.example.msf.msf.R;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link EnrollmentFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link EnrollmentFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
+import retrofit.mime.TypedByteArray;
+
 public class EnrollmentFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    private OnFragmentInteractionListener mListener;
-
+    private ListView enrollmentLV;
+    private final String TAG = this.getClass().getSimpleName();
     public EnrollmentFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment EnrollmentFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static EnrollmentFragment newInstance(String param1, String param2) {
-        EnrollmentFragment fragment = new EnrollmentFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        String total = mParam1 + " " + mParam2;
-        onButtonPressed(total);
-        return inflater.inflate(R.layout.fragment_enrollment, container, false);
+
+        View view = inflater.inflate(R.layout.fragment_enrollment, container, false);
+        enrollmentLV = (ListView) view.findViewById(R.id.enrollmentLV);
+        enrollmentsGet();
+        enrollmentLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                TextView idTV = (TextView) view.findViewById(R.id.idTV);
+                String id = idTV.getText().toString().split(" ")[1];
+                Log.e(TAG, id.toString());
+                EnrollmentInfoFragment enrollmentInfoFragment = new EnrollmentInfoFragment().newInstance(id);
+                FragmentManager manager = getActivity().getSupportFragmentManager();
+                manager.beginTransaction()
+                        .replace(R.id.rel_layout_for_frag, enrollmentInfoFragment,
+                                enrollmentInfoFragment.getTag())
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
+        return view;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(String data) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(data);
-        }
+    public void enrollmentsGet(){
+        final ArrayList<Enrollment> enrollmentList = new ArrayList<Enrollment>();
+        Interface communicatorInterface = Auth.getInterface();
+        Callback<List<Enrollment>> callback = new Callback<List<Enrollment>>() {
+            @Override
+            public void success(List<Enrollment> serverResponse, Response response2) {
+                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
+                try{
+                    Enrollment enrollment = new Enrollment();
+                    JSONArray jsonarray = new JSONArray(resp);
+                    if (jsonarray.length()>0) {
+                        Log.d(TAG, jsonarray.toString());
+                        for (int i = 0; i < jsonarray.length(); i++) {
+                            JSONObject jsonobject = jsonarray.getJSONObject(i);
+                            int id = Integer.parseInt(jsonobject.getString("id"));
+                            int program = Integer.parseInt(jsonobject.getString("program"));
+                            int patient = Integer.parseInt(jsonobject.getString("patient"));
+                            String date = jsonobject.getString("date_enrolled");
+                            String comment = jsonobject.getString("comment");
+                            Log.d(TAG, "enrollment "+date);
+                            enrollment = new Enrollment(id, patient, program, comment, date);
+                            enrollmentList.add(enrollment);
+                        }
+
+                        Log.d(TAG, "enrollment "+enrollmentList.toString());
+                        BindDictionary<Enrollment> dictionary = new BindDictionary<>();
+                        dictionary.addStringField(R.id.titleTV, new StringExtractor<Enrollment>() {
+                            @Override
+                            public String getStringValue(Enrollment enrollment, int position) {
+                                return ""+enrollment.getProgram();
+                            }
+                        });
+                        dictionary.addStringField(R.id.personTV, new StringExtractor<Enrollment>() {
+                            @Override
+                            public String getStringValue(Enrollment enrollment, int position) {
+                                return ""+enrollment.getPatient();
+                            }
+                        });
+
+                        dictionary.addStringField(R.id.dateTV, new StringExtractor<Enrollment>() {
+                            @Override
+                            public String getStringValue(Enrollment enrollment, int position) {
+                                return enrollment.getDate();
+                            }
+                        });
+
+                        dictionary.addStringField(R.id.idTV, new StringExtractor<Enrollment>() {
+                            @Override
+                            public String getStringValue(Enrollment enrollment, int position) {
+                                return "ID: "+enrollment.getId();
+                            }
+                        });
+                        FunDapter adapter = new FunDapter(EnrollmentFragment.this.getActivity(),
+                                enrollmentList,
+                                R.layout.appointment_list_layout, dictionary);
+                        enrollmentLV.setAdapter(adapter);
+                    }
+                    else{
+                        BindDictionary<Enrollment> dictionary = new BindDictionary<>();
+                        dictionary.addStringField(R.id.titleTV, new StringExtractor<Enrollment>() {
+                            @Override
+                            public String getStringValue(Enrollment enrollment, int position) {
+                                return "No recorded enrollments";
+                            }
+                        });
+
+                        FunDapter adapter = new FunDapter(EnrollmentFragment.this.getActivity(),
+                                enrollmentList,
+                                R.layout.appointment_list_layout, dictionary);
+                        enrollmentLV.setAdapter(adapter);
+                        Toast.makeText(EnrollmentFragment.this.getActivity(),
+                                "No recorded enrollments", Toast.LENGTH_SHORT).show();
+                        //appointmentList.add("No scheduled appointments.");
+                    }
+
+
+                }
+                catch (JSONException e){
+                    System.out.print("unsuccessful");
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                if(error != null ){
+                    Log.e(TAG, error.getMessage());
+                    error.printStackTrace();
+                }
+            }
+        };
+        communicatorInterface.getEnrollments(callback);
     }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
+    /**public void userGet(long userID){
+        final ArrayList<Users> userList = new ArrayList<Users>();
+        final Interface communicatorInterface = Auth.getInterface();
+        Callback<Users> callback = new Callback<Users>() {
+            @Override
+            public void success(Users serverResponse, Response response2) {
+                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
+                try{
+                    Users user = new Users();
+                    JSONObject jsonObject = new JSONObject(resp);
+                    int id = Integer.parseInt(jsonObject.getString("id"));
+                    final String username = jsonObject.getString("username");
+                    user = new Users(id, username);
+                    userList.add(user);
+                    BindDictionary<Users> dictionary = new BindDictionary<>();
+                    dictionary.addStringField(R.id.personTV, new StringExtractor<Users>() {
+                        @Override
+                        public String getStringValue(Users user, int position) {
+                            return ""+user.getUsername();
+                        }
+                    });
+                    FunDapter adapter = new FunDapter(EnrollmentFragment.this.getActivity(),
+                            userList,
+                            R.layout.appointment_list_layout, dictionary);
+                    enrollmentLV.setAdapter(adapter);
+                }
+                catch (JSONException e){
+                    System.out.print("unsuccessful");
+                }
+            }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
+            @Override
+            public void failure(RetrofitError error) {
+                if(error != null ){
+                    Log.e(TAG, error.getMessage());
+                    error.printStackTrace();
+                }
+            }
+        };
+        communicatorInterface.getUser(userID, callback);
+    }**/
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(String data);
-    }
+
+
+
 }

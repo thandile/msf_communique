@@ -10,11 +10,13 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.amigold.fundapter.BindDictionary;
 import com.amigold.fundapter.FunDapter;
 import com.amigold.fundapter.extractors.StringExtractor;
 import com.example.msf.msf.API.Auth;
+import com.example.msf.msf.API.Deserializers.Enrollment;
 import com.example.msf.msf.API.Deserializers.Patients;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.API.PatientsDeserialiser;
@@ -79,54 +81,71 @@ public class PatientFragment extends Fragment {
             @Override
             public void success(List<PatientsDeserialiser> serverResponse, Response response2) {
                 String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
-                try{
+                try {
                     Patients patient = new Patients();
                     JSONArray jsonarray = new JSONArray(resp);
-                    for (int i = 0; i < jsonarray.length(); i++) {
-                        JSONObject jsonobject = jsonarray.getJSONObject(i);
-                        String id = jsonobject.getString("id");
-                        String firstName = jsonobject.getString("first_name");
-                        String lastName = jsonobject.getString("last_name");
-                        String dob = jsonobject.getString("birth_date");
-                        String location = jsonobject.getString("location");
-                        String contact = jsonobject.getString("contact_number");
-                        JSONArray enrollmentsJson = jsonobject.getJSONArray("enrolled_programs");
-                        String[] enrollments = new String[enrollmentsJson.length()];
-                        for (int j = 0; j<enrollmentsJson.length(); j++){
-                            enrollments[j] = enrollmentsJson.getString(j);
+                    if (jsonarray.length() > 0) {
+                        for (int i = 0; i < jsonarray.length(); i++) {
+                            JSONObject jsonobject = jsonarray.getJSONObject(i);
+                            String id = jsonobject.getString("id");
+                            String firstName = jsonobject.getString("other_names");
+                            String lastName = jsonobject.getString("last_name");
+                            String dob = jsonobject.getString("birth_date");
+                            String location = jsonobject.getString("location");
+                            String contact = jsonobject.getString("contact_number");
+                            JSONArray enrollmentsJson = jsonobject.getJSONArray("enrolled_programs");
+                            String[] enrollments = new String[enrollmentsJson.length()];
+                            for (int j = 0; j < enrollmentsJson.length(); j++) {
+                                enrollments[j] = enrollmentsJson.getString(j);
+                            }
+                            String health_centre = jsonobject.getString("reference_health_centre");
+                            patient = new Patients(id, firstName, lastName, dob, contact,
+                                    location, enrollments, health_centre);
+
+                            patientList.add(patient);
+
                         }
-                        String health_centre = jsonobject.getString("reference_health_centre");
-                        patient = new Patients(id,firstName, lastName, dob, contact,
-                                location, enrollments, health_centre);
+                        Log.d(TAG, patientList.toString());
+                        BindDictionary<Patients> dictionary = new BindDictionary<>();
+                        dictionary.addStringField(R.id.titleTV, new StringExtractor<Patients>() {
+                            @Override
+                            public String getStringValue(Patients patient, int position) {
+                                return patient.getFirst_name();
+                            }
+                        });
+                        dictionary.addStringField(R.id.personTV, new StringExtractor<Patients>() {
+                            @Override
+                            public String getStringValue(Patients patient, int position) {
+                                return "Contact: " + patient.getContact_number();
+                            }
+                        });
+                        dictionary.addStringField(R.id.idTV, new StringExtractor<Patients>() {
+                            @Override
+                            public String getStringValue(Patients patient, int position) {
+                                return "ID: " + patient.getId();
+                            }
+                        });
 
-                        patientList.add(patient);
+                        FunDapter adapter = new FunDapter(PatientFragment.this.getActivity(), patientList,
+                                R.layout.list_layout, dictionary);
+                        patientLv.setAdapter(adapter);
+                    } else {
 
+                        BindDictionary<Patients> dictionary = new BindDictionary<>();
+                        dictionary.addStringField(R.id.titleTV, new StringExtractor<Patients>() {
+                            @Override
+                            public String getStringValue(Patients patient, int position) {
+                                return "No registered patients";
+                            }
+                        });
+
+                        FunDapter adapter = new FunDapter(PatientFragment.this.getActivity(), patientList,
+                                R.layout.list_layout, dictionary);
+                        patientLv.setAdapter(adapter);
+                        Toast.makeText(PatientFragment.this.getActivity(),
+                                "No registered patients", Toast.LENGTH_SHORT).show();
+                        //appointmentList.add("No scheduled appointments.");
                     }
-                    Log.d(TAG, patientList.toString());
-                    BindDictionary<Patients> dictionary = new BindDictionary<>();
-                    dictionary.addStringField(R.id.titleTV, new StringExtractor<Patients>() {
-                        @Override
-                        public String getStringValue(Patients patient, int position) {
-                            return patient.getFirst_name();
-                        }
-                    });
-                    dictionary.addStringField(R.id.personTV, new StringExtractor<Patients>() {
-                        @Override
-                        public String getStringValue(Patients patient, int position) {
-                            return "Contact: " +patient.getContact_number();
-                        }
-                    });
-                    dictionary.addStringField(R.id.idTV, new StringExtractor<Patients>() {
-                        @Override
-                        public String getStringValue(Patients patient, int position) {
-                            return "ID: "+patient.getId();
-                        }
-                    });
-
-                    FunDapter adapter = new FunDapter(PatientFragment.this.getActivity(), patientList,
-                            R.layout.list_layout, dictionary);
-                    patientLv.setAdapter(adapter);
-
                 }
                 catch (JSONException e){
                     System.out.print("unsuccessful");

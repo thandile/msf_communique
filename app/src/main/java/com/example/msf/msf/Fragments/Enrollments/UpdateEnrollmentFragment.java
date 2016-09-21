@@ -1,14 +1,42 @@
 package com.example.msf.msf.Fragments.Enrollments;
 
+import android.app.ProgressDialog;
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.Toast;
 
+import com.example.msf.msf.API.Auth;
+import com.example.msf.msf.API.BusProvider;
+import com.example.msf.msf.API.Communicator;
+import com.example.msf.msf.API.ErrorEvent;
+import com.example.msf.msf.API.Interface;
+import com.example.msf.msf.API.PatientsDeserialiser;
+import com.example.msf.msf.API.PilotsDeserializer;
+import com.example.msf.msf.API.ServerEvent;
 import com.example.msf.msf.R;
+import com.squareup.otto.Subscribe;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
+import retrofit.mime.TypedByteArray;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -19,14 +47,18 @@ import com.example.msf.msf.R;
  * create an instance of this fragment.
  */
 public class UpdateEnrollmentFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    private final String TAG = this.getClass().getSimpleName();
+    private Communicator communicator;
+    ProgressDialog prgDialog;
+    Spinner pilotPrograms;
+    AutoCompleteTextView patientNames;
+    EditText comment, enrollment_date;
+    AutoCompleteTextView patientsTV;
+    Button submit;
     private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
 
     // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private String[] enrollmentInfo;
 
     private OnFragmentInteractionListener mListener;
 
@@ -39,15 +71,13 @@ public class UpdateEnrollmentFragment extends Fragment {
      * this fragment using the provided parameters.
      *
      * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
      * @return A new instance of fragment UpdateCounsellingFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static UpdateEnrollmentFragment newInstance(String param1, String param2) {
+    public static UpdateEnrollmentFragment newInstance(String[] param1) {
         UpdateEnrollmentFragment fragment = new UpdateEnrollmentFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putStringArray(ARG_PARAM1, param1);
         fragment.setArguments(args);
         return fragment;
     }
@@ -56,22 +86,42 @@ public class UpdateEnrollmentFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            enrollmentInfo = getArguments().getStringArray(ARG_PARAM1);
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_update_enrollment, container, false);
+        View view = inflater.inflate(R.layout.fragment_update_enrollment, container, false);
+
+        patientsGet();
+        pilotsGet();
+        communicator = new Communicator();
+        // Instantiate Progress Dialog object
+        prgDialog = new ProgressDialog(UpdateEnrollmentFragment.this.getActivity());
+        // Set Progress Dialog Text
+        prgDialog.setMessage("Please wait...");
+        // Set Cancelable as False
+        prgDialog.setCancelable(false);
+        // Get a reference to the AutoCompleteTextView in the layout
+        patientsTV = (AutoCompleteTextView) view.findViewById(R.id.autocomplete_patients);
+        pilotPrograms = (Spinner) view.findViewById(R.id.pilotSpinner);
+        comment = (EditText) view.findViewById(R.id.enrollmentComment);
+        enrollment_date = (EditText) view.findViewById(R.id.enrollmentDate);
+        submit = (Button) view.findViewById(R.id.submit_enrollment);
+
+        patientsTV.setText(enrollmentInfo[1]);
+        comment.setText(enrollmentInfo[3]);
+        enrollment_date.setText(enrollmentInfo[2]);
+        addListenerOnButton();
+        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
+    public void onButtonPressed(String[] data) {
         if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
+            mListener.onFragmentInteraction(data);
         }
     }
 
@@ -104,6 +154,132 @@ public class UpdateEnrollmentFragment extends Fragment {
      */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+        void onFragmentInteraction(String[] data);
+    }
+
+    public void patientsGet(){
+        final List<String> patientList = new ArrayList<String>();
+        Interface communicatorInterface = Auth.getInterface();
+        Callback<List<PatientsDeserialiser>> callback = new Callback<List<PatientsDeserialiser>>() {
+            @Override
+            public void success(List<PatientsDeserialiser> serverResponse, Response response2) {
+                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
+                try{
+                    JSONArray jsonarray = new JSONArray(resp);
+                    for (int i = 0; i < jsonarray.length(); i++) {
+                        JSONObject jsonobject = jsonarray.getJSONObject(i);
+                        String id = jsonobject.getString("enrollmentInfo");
+                        String fullName = jsonobject.getString("other_names")+" "
+                                +jsonobject.getString("last_name");
+                        patientList.add(id+": "+fullName);
+                    }
+                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                            UpdateEnrollmentFragment.this.getActivity(),
+                            android.R.layout.simple_dropdown_item_1line, patientList);
+                    patientsTV.setAdapter(adapter);
+                }
+                catch (JSONException e){
+                    System.out.print("unsuccessful");
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                if(error != null ){
+                    Log.e(TAG, error.getMessage());
+                    error.printStackTrace();
+                }
+            }
+        };
+        communicatorInterface.getPatients(callback);
+    }
+
+    public void pilotsGet(){
+        final List<String>pilotNames = new ArrayList<String>();
+        Interface communicatorInterface = Auth.getInterface();
+        Callback<List<PilotsDeserializer>> callback = new Callback<List<PilotsDeserializer>>() {
+            @Override
+            public void success(List<PilotsDeserializer> serverResponse, Response response2) {
+                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
+                try{
+                    JSONArray jsonarray = new JSONArray(resp);
+                    for (int i = 0; i < jsonarray.length(); i++) {
+                        JSONObject jsonobject = jsonarray.getJSONObject(i);
+                        String id_name =jsonobject.getString("id")+": "+jsonobject.getString("name");
+                        pilotNames.add(id_name);
+                    }
+                    addItemsOnPilotSpinner(pilotNames);
+                }
+                catch (JSONException e){
+                    System.out.print("unsuccessful");
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                if(error != null ){
+                    Log.e(TAG, error.getMessage());
+                    error.printStackTrace();
+                }
+            }
+        };
+        communicatorInterface.getPilots(callback);
+    }
+
+    // add items into spinner dynamically
+    public void addItemsOnPilotSpinner(List<String> pilots) {
+        //adding to the pilot name spinner
+        ArrayAdapter<String> pilotSpinnerAdapter = new ArrayAdapter<String>(
+                UpdateEnrollmentFragment.this.getActivity(),
+                android.R.layout.simple_spinner_item, pilots);
+        pilotSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        pilotPrograms.setAdapter(pilotSpinnerAdapter);
+    }
+
+    // get the selected dropdown list value
+    public void addListenerOnButton() {
+        submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                prgDialog.show();
+                String[] patient_id = patientsTV.getText().toString().split(":");
+                String[] program = String.valueOf(pilotPrograms.getSelectedItem()).split(":");
+                String enrollment_comment = comment.getText().toString();
+                String date = enrollment_date.getText().toString();
+                communicator.enrollmentUpdate(Long.parseLong(enrollmentInfo[4]), patient_id[1],
+                        enrollment_comment, program[0], date);
+            }
+        });
+    }
+
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        BusProvider.getInstance().register(this);
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        BusProvider.getInstance().unregister(this);
+    }
+
+    @Subscribe
+    public void onServerEvent(ServerEvent serverEvent){
+        prgDialog.hide();
+        Toast.makeText(UpdateEnrollmentFragment.this.getActivity(),
+                "You have successfully enrolled the patient into a pilot",
+                Toast.LENGTH_LONG).show();
+        comment.setText("");
+        enrollment_date.setText("");
+        patientsTV.setText("");
+    }
+
+    @Subscribe
+    public void onErrorEvent(ErrorEvent errorEvent){
+        prgDialog.hide();
+        Toast.makeText(UpdateEnrollmentFragment.this.getActivity(),
+                "" + errorEvent.getErrorMsg(), Toast.LENGTH_SHORT).show();
     }
 }

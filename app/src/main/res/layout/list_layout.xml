@@ -7,7 +7,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Large Text"
+        android:text=""
         android:id="@+id/titleTV"
         android:layout_marginTop="10dp" />
 
@@ -15,7 +15,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="Medium Text"
+        android:text=""
         android:id="@+id/personTV"
         android:layout_below="@+id/titleTV"
         android:layout_alignParentLeft="true"
@@ -26,7 +26,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="Small Text"
+        android:text=""
         android:id="@+id/idTV"
         android:layout_alignBaseline="@+id/personTV"
         android:layout_alignBottom="@+id/personTV"

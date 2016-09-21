@@ -6,10 +6,13 @@ import com.google.gson.annotations.SerializedName;
  * Created by Thandile on 2016/09/15.
  */
 public class AddCounsellingResponse {
+
+    @SerializedName("id")
+    private int id;
     @SerializedName("patient")
-    private String patient;
+    private int patient;
     @SerializedName("counselling_session_type")
-    private String counselling_session_type;
+    private int counselling_session_type;
     @SerializedName("notes ")
     private String notes;
     @SerializedName("message")
@@ -18,7 +21,8 @@ public class AddCounsellingResponse {
     private int responseCode;
 
 
-    public AddCounsellingResponse(String patient, String counselling_session_type, String notes, String message, int responseCode){
+    public AddCounsellingResponse(int patient, int counselling_session_type, String notes,
+                                  String message, int responseCode){
 
         // this.id = id;
         this.patient = patient;
@@ -28,21 +32,43 @@ public class AddCounsellingResponse {
         this.message = message;
     }
 
-    public String getPatient() {
+    public AddCounsellingResponse(int id, int patient, int counselling_session_type, String notes){
+
+        this.id = id;
+        this.patient = patient;
+        this.counselling_session_type = counselling_session_type;
+        this.notes = notes;
+    }
+
+    public AddCounsellingResponse()
+    {
+
+    }
+
+    public int getPatient() {
         return patient;
     }
 
-    public void setPatient(String patient) {
+    public void setPatient(int patient) {
         this.patient = patient;
     }
 
-    public String getCounselling_session_type() {
+    public int getCounselling_session_type() {
         return counselling_session_type;
     }
 
-    public void setCounselling_session_type(String program) {
+    public void setCounselling_session_type(int program) {
         this.counselling_session_type = program;
     }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
 
     public String getNotes() {
         return notes;

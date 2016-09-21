@@ -17,7 +17,7 @@ import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.BusProvider;
 import com.example.msf.msf.API.Communicator;
 import com.example.msf.msf.API.Deserializers.Appointment;
-import com.example.msf.msf.API.Deserializers.PatientResponse;
+import com.example.msf.msf.API.Deserializers.Users;
 import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.API.ServerEvent;
@@ -75,7 +75,6 @@ public class AppointmentInfoFragment extends Fragment {
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         fragment.setArguments(args);
-
         return fragment;
     }
 
@@ -156,8 +155,8 @@ public class AppointmentInfoFragment extends Fragment {
     }
 
 
-    public void appointmentGet(long patientID){
-        final List<String> patientList = new ArrayList<String>();
+    public void appointmentGet(long appointmentID){
+        //final List<String> patientList = new ArrayList<String>();
         Interface communicatorInterface = Auth.getInterface();
         Callback<Appointment> callback = new Callback<Appointment>() {
             @Override
@@ -189,20 +188,20 @@ public class AppointmentInfoFragment extends Fragment {
                 }
             }
         };
-        communicatorInterface.getAppointment(patientID,callback);
+        communicatorInterface.getAppointment(appointmentID,callback);
     }
 
     public void patientGet(long patientID){
         final List<String> patientList = new ArrayList<String>();
         Interface communicatorInterface = Auth.getInterface();
-        Callback<PatientResponse> callback = new Callback<PatientResponse>() {
+        Callback<Users> callback = new Callback<Users>() {
             @Override
-            public void success(PatientResponse serverResponse, Response response2) {
+            public void success(Users serverResponse, Response response2) {
                 String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
                 try{
                     JSONObject jsonObject = new JSONObject(resp);
                     String id = jsonObject.getString("id");
-                    String first_name = jsonObject.getString("first_name");
+                    String first_name = jsonObject.getString("other_names");
                     String last_name = jsonObject.getString("last_name");
                     String full_name = id + ": " +first_name + " " + last_name;
                     patientTV.setText(full_name);
@@ -230,9 +229,9 @@ public class AppointmentInfoFragment extends Fragment {
     public void userGet(long userID){
         final List<String> userList = new ArrayList<String>();
         final Interface communicatorInterface = Auth.getInterface();
-        Callback<PatientResponse> callback = new Callback<PatientResponse>() {
+        Callback<Users> callback = new Callback<Users>() {
             @Override
-            public void success(PatientResponse serverResponse, Response response2) {
+            public void success(Users serverResponse, Response response2) {
                 String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
                 try{
                     JSONObject jsonObject = new JSONObject(resp);
@@ -264,6 +263,7 @@ public class AppointmentInfoFragment extends Fragment {
             public void onClick(View v) {
                 prgDialog.show();
                 communicator.appointmentDelete(Long.parseLong(id));
+
             }
         });
 

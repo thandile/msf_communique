@@ -25,8 +25,7 @@ public class UpdateCounsellingFragment extends Fragment {
     private static final String ARG_PARAM2 = "param2";
 
     // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private String counsellingInfo;
 
     private OnFragmentInteractionListener mListener;
 
@@ -39,15 +38,13 @@ public class UpdateCounsellingFragment extends Fragment {
      * this fragment using the provided parameters.
      *
      * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
      * @return A new instance of fragment UpdateCounsellingFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static UpdateCounsellingFragment newInstance(String param1, String param2) {
+    public static UpdateCounsellingFragment newInstance(String[] param1) {
         UpdateCounsellingFragment fragment = new UpdateCounsellingFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putStringArray(ARG_PARAM1, param1);
         fragment.setArguments(args);
         return fragment;
     }
@@ -56,8 +53,7 @@ public class UpdateCounsellingFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            counsellingInfo = getArguments().getString(ARG_PARAM1);
         }
     }
 
@@ -69,9 +65,9 @@ public class UpdateCounsellingFragment extends Fragment {
     }
 
     // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
+    public void onButtonPressed(String[] data) {
         if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
+            mListener.onFragmentInteraction(data);
         }
     }
 
@@ -104,6 +100,6 @@ public class UpdateCounsellingFragment extends Fragment {
      */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+        void onFragmentInteraction(String [] data);
     }
 }

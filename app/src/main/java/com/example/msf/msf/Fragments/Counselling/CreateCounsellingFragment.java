@@ -73,7 +73,7 @@ public class CreateCounsellingFragment extends Fragment {
         patientNames = (AutoCompleteTextView) view.findViewById(R.id.autocomplete_patients);
         sessionType = (Spinner) view.findViewById(R.id.session_spinner);
         notesET = (EditText) view.findViewById(R.id.notesET);
-        sessionType = (Spinner) view.findViewById(R.id.session_spinner);
+        //sessionType = (Spinner) view.findViewById(R.id.session_spinner);
         submit = (Button) view.findViewById(R.id.session_submit);
         addListenerOnButton();
         return view;
@@ -91,7 +91,7 @@ public class CreateCounsellingFragment extends Fragment {
                     for (int i = 0; i < jsonarray.length(); i++) {
                         JSONObject jsonobject = jsonarray.getJSONObject(i);
                         String id = jsonobject.getString("id");
-                        String fullName = jsonobject.getString("first_name")+" "
+                        String fullName = jsonobject.getString("other_names")+" "
                                 +jsonobject.getString("last_name");
                         patientList.add(id+": "+fullName);
                     }
