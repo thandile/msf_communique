@@ -1,11 +1,9 @@
 package com.example.msf.msf.Fragments.AppointmentFragments;
 
 import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,8 +11,10 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.example.msf.msf.API.Auth;
@@ -24,6 +24,8 @@ import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.API.PatientsDeserialiser;
 import com.example.msf.msf.API.ServerEvent;
+import com.example.msf.msf.Dialogs.DateDialog;
+import com.example.msf.msf.Dialogs.TimeDialog;
 import com.example.msf.msf.R;
 import com.squareup.otto.Subscribe;
 
@@ -47,7 +49,9 @@ public class CreateAppointmentFragment extends Fragment {
     ProgressDialog prgDialog;
     AutoCompleteTextView patientNames;
     Spinner users;
-    EditText notesET, appointmentTypeET, dateET, startTimeET, endTimeEI;
+    EditText notesET, appointmentTypeET, dateET, startTimeET, endTimeET;
+    DatePicker appDatePicker;
+    TimePicker startTImePicker, endTimePicker;
     private final String TAG = this.getClass().getSimpleName();
 
     public CreateAppointmentFragment() {
@@ -77,11 +81,41 @@ public class CreateAppointmentFragment extends Fragment {
         //patientNames = (AutoCompleteTextView) findViewById(R.id.autocomplete_patients);
         //sessionType = (Spinner) findViewById(R.id.session_spinner);
         appointmentTypeET = (EditText) view.findViewById(R.id.appointmentTypeET);
-        dateET = (EditText) view.findViewById(R.id.date_ET);
+        dateET = (EditText) view.findViewById(R.id.app_date_ET);
         startTimeET = (EditText) view.findViewById(R.id.startTimeET);
-        endTimeEI = (EditText) view.findViewById(R.id.endTimeET);
+        endTimeET = (EditText) view.findViewById(R.id.endTimeET);
         notesET = (EditText) view.findViewById(R.id.noteET);
+        //appDatePicker = (DatePicker) view.findViewById(R.id.app_datePicker);
+        startTImePicker = (TimePicker) view.findViewById(R.id.start_timePicker);
+        endTimePicker = (TimePicker) view.findViewById(R.id.end_timePicker2);
         submit = (Button) view.findViewById(R.id.appointment_submit);
+        dateET.setOnFocusChangeListener(new View.OnFocusChangeListener(){
+            public void onFocusChange(View view, boolean hasfocus){
+                if(hasfocus){
+                    DateDialog dialog=new DateDialog(view);
+                    FragmentTransaction ft =getFragmentManager().beginTransaction();
+                    dialog.show(ft, "DatePicker");
+                }
+            }
+        });
+        startTimeET.setOnFocusChangeListener(new View.OnFocusChangeListener(){
+            public void onFocusChange(View view, boolean hasfocus){
+                if(hasfocus){
+                    TimeDialog dialog= TimeDialog.newInstance(view);
+                    FragmentTransaction ft =getFragmentManager().beginTransaction();
+                    dialog.show(ft, "TimeDialog");
+                }
+            }
+        });
+        endTimeET.setOnFocusChangeListener(new View.OnFocusChangeListener(){
+            public void onFocusChange(View view, boolean hasfocus){
+                if(hasfocus){
+                    TimeDialog dialog= TimeDialog.newInstance(view);
+                    FragmentTransaction ft =getFragmentManager().beginTransaction();
+                    dialog.show(ft, "TimeDialog");
+                }
+            }
+        });
         addListenerOnButton();
         return view;
     }
@@ -168,12 +202,13 @@ public class CreateAppointmentFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 prgDialog.show();
+
                 String[] patientId = patientNames.getText().toString().split(":");
                 String[] owner = String.valueOf(users.getSelectedItem()).split(":");
                 String notes = notesET.getText().toString();
                 String date = dateET.getText().toString();
                 String appointmentType = appointmentTypeET.getText().toString();
-                String endTime = endTimeEI.getText().toString();
+                String endTime = endTimeET.getText().toString();
                 String startTime = startTimeET.getText().toString();
                 // Log.d(TAG,  counsellingSession +" "+patientId);
                 communicator.appointmentPost(patientId[0], owner[0], notes, date, appointmentType,
@@ -205,7 +240,7 @@ public class CreateAppointmentFragment extends Fragment {
         notesET.setText("");
         dateET.setText("");
         appointmentTypeET.setText("");
-        String endTime = endTimeEI.getText().toString();
+        String endTime = endTimeET.getText().toString();
         String startTime = startTimeET.getText().toString();
 
         //patientNames.setText("");

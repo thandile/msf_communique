@@ -39,7 +39,7 @@ public class LoginActivity extends AppCompatActivity {
     public static String password;
     Context context = this;
     private final String TAG = this.getClass().getSimpleName();
-    public static final String SERVER_URL =  "https://drtbdemo.herokuapp.com/api/";
+    public static final String SERVER_URL =  "https://salty-tor-72502.herokuapp.com/api/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +66,7 @@ public class LoginActivity extends AppCompatActivity {
                 username = usernameET.getText().toString();
                 // Get Password Edit View Value
                 password = pwdET.getText().toString();
+                //thnanavigateToHomeActivity();
                 usersGet();
             }
         });

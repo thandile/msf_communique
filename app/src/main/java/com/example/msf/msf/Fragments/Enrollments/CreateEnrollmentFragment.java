@@ -1,9 +1,11 @@
 package com.example.msf.msf.Fragments.Enrollments;
 
 
+import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -23,6 +26,7 @@ import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.API.PatientsDeserialiser;
 import com.example.msf.msf.API.PilotsDeserializer;
 import com.example.msf.msf.API.ServerEvent;
+import com.example.msf.msf.Dialogs.DateDialog;
 import com.example.msf.msf.R;
 import com.squareup.otto.Subscribe;
 
@@ -31,6 +35,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import retrofit.Callback;
@@ -50,6 +55,8 @@ public class CreateEnrollmentFragment extends Fragment {
     EditText comment, enrollment_date;
     AutoCompleteTextView patientsTV;
     Button submit;
+    DatePicker enroll_datePicker;
+    String date;
     public CreateEnrollmentFragment() {
         // Required empty public constructor
     }
@@ -75,8 +82,21 @@ public class CreateEnrollmentFragment extends Fragment {
         patientNames = (AutoCompleteTextView) view.findViewById(R.id.autocomplete_patients);
         pilotPrograms = (Spinner) view.findViewById(R.id.pilotSpinner);
         comment = (EditText) view.findViewById(R.id.enrollmentComment);
+        //EditText txtDate=(EditText)findViewById(R.id.enrollmentDate);
         enrollment_date = (EditText) view.findViewById(R.id.enrollmentDate);
+        //enroll_datePicker = (DatePicker) view.findViewById(R.id.enrollment_datePicker);
         submit = (Button) view.findViewById(R.id.submit_enrollment);
+        enrollment_date.setOnFocusChangeListener(new View.OnFocusChangeListener(){
+            public void onFocusChange(View view, boolean hasfocus){
+                if(hasfocus){
+                    DateDialog dialog=new DateDialog(view);
+                    FragmentTransaction ft =getFragmentManager().beginTransaction();
+                    dialog.show(ft, "DatePicker");
+
+                }
+            }
+
+        });
         addListenerOnButton();
         return view;
     }
@@ -166,14 +186,23 @@ public class CreateEnrollmentFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 prgDialog.show();
+
+                //final Calendar c = Calendar.getInstance();
+                //int year = enroll_datePicker.getYear();
+                //int month = enroll_datePicker.getMonth();
+                //int day = enroll_datePicker.getDayOfMonth();
+
+                //String date=day+"-"+(month+1)+"-"+year;
                 String[] patient_id = patientNames.getText().toString().split(":");
                 String[] program = String.valueOf(pilotPrograms.getSelectedItem()).split(":");
                 String enrollment_comment = comment.getText().toString();
                 String date = enrollment_date.getText().toString();
+                Toast.makeText(CreateEnrollmentFragment.this.getActivity(), date, Toast.LENGTH_SHORT).show();
                 communicator.enrollmentPost(patient_id[0], enrollment_comment, program[0], date);
             }
         });
     }
+
 
 
     @Override
@@ -195,7 +224,7 @@ public class CreateEnrollmentFragment extends Fragment {
                 "You have successfully enrolled the patient into a pilot",
                 Toast.LENGTH_LONG).show();
         comment.setText("");
-        enrollment_date.setText("");
+        //enrollment_date.setText("");
         patientNames.setText("");
     }
 

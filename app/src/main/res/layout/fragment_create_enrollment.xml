@@ -60,13 +60,20 @@
         android:paddingTop="10dp"
         android:paddingBottom="10dp"/>
 
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="date"
-        android:hint="DD/MM/YYYY"
-        android:ems="10"
-        android:id="@+id/enrollmentDate" />
+        <EditText
+            android:id="@+id/enrollmentDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:hint="Touch here to select a date"
+            />
+
+
+        <DatePicker
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/enrollment_datePicker"
+            android:datePickerMode="calendar" />
 
         <TextView
         android:layout_width="wrap_content"

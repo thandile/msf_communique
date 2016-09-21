@@ -63,16 +63,49 @@ public class HomeActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        if (savedInstanceState == null) {
+            navItemIndex = 0;
+            HomeFragment home = new HomeFragment();
+            FragmentManager manager = getSupportFragmentManager();
+            manager.beginTransaction().replace(R.id.rel_layout_for_frag,
+                    home,
+                    home.getTag())
+                    .addToBackStack(null)
+                    .commit();
+            setToolbarTitle("Home");
+
+        }
     }
 
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
+            drawer.closeDrawers();
+            return;
         }
+
+        // This code loads home fragment when back key is pressed
+        // when user is in other fragment than home
+        if (shouldLoadHomeFragOnBackPress) {
+            // checking if user is on other navigation menu
+            // rather than home
+            if (navItemIndex != 0) {
+                navItemIndex = 0;
+                HomeFragment home = new HomeFragment();
+                FragmentManager manager = getSupportFragmentManager();
+                manager.beginTransaction().replace(R.id.rel_layout_for_frag,
+                        home,
+                        home.getTag())
+                        .addToBackStack(null)
+                        .commit();
+                setToolbarTitle("Home");
+                return;
+            }
+        }
+
+        super.onBackPressed();
     }
 
     @Override

@@ -73,7 +73,7 @@
             android:inputType="date"
             android:hint="DD/MM/YYYY"
             android:ems="10"
-            android:id="@+id/date_ET" />
+            android:id="@+id/app_date_ET" />
 
 
         <TextView
@@ -93,6 +93,12 @@
             android:ems="10"
             android:id="@+id/startTimeET" />
 
+        <TimePicker
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/start_timePicker"
+            android:layout_gravity="center_horizontal" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -109,6 +115,11 @@
             android:inputType="time"
             android:ems="10"
             android:id="@+id/endTimeET" />
+
+        <TimePicker
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/end_timePicker2" />
 
         <TextView
             android:layout_width="wrap_content"
