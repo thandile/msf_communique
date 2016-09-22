@@ -1,6 +1,5 @@
 package com.example.msf.msf.Fragments.PatientFragments;
 
-import android.content.Context;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -39,18 +38,16 @@ import retrofit.mime.TypedByteArray;
 
 
 public class PatientFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+
+
     private final String TAG = this.getClass().getSimpleName();
     ListView patientLv;
-    String FILENAME = "Patients";
+    public static String FILENAME = "Patients";
     private SwipeRefreshLayout swipeRefreshLayout;
-
-   // private OnFragmentInteractionListener mListener;
 
     public PatientFragment() {
         // Required empty public constructor
     }
-
-
 
 
     @Override
@@ -81,6 +78,7 @@ public class PatientFragment extends Fragment implements SwipeRefreshLayout.OnRe
         return view;
     }
 
+
     /**
      * This method is called when swipe refresh is pulled down
      */
@@ -96,7 +94,8 @@ public class PatientFragment extends Fragment implements SwipeRefreshLayout.OnRe
         return file.exists();
     }
 
-    public Patients getPatients(JSONObject jsonobject) {
+
+    public Patients createPatients(JSONObject jsonobject) {
         Patients patient = null;
         try {
             String id = jsonobject.getString("id");
@@ -114,71 +113,70 @@ public class PatientFragment extends Fragment implements SwipeRefreshLayout.OnRe
             patient = new Patients(id, firstName, lastName, dob, contact,
                     location, enrollments, health_centre);
         } catch (Exception e) {
-
         }
         return patient;
     }
+
+    public void loadFromFile(BindDictionary<Patients> dictionary, ArrayList<Patients> patientList ){
+        String patients = WriteRead.read(FILENAME, getContext());
+        Patients patient = new Patients();
+        try {
+            JSONArray jsonarray = new JSONArray(patients);
+            if (jsonarray.length() > 0) {
+                for (int i = 0; i < jsonarray.length(); i++) {
+                    JSONObject jsonobject = jsonarray.getJSONObject(i);
+                    patientList.add(createPatients(jsonobject));
+                }
+                Log.d(TAG, patientList.toString());
+                dictionary.addStringField(R.id.titleTV, new StringExtractor<Patients>() {
+                    @Override
+                    public String getStringValue(Patients patient, int position) {
+                        return patient.getFirst_name();
+                    }
+                });
+                dictionary.addStringField(R.id.personTV, new StringExtractor<Patients>() {
+                    @Override
+                    public String getStringValue(Patients patient, int position) {
+                        return "Contact: " + patient.getContact_number();
+                    }
+                });
+                dictionary.addStringField(R.id.idTV, new StringExtractor<Patients>() {
+                    @Override
+                    public String getStringValue(Patients patient, int position) {
+                        return "ID: " + patient.getId();
+                    }
+                });
+                FunDapter adapter = new FunDapter(PatientFragment.this.getActivity(), patientList,
+                        R.layout.list_layout, dictionary);
+                patientLv.setAdapter(adapter);
+            }
+            else {
+                dictionary.addStringField(R.id.titleTV, new StringExtractor<Patients>() {
+                    @Override
+                    public String getStringValue(Patients patient, int position) {
+                        return "No registered patients";
+                    }
+                });
+
+                FunDapter adapter = new FunDapter(PatientFragment.this.getActivity(), patientList,
+                        R.layout.list_layout, dictionary);
+                patientLv.setAdapter(adapter);
+                Toast.makeText(PatientFragment.this.getActivity(),
+                        "No registered patients", Toast.LENGTH_SHORT).show();
+            }
+        }
+        catch (JSONException e) {
+            System.out.print("unsuccessful");
+        }
+        Log.d(TAG, "read from phone");
+    }
+
     public void patientsGet(){
         final BindDictionary<Patients> dictionary = new BindDictionary<>();
         final ArrayList<Patients> patientList = new ArrayList<Patients>();
         Interface communicatorInterface = Auth.getInterface();
         if (fileExistance(FILENAME)) {
-            String patients = WriteRead.read(FILENAME, getContext());
-            Patients patient = new Patients();
-            try {
-                JSONArray jsonarray = new JSONArray(patients);
-                //WriteRead.write(FILENAME, jsonarray.toString(), getContext());
-                if (jsonarray.length() > 0) {
-                    for (int i = 0; i < jsonarray.length(); i++) {
-                        JSONObject jsonobject = jsonarray.getJSONObject(i);
-                        patientList.add(getPatients(jsonobject));
-                    }
-                    Log.d(TAG, patientList.toString());
-                    // BindDictionary<Patients> dictionary = new BindDictionary<>();
-                    dictionary.addStringField(R.id.titleTV, new StringExtractor<Patients>() {
-                        @Override
-                        public String getStringValue(Patients patient, int position) {
-                            return patient.getFirst_name();
-                        }
-                    });
-                    dictionary.addStringField(R.id.personTV, new StringExtractor<Patients>() {
-                        @Override
-                        public String getStringValue(Patients patient, int position) {
-                            return "Contact: " + patient.getContact_number();
-                        }
-                    });
-                    dictionary.addStringField(R.id.idTV, new StringExtractor<Patients>() {
-                        @Override
-                        public String getStringValue(Patients patient, int position) {
-                            return "ID: " + patient.getId();
-                        }
-                    });
-                    FunDapter adapter = new FunDapter(PatientFragment.this.getActivity(), patientList,
-                            R.layout.list_layout, dictionary);
-                    patientLv.setAdapter(adapter);
-                }
-                else {
-
-                    //BindDictionary<Patients> dictionary = new BindDictionary<>();
-                    dictionary.addStringField(R.id.titleTV, new StringExtractor<Patients>() {
-                        @Override
-                        public String getStringValue(Patients patient, int position) {
-                            return "No registered patients";
-                        }
-                    });
-
-                    FunDapter adapter = new FunDapter(PatientFragment.this.getActivity(), patientList,
-                            R.layout.list_layout, dictionary);
-                    patientLv.setAdapter(adapter);
-                    Toast.makeText(PatientFragment.this.getActivity(),
-                            "No registered patients", Toast.LENGTH_SHORT).show();
-                    //appointmentList.add("No scheduled appointments.");
-                }
-            }
-            catch (JSONException e) {
-                System.out.print("unsuccessful");
-            }
-            Log.d(TAG, "read from phone");
+            loadFromFile(dictionary, patientList);
         }
         else {
             // showing refresh animation before making http call
@@ -187,58 +185,10 @@ public class PatientFragment extends Fragment implements SwipeRefreshLayout.OnRe
                 @Override
                 public void success(List<PatientsDeserialiser> serverResponse, Response response2) {
                     String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
-                    try {
-                        Patients patient = new Patients();
-                        JSONArray jsonarray = new JSONArray(resp);
-                        WriteRead.write(FILENAME, jsonarray.toString(), getContext());
-                        if (jsonarray.length() > 0) {
-                            for (int i = 0; i < jsonarray.length(); i++) {
-                                JSONObject jsonobject = jsonarray.getJSONObject(i);
-                                patientList.add(getPatients(jsonobject));
-                            }
-                            //Log.d(TAG, patientList.toString());
-                            BindDictionary<Patients> dictionary = new BindDictionary<>();
-                            dictionary.addStringField(R.id.titleTV, new StringExtractor<Patients>() {
-                                @Override
-                                public String getStringValue(Patients patient, int position) {
-                                    return patient.getFirst_name();
-                                }
-                            });
-                            dictionary.addStringField(R.id.personTV, new StringExtractor<Patients>() {
-                                @Override
-                                public String getStringValue(Patients patient, int position) {
-                                    return "Contact: " + patient.getContact_number();
-                                }
-                            });
-                            dictionary.addStringField(R.id.idTV, new StringExtractor<Patients>() {
-                                @Override
-                                public String getStringValue(Patients patient, int position) {
-                                    return "ID: " + patient.getId();
-                                }
-                            });
-
-                           FunDapter adapter = new FunDapter(PatientFragment.this.getActivity(), patientList,
-                                    R.layout.list_layout, dictionary);
-                            patientLv.setAdapter(adapter);
-                        } else {
-                            dictionary.addStringField(R.id.titleTV, new StringExtractor<Patients>() {
-                                @Override
-                                public String getStringValue(Patients patient, int position) {
-                                    return "No registered patients";
-                                }
-                            });
-
-                          FunDapter adapter = new FunDapter(PatientFragment.this.getActivity(), patientList,
-                                    R.layout.list_layout, dictionary);
-                            patientLv.setAdapter(adapter);
-                            Toast.makeText(PatientFragment.this.getActivity(),
-                                    "No registered patients", Toast.LENGTH_SHORT).show();
-                            //appointmentList.add("No scheduled appointments.");
-                        }
-
-                    } catch (JSONException e) {
-                        System.out.print("unsuccessful");
-                    }
+                    Patients patient = new Patients();
+                    //JSONArray jsonarray = new JSONArray(resp);
+                    WriteRead.write(FILENAME, resp, getContext());
+                    loadFromFile(dictionary, patientList);
                     // stopping swipe refresh
                     swipeRefreshLayout.setRefreshing(false);
                     Log.d(TAG, "read from server");
@@ -250,6 +200,7 @@ public class PatientFragment extends Fragment implements SwipeRefreshLayout.OnRe
                         Log.e(TAG, error.getMessage());
                         error.printStackTrace();
                     }
+                    swipeRefreshLayout.setRefreshing(false);
                 }
             };
             communicatorInterface.getPatients(callback);

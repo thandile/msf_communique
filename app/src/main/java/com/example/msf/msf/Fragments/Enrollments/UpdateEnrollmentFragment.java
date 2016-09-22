@@ -23,7 +23,9 @@ import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.API.PatientsDeserialiser;
 import com.example.msf.msf.API.PilotsDeserializer;
 import com.example.msf.msf.API.ServerEvent;
+import com.example.msf.msf.Fragments.PatientFragments.PatientFragment;
 import com.example.msf.msf.R;
+import com.example.msf.msf.Utils.WriteRead;
 import com.squareup.otto.Subscribe;
 
 import org.json.JSONArray;
@@ -94,9 +96,6 @@ public class UpdateEnrollmentFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_update_enrollment, container, false);
-
-        patientsGet();
-        pilotsGet();
         communicator = new Communicator();
         // Instantiate Progress Dialog object
         prgDialog = new ProgressDialog(UpdateEnrollmentFragment.this.getActivity());
@@ -110,7 +109,8 @@ public class UpdateEnrollmentFragment extends Fragment {
         comment = (EditText) view.findViewById(R.id.enrollmentComment);
         enrollment_date = (EditText) view.findViewById(R.id.enrollmentDate);
         submit = (Button) view.findViewById(R.id.submit_enrollment);
-
+        patientsGet();
+        pilotsGet();
         patientsTV.setText(enrollmentInfo[1]);
         comment.setText(enrollmentInfo[3]);
         enrollment_date.setText(enrollmentInfo[2]);
@@ -159,40 +159,28 @@ public class UpdateEnrollmentFragment extends Fragment {
 
     public void patientsGet(){
         final List<String> patientList = new ArrayList<String>();
-        Interface communicatorInterface = Auth.getInterface();
-        Callback<List<PatientsDeserialiser>> callback = new Callback<List<PatientsDeserialiser>>() {
-            @Override
-            public void success(List<PatientsDeserialiser> serverResponse, Response response2) {
-                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
-                try{
-                    JSONArray jsonarray = new JSONArray(resp);
-                    for (int i = 0; i < jsonarray.length(); i++) {
-                        JSONObject jsonobject = jsonarray.getJSONObject(i);
-                        String id = jsonobject.getString("enrollmentInfo");
-                        String fullName = jsonobject.getString("other_names")+" "
-                                +jsonobject.getString("last_name");
-                        patientList.add(id+": "+fullName);
-                    }
-                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-                            UpdateEnrollmentFragment.this.getActivity(),
-                            android.R.layout.simple_dropdown_item_1line, patientList);
-                    patientsTV.setAdapter(adapter);
-                }
-                catch (JSONException e){
-                    System.out.print("unsuccessful");
-                }
+        String patients = WriteRead.read(PatientFragment.FILENAME, getContext());
+        try{
+            JSONArray jsonarray = new JSONArray(patients);
+            // JSONArray jsonarray = new JSONArray(resp);
+            for (int i = 0; i < jsonarray.length(); i++) {
+                JSONObject jsonobject = jsonarray.getJSONObject(i);
+                String id = jsonobject.getString("id");
+                String fullName = jsonobject.getString("other_names")+" " +
+                        jsonobject.getString("last_name");
+                patientList.add(id+": "+fullName);
             }
-
-            @Override
-            public void failure(RetrofitError error) {
-                if(error != null ){
-                    Log.e(TAG, error.getMessage());
-                    error.printStackTrace();
-                }
-            }
-        };
-        communicatorInterface.getPatients(callback);
+            Log.d(TAG, patients);
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                    UpdateEnrollmentFragment.this.getActivity(),
+                    android.R.layout.simple_dropdown_item_1line, patientList);
+            patientsTV.setAdapter(adapter);
+        }
+        catch (JSONException e){
+            System.out.print("unsuccessful");
+        }
     }
+
 
     public void pilotsGet(){
         final List<String>pilotNames = new ArrayList<String>();

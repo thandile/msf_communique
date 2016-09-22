@@ -1,7 +1,6 @@
 package com.example.msf.msf.Fragments.Enrollments;
 
 
-import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -17,25 +16,27 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
+import android.support.v4.widget.SwipeRefreshLayout;
 
 import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.BusProvider;
 import com.example.msf.msf.API.Communicator;
 import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.Interface;
-import com.example.msf.msf.API.PatientsDeserialiser;
 import com.example.msf.msf.API.PilotsDeserializer;
 import com.example.msf.msf.API.ServerEvent;
 import com.example.msf.msf.Dialogs.DateDialog;
+import com.example.msf.msf.Fragments.PatientFragments.PatientFragment;
 import com.example.msf.msf.R;
+import com.example.msf.msf.Utils.WriteRead;
 import com.squareup.otto.Subscribe;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import retrofit.Callback;
@@ -46,7 +47,7 @@ import retrofit.mime.TypedByteArray;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class CreateEnrollmentFragment extends Fragment {
+public class CreateEnrollmentFragment extends Fragment  {
     private final String TAG = this.getClass().getSimpleName();
     private Communicator communicator;
     ProgressDialog prgDialog;
@@ -55,6 +56,7 @@ public class CreateEnrollmentFragment extends Fragment {
     EditText comment, enrollment_date;
     AutoCompleteTextView patientsTV;
     Button submit;
+    public static String FILENAME = "Pilots";
     DatePicker enroll_datePicker;
     String date;
     public CreateEnrollmentFragment() {
@@ -66,9 +68,6 @@ public class CreateEnrollmentFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_create_enrollment, container, false);
-
-        patientsGet();
-        pilotsGet();
         communicator = new Communicator();
         // Instantiate Progress Dialog object
         prgDialog = new ProgressDialog(CreateEnrollmentFragment.this.getActivity());
@@ -86,6 +85,8 @@ public class CreateEnrollmentFragment extends Fragment {
         enrollment_date = (EditText) view.findViewById(R.id.enrollmentDate);
         //enroll_datePicker = (DatePicker) view.findViewById(R.id.enrollment_datePicker);
         submit = (Button) view.findViewById(R.id.submit_enrollment);
+        patientsGet();
+        pilotsGet();
         enrollment_date.setOnFocusChangeListener(new View.OnFocusChangeListener(){
             public void onFocusChange(View view, boolean hasfocus){
                 if(hasfocus){
@@ -101,73 +102,85 @@ public class CreateEnrollmentFragment extends Fragment {
         return view;
     }
 
+
+    public boolean fileExistance(String FILENAME){
+        File file = getContext().getFileStreamPath(FILENAME);
+        return file.exists();
+    }
+
+
+    public void populatePatientListView(List<String> patientList, String patients) {
+
+        try {
+            JSONArray jsonarray = new JSONArray(patients);
+            // JSONArray jsonarray = new JSONArray(resp);
+            for (int i = 0; i < jsonarray.length(); i++) {
+                JSONObject jsonobject = jsonarray.getJSONObject(i);
+                String id = jsonobject.getString("id");
+                String fullName = jsonobject.getString("other_names") + " " +
+                        jsonobject.getString("last_name");
+                patientList.add(id + ": " + fullName);
+            }
+        }
+            catch (JSONException e){
+                System.out.print("unsuccessful");
+            }
+    }
+
     public void patientsGet(){
-        final List<String> patientList = new ArrayList<String>();
-        Interface communicatorInterface = Auth.getInterface();
-        Callback<List<PatientsDeserialiser>> callback = new Callback<List<PatientsDeserialiser>>() {
-            @Override
-            public void success(List<PatientsDeserialiser> serverResponse, Response response2) {
-                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
-                try{
-                    JSONArray jsonarray = new JSONArray(resp);
-                    for (int i = 0; i < jsonarray.length(); i++) {
-                        JSONObject jsonobject = jsonarray.getJSONObject(i);
-                        String id = jsonobject.getString("id");
-                        String fullName = jsonobject.getString("other_names")+" "
-                                +jsonobject.getString("last_name");
-                        patientList.add(id+": "+fullName);
-                    }
-                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-                            CreateEnrollmentFragment.this.getActivity(),
-                            android.R.layout.simple_dropdown_item_1line, patientList);
-                    patientsTV.setAdapter(adapter);
-                }
-                catch (JSONException e){
-                    System.out.print("unsuccessful");
-                }
+            final List<String> patientList = new ArrayList<String>();
+            String patients = WriteRead.read(PatientFragment.FILENAME, getContext());
+                populatePatientListView(patientList, patients);
+                Log.d(TAG, patients);
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                        CreateEnrollmentFragment.this.getActivity(),
+                        android.R.layout.simple_dropdown_item_1line, patientList);
+                patientsTV.setAdapter(adapter);
             }
 
-            @Override
-            public void failure(RetrofitError error) {
-                if(error != null ){
-                    Log.e(TAG, error.getMessage());
-                    error.printStackTrace();
-                }
+    public void loadPilots(List<String>pilotNames){
+        String pilots = WriteRead.read(FILENAME, getContext());
+        try {
+            JSONArray jsonarray = new JSONArray(pilots);
+            for (int i = 0; i < jsonarray.length(); i++) {
+                JSONObject jsonobject = jsonarray.getJSONObject(i);
+                String id_name = jsonobject.getString("id") + ": " + jsonobject.getString("name");
+                pilotNames.add(id_name);
             }
-        };
-        communicatorInterface.getPatients(callback);
+            addItemsOnPilotSpinner(pilotNames);
+        }catch (JSONException e) {
+            System.out.print("unsuccessful");
+        }
+
     }
 
     public void pilotsGet(){
         final List<String>pilotNames = new ArrayList<String>();
-        Interface communicatorInterface = Auth.getInterface();
-        Callback<List<PilotsDeserializer>> callback = new Callback<List<PilotsDeserializer>>() {
-            @Override
-            public void success(List<PilotsDeserializer> serverResponse, Response response2) {
-                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
-                try{
-                    JSONArray jsonarray = new JSONArray(resp);
-                    for (int i = 0; i < jsonarray.length(); i++) {
-                        JSONObject jsonobject = jsonarray.getJSONObject(i);
-                        String id_name =jsonobject.getString("id")+": "+jsonobject.getString("name");
-                        pilotNames.add(id_name);
-                    }
-                    addItemsOnPilotSpinner(pilotNames);
+        if (fileExistance(FILENAME)) {
+            loadPilots(pilotNames);
+            Log.d(TAG, "read from storage");
+        }
+        else {
+            Interface communicatorInterface = Auth.getInterface();
+            Callback<List<PilotsDeserializer>> callback = new Callback<List<PilotsDeserializer>>() {
+                @Override
+                public void success(List<PilotsDeserializer> serverResponse, Response response2) {
+                    String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
+                    WriteRead.write(FILENAME, resp, getContext());
+                    loadPilots(pilotNames);
                 }
-                catch (JSONException e){
-                    System.out.print("unsuccessful");
-                }
-            }
 
-            @Override
-            public void failure(RetrofitError error) {
-                if(error != null ){
-                    Log.e(TAG, error.getMessage());
-                    error.printStackTrace();
+                @Override
+                public void failure(RetrofitError error) {
+                    if (error != null) {
+                        Log.e(TAG, error.getMessage());
+                        error.printStackTrace();
+                    }
                 }
-            }
-        };
-        communicatorInterface.getPilots(callback);
+            };
+            communicatorInterface.getPilots(callback);
+            Log.d(TAG, "read from server");
+        }
     }
 
     // add items into spinner dynamically
@@ -187,12 +200,6 @@ public class CreateEnrollmentFragment extends Fragment {
             public void onClick(View v) {
                 prgDialog.show();
 
-                //final Calendar c = Calendar.getInstance();
-                //int year = enroll_datePicker.getYear();
-                //int month = enroll_datePicker.getMonth();
-                //int day = enroll_datePicker.getDayOfMonth();
-
-                //String date=day+"-"+(month+1)+"-"+year;
                 String[] patient_id = patientNames.getText().toString().split(":");
                 String[] program = String.valueOf(pilotPrograms.getSelectedItem()).split(":");
                 String enrollment_comment = comment.getText().toString();
@@ -224,7 +231,7 @@ public class CreateEnrollmentFragment extends Fragment {
                 "You have successfully enrolled the patient into a pilot",
                 Toast.LENGTH_LONG).show();
         comment.setText("");
-        //enrollment_date.setText("");
+        enrollment_date.setText("");
         patientNames.setText("");
     }
 
@@ -234,5 +241,4 @@ public class CreateEnrollmentFragment extends Fragment {
         Toast.makeText(CreateEnrollmentFragment.this.getActivity(),
                 "" + errorEvent.getErrorMsg(), Toast.LENGTH_SHORT).show();
     }
-
 }

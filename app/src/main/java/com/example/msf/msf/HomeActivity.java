@@ -1,5 +1,8 @@
 package com.example.msf.msf;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -78,6 +81,7 @@ public class HomeActivity extends AppCompatActivity
         }
     }
 
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -124,10 +128,29 @@ public class HomeActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+           /** SharedPreferences sharedpreferences = getSharedPreferences(LoginActivity.MyPREFERENCES,
+                    Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedpreferences.edit();
+            editor.clear();
+            editor.commit();
+            String pass = sharedpreferences.getString(LoginActivity.Password, null);
+            String uname = sharedpreferences.getString(LoginActivity.Username, null);
+            Toast.makeText(HomeActivity.this, uname+ " " + pass,Toast.LENGTH_LONG).show();**/
+            LoginActivity.username = null;
+            LoginActivity.password = null;
+            Intent intent = new Intent(getApplicationContext(),LoginActivity.class);
+            startActivity(intent);
+            //onDestroy();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void onDestroy() {
+
+        super.onDestroy();
+
     }
 
     @SuppressWarnings("StatementWithEmptyBody")

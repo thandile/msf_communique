@@ -65,15 +65,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="20sp"
-            android:hint="Touch here to select a date"
+            android:hint="DD/MM/YYYY"
             />
 
-
-        <DatePicker
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/enrollment_datePicker"
-            android:datePickerMode="calendar" />
 
         <TextView
         android:layout_width="wrap_content"

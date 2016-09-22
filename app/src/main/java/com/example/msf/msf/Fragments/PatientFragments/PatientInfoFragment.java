@@ -21,8 +21,10 @@ import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.API.ServerEvent;
 import com.example.msf.msf.R;
+import com.example.msf.msf.Utils.WriteRead;
 import com.squareup.otto.Subscribe;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -54,7 +56,7 @@ public class PatientInfoFragment extends Fragment {
     ProgressDialog prgDialog;
     // TODO: Rename and change types of parameters
     private String id;
-
+    public static String FILENAME = "Patients";
     private OnFragmentInteractionListener mListener;
 
     public PatientInfoFragment() {
@@ -96,7 +98,8 @@ public class PatientInfoFragment extends Fragment {
         prgDialog.setMessage("Please wait...");
         // Set Cancelable as False
         prgDialog.setCancelable(false);
-        patientGet(Long.parseLong(id));
+        //patientGet(Long.parseLong(id));
+
         first_name = (TextView) view.findViewById(R.id.first_nameTV);
         last_name = (TextView) view.findViewById(R.id.last_nameTV);
         contact = (TextView) view.findViewById(R.id.contactTV);
@@ -109,6 +112,7 @@ public class PatientInfoFragment extends Fragment {
         delete = (Button) view.findViewById(R.id.delBtn);
         edit = (Button) view.findViewById(R.id.editBtn);
         communicator = new Communicator();
+        getPatientInfo();
         deleteListener();
         editListener();
         return view;
@@ -153,37 +157,54 @@ public class PatientInfoFragment extends Fragment {
         void onFragmentInteraction(String data);
     }
 
-    public void patientGet(long patientID){
+    public void getPatientInfo(){
+        String patients = WriteRead.read(FILENAME, getContext());
+        try{
+            JSONArray jsonarray = new JSONArray(patients);
+            for (int i = 0; i < jsonarray.length(); i++) {
+                JSONObject jsonobject = jsonarray.getJSONObject(i);
+                Log.d(TAG, "ID: " + jsonobject.getString("id"));
+                if (jsonobject.getString("id").equals(id)) {
+                    first_name.setText(jsonobject.getString("other_names"));
+                    last_name.setText(jsonobject.getString("last_name"));
+                    if (!jsonobject.getString("contact_number").equals("null")) {
+                        contact.setText(jsonobject.getString("contact_number"));
+                    }
+                    if (!jsonobject.getString("birth_date").equals("null")) {
+                        dob.setText(jsonobject.getString("birth_date"));
+                    }
+                    if (!jsonobject.getString("reference_health_centre").equals("null")) {
+                        health_centre.setText(jsonobject.getString("reference_health_centre"));
+                    }
+                    if (!jsonobject.getString("location").equals("null")) {
+                        address.setText(jsonobject.getString("location"));
+                    }
+                    if (!jsonobject.getString("treatment_start_date").equals("null")) {
+                        startDate.setText(jsonobject.getString("treatment_start_date"));
+                    }
+                    if (!jsonobject.getString("interim_outcome").equals("null")) {
+                        outcome.setText(jsonobject.getString("interim_outcome"));
+                    }
+                    if (!jsonobject.getString("sex").equals("null")) {
+                        sex.setText(jsonobject.getString("sex"));
+                    }
+                    break;
+                }
+            }
+        }
+        catch (JSONException e){
+            System.out.print("unsuccessful");
+        }
+    }
+
+  /**  public void patientGet(long patientID){
         final List<String> patientList = new ArrayList<String>();
         Interface communicatorInterface = Auth.getInterface();
         Callback<Users> callback = new Callback<Users>() {
             @Override
             public void success(Users serverResponse, Response response2) {
                 String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
-                try{
-
-                    JSONObject jsonobject = new JSONObject(resp);
-                    Log.d(TAG, "ID: "+ jsonobject.getString("id"));
-                    first_name.setText(jsonobject.getString("other_names"));
-                    last_name.setText(jsonobject.getString("last_name"));
-                    if (!jsonobject.getString("contact_number").equals("null")) {
-                        contact.setText(jsonobject.getString("contact_number")); }
-                    if (!jsonobject.getString("birth_date").equals("null")) {
-                        dob.setText(jsonobject.getString("birth_date"));}
-                    if (!jsonobject.getString("reference_health_centre").equals("null")) {
-                        health_centre.setText(jsonobject.getString("reference_health_centre"));}
-                    if (!jsonobject.getString("location").equals("null")) {
-                        address.setText(jsonobject.getString("location")); }
-                    if (!jsonobject.getString("treatment_start_date").equals("null")) {
-                        startDate.setText(jsonobject.getString("treatment_start_date")); }
-                    if (!jsonobject.getString("interim_outcome").equals("null")) {
-                        outcome.setText(jsonobject.getString("interim_outcome"));}
-                    if (!jsonobject.getString("sex").equals("null")) {
-                        sex.setText(jsonobject.getString("sex"));}
-                }
-                catch (JSONException e){
-                    System.out.print("unsuccessful");
-                }
+                WriteRead.write(FILENAME, resp, getContext());
             }
 
             @Override
@@ -195,7 +216,7 @@ public class PatientInfoFragment extends Fragment {
             }
         };
         communicatorInterface.getPatient(patientID,callback);
-    }
+    }**/
 
     public void deleteListener() {
         delete.setOnClickListener(new View.OnClickListener() {

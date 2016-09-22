@@ -3,6 +3,7 @@ package com.example.msf.msf;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -35,11 +36,15 @@ public class LoginActivity extends AppCompatActivity {
     // Passwprd Edit View Object
     EditText pwdET;
     Button login;
-    public static String username;
-    public static String password;
+    public static String username = null;
+    public static String password = null;
     Context context = this;
     private final String TAG = this.getClass().getSimpleName();
     public static final String SERVER_URL =  "https://salty-tor-72502.herokuapp.com/api/";
+    public static final String MyPREFERENCES = "MyLogin" ;
+    public static final String Username = "usernameKey";
+    public static final String Password = "passwordKey";
+    SharedPreferences sharedpreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,15 +64,24 @@ public class LoginActivity extends AppCompatActivity {
         // Set Cancelable as False
         prgDialog.setCancelable(false);
         login = (Button) findViewById(R.id.btnLogin);
+        sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 prgDialog.show();
+
                 username = usernameET.getText().toString();
                 // Get Password Edit View Value
                 password = pwdET.getText().toString();
-                //thnanavigateToHomeActivity();
+                SharedPreferences.Editor editor = sharedpreferences.edit();
+                editor.putString(Username, usernameET.getText().toString());
+                editor.putString(Password, pwdET.getText().toString());
+                editor.commit();
+                String pass = sharedpreferences.getString(Password, null);
+                String uname = sharedpreferences.getString(Username, null);
+                Toast.makeText(LoginActivity.this, uname+ " " + pass,Toast.LENGTH_LONG).show();
                 usersGet();
+
             }
         });
     }
@@ -79,8 +93,6 @@ public class LoginActivity extends AppCompatActivity {
             public void success(List<PatientsDeserialiser> serverResponse, Response response2) {
                 navigateToHomeActivity();
                 prgDialog.hide();
-                //usernameET.setText("");
-                //pwdET.setText("");
             }
 
             @Override
@@ -94,70 +106,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         };
         communicatorInterface.getUsers(callback);
-
     }
-
-
-    /**
-     * Method gets triggered when Login button is clicked
-     *
-     * @param view
-     */
-    /**public void loginUser(View view){
-        //navigateToHomeActivity();
-        // Get Email Edit View Value
-        username = usernameET.getText().toString();
-        // Get Password Edit View Value
-        password = pwdET.getText().toString();
-        navigateToHomeActivity();
-        // Instantiate Http Request Param Object
-       // RequestParams params = new RequestParams();
-        // Put Http parameter username with value of username Edit Value control
-        params.put("username", username);
-        // Put Http parameter password with value of Password Edit Value control
-        params.put("password", password);
-        CommuniqueAPI.getCredentials(username, password);
-        // Invoke RESTful Web Service with Http parameters
-        invokeWS(params, username, password);**/
-
-   // }
-/**
-    /**
-     * Method that performs RESTful webservice invocations
-     *
-     * @param params, username, password
-
-    public void invokeWS(RequestParams params, final String username, String password){
-        // Show Progress Dialog
-        prgDialog.show();
-        // Make RESTful webservice
-        CommuniqueAPI.get("login/"+username+"/", null, new AsyncHttpResponseHandler(){
-            public void onSuccess(int statusCode, Header[] headers, byte[] response) {
-                prgDialog.hide();
-                navigateToHomeActivity();
-            }
-
-
-            // When the response returned by REST has Http response code other than '200'
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                // Hide Progress Dialog
-                prgDialog.hide();
-                // When Http response code is '404'
-                if(statusCode == 403){
-                    Toast.makeText(getApplicationContext(), "Incorrect username or password", Toast.LENGTH_LONG).show();
-                }
-                // When Http response code is '500'
-                else if(statusCode == 500){
-                    Toast.makeText(getApplicationContext(), "Something went wrong at server end", Toast.LENGTH_LONG).show();
-                }
-                // When Http response code other than 404, 500
-                else{
-                    Toast.makeText(getApplicationContext(), "There was a problem with your login", Toast.LENGTH_LONG).show();
-                }
-            }
-        });
-    }**/
-
 
 
     /**

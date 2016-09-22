@@ -26,7 +26,9 @@ import com.example.msf.msf.API.PatientsDeserialiser;
 import com.example.msf.msf.API.ServerEvent;
 import com.example.msf.msf.Dialogs.DateDialog;
 import com.example.msf.msf.Dialogs.TimeDialog;
+import com.example.msf.msf.Fragments.PatientFragments.PatientFragment;
 import com.example.msf.msf.R;
+import com.example.msf.msf.Utils.WriteRead;
 import com.squareup.otto.Subscribe;
 
 import org.json.JSONArray;
@@ -66,8 +68,7 @@ public class CreateAppointmentFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_create_appointment, container, false);
         communicator = new Communicator();
 
-        patientsGet();
-        usersGet();
+
         // Instantiate Progress Dialog object
         prgDialog = new ProgressDialog(CreateAppointmentFragment.this.getActivity());
         // Set Progress Dialog Text
@@ -89,6 +90,8 @@ public class CreateAppointmentFragment extends Fragment {
         startTImePicker = (TimePicker) view.findViewById(R.id.start_timePicker);
         endTimePicker = (TimePicker) view.findViewById(R.id.end_timePicker2);
         submit = (Button) view.findViewById(R.id.appointment_submit);
+        patientsGet();
+        usersGet();
         dateET.setOnFocusChangeListener(new View.OnFocusChangeListener(){
             public void onFocusChange(View view, boolean hasfocus){
                 if(hasfocus){
@@ -123,13 +126,10 @@ public class CreateAppointmentFragment extends Fragment {
 
     public void patientsGet(){
         final List<String> patientList = new ArrayList<String>();
-        final Interface communicatorInterface = Auth.getInterface();
-        Callback<List<PatientsDeserialiser>> callback = new Callback<List<PatientsDeserialiser>>() {
-            @Override
-            public void success(List<PatientsDeserialiser> serverResponse, Response response2) {
-                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
-                try{
-                    JSONArray jsonarray = new JSONArray(resp);
+        String patients = WriteRead.read(PatientFragment.FILENAME, getContext());
+        try{
+            JSONArray jsonarray = new JSONArray(patients);
+                   // JSONArray jsonarray = new JSONArray(resp);
                     for (int i = 0; i < jsonarray.length(); i++) {
                         JSONObject jsonobject = jsonarray.getJSONObject(i);
                         String id = jsonobject.getString("id");
@@ -137,6 +137,7 @@ public class CreateAppointmentFragment extends Fragment {
                                 jsonobject.getString("last_name");
                         patientList.add(id+": "+fullName);
                     }
+            Log.d(TAG, patients);
                     ArrayAdapter<String> adapter = new ArrayAdapter<String>(
                             CreateAppointmentFragment.this.getActivity(),
                             android.R.layout.simple_dropdown_item_1line, patientList);
@@ -147,16 +148,6 @@ public class CreateAppointmentFragment extends Fragment {
                 }
             }
 
-            @Override
-            public void failure(RetrofitError error) {
-                if(error != null ){
-                    Log.e(TAG, error.getMessage());
-                    error.printStackTrace();
-                }
-            }
-        };
-        communicatorInterface.getPatients(callback);
-    }
 
     public void usersGet(){
         final List<String> userList = new ArrayList<String>();

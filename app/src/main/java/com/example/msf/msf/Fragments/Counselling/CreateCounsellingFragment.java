@@ -23,8 +23,11 @@ import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.API.PatientsDeserialiser;
 import com.example.msf.msf.API.ServerEvent;
+import com.example.msf.msf.Fragments.AppointmentFragments.CreateAppointmentFragment;
 import com.example.msf.msf.Fragments.PatientFragments.CreatePatientFragment;
+import com.example.msf.msf.Fragments.PatientFragments.PatientFragment;
 import com.example.msf.msf.R;
+import com.example.msf.msf.Utils.WriteRead;
 import com.squareup.otto.Subscribe;
 
 import org.json.JSONArray;
@@ -59,10 +62,7 @@ public class CreateCounsellingFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_create_counselling, container, false);
-
         communicator = new Communicator();
-        patientsGet();
-        sessionGet();
         // Instantiate Progress Dialog object
         prgDialog = new ProgressDialog(CreateCounsellingFragment.this.getActivity());
         // Set Progress Dialog Text
@@ -75,46 +75,36 @@ public class CreateCounsellingFragment extends Fragment {
         notesET = (EditText) view.findViewById(R.id.notesET);
         //sessionType = (Spinner) view.findViewById(R.id.session_spinner);
         submit = (Button) view.findViewById(R.id.session_submit);
+        patientsGet();
+        sessionGet();
         addListenerOnButton();
         return view;
     }
 
     public void patientsGet(){
         final List<String> patientList = new ArrayList<String>();
-        final Interface communicatorInterface = Auth.getInterface();
-        Callback<List<PatientsDeserialiser>> callback = new Callback<List<PatientsDeserialiser>>() {
-            @Override
-            public void success(List<PatientsDeserialiser> serverResponse, Response response2) {
-                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
-                try{
-                    JSONArray jsonarray = new JSONArray(resp);
-                    for (int i = 0; i < jsonarray.length(); i++) {
-                        JSONObject jsonobject = jsonarray.getJSONObject(i);
-                        String id = jsonobject.getString("id");
-                        String fullName = jsonobject.getString("other_names")+" "
-                                +jsonobject.getString("last_name");
-                        patientList.add(id+": "+fullName);
-                    }
-                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-                            CreateCounsellingFragment.this.getActivity(),
-                            android.R.layout.simple_dropdown_item_1line, patientList);
-                    patientNames.setAdapter(adapter);
-                }
-                catch (JSONException e){
-                    System.out.print("unsuccessful");
-                }
+        String patients = WriteRead.read(PatientFragment.FILENAME, getContext());
+        try{
+            JSONArray jsonarray = new JSONArray(patients);
+            // JSONArray jsonarray = new JSONArray(resp);
+            for (int i = 0; i < jsonarray.length(); i++) {
+                JSONObject jsonobject = jsonarray.getJSONObject(i);
+                String id = jsonobject.getString("id");
+                String fullName = jsonobject.getString("other_names")+" " +
+                        jsonobject.getString("last_name");
+                patientList.add(id+": "+fullName);
             }
-
-            @Override
-            public void failure(RetrofitError error) {
-                if(error != null ){
-                    Log.e(TAG, error.getMessage());
-                    error.printStackTrace();
-                }
-            }
-        };
-        communicatorInterface.getPatients(callback);
+            Log.d(TAG, patients);
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                    CreateCounsellingFragment.this.getActivity(),
+                    android.R.layout.simple_dropdown_item_1line, patientList);
+            patientNames.setAdapter(adapter);
+        }
+        catch (JSONException e){
+            System.out.print("unsuccessful");
+        }
     }
+
 
     public void sessionGet(){
         final List<String> sessionList = new ArrayList<String>();

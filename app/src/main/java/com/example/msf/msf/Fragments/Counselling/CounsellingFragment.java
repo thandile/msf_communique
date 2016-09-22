@@ -95,7 +95,6 @@ public class CounsellingFragment extends Fragment {
                             counselling = new AddCounsellingResponse(id, patient, session, notes);
                             //userGet(owner);
                             appointmentList.add(counselling);
-
                         }
                         Log.d(TAG, appointmentList.toString());
                         BindDictionary<AddCounsellingResponse> dictionary = new BindDictionary<>();
