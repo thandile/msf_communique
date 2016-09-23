@@ -123,6 +123,11 @@ public interface Interface {
                        @Part("last_name") String lastName,
                        @Part("birth_date") String dob,
                        @Part("reference_health_centre ") String facility,
+                       @Part("sex") String sex,
+                       @Part("contact_number") String contact,
+                       @Part("treatment_start_date") String txStart,
+                       @Part("location") String location,
+                       @Part("interim_outcome") String outcome,
                        Callback<Users> callback);
 
     @Multipart

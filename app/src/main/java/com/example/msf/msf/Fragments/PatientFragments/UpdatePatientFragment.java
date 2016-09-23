@@ -9,8 +9,10 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,6 +22,8 @@ import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.ServerEvent;
 import com.example.msf.msf.R;
 import com.squareup.otto.Subscribe;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -36,8 +40,11 @@ public class UpdatePatientFragment extends Fragment {
     private final String TAG = this.getClass().getSimpleName();
     ProgressDialog prgDialog;
     Button submit;
-    EditText patient_fname, patient_sname, patient_currFacility, patient_dob;
-    String sname, fname, curr_facility, dob;
+    EditText patient_fname, patient_sname, patient_currFacility, patient_dob, contact, outcome,
+            location, treatment_start;
+    Spinner sex;
+    String sname, fname, curr_facility, dob, patientSex, patientLocation, tx_start, patientContact,
+            interimOutcome;
     private Communicator communicator;
     // TODO: Rename and change types of parameters
     private String[] patientInfo;
@@ -82,6 +89,20 @@ public class UpdatePatientFragment extends Fragment {
         patient_sname = (EditText) view.findViewById(R.id.patient_sname);
         patient_dob = (EditText) view.findViewById(R.id.patient_dob);
         patient_currFacility = (EditText) view.findViewById(R.id.patient_curr_facitlity);
+        contact = (EditText) view.findViewById(R.id.patient_contact);
+        location = (EditText) view.findViewById(R.id.patient_location);
+        outcome = (EditText) view.findViewById(R.id.interim_outcome);
+        treatment_start = (EditText) view.findViewById(R.id.tx_start_date) ;
+        sex = (Spinner) view.findViewById(R.id.sexSpinner);
+        ArrayList<String> sexes = new ArrayList<String>();
+        sexes.add("");
+        sexes.add("Female");
+        sexes.add("Male");
+        ArrayAdapter<String> sessionSpinnerAdapter = new ArrayAdapter<String>(
+                UpdatePatientFragment.this.getActivity(),
+                android.R.layout.simple_spinner_item, sexes);
+        sessionSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sex.setAdapter(sessionSpinnerAdapter);
         onButtonPressed(patientInfo);
         patient_fname.setText(patientInfo[0], TextView.BufferType.EDITABLE);
         patient_sname.setText(patientInfo[1], TextView.BufferType.EDITABLE);
@@ -90,6 +111,18 @@ public class UpdatePatientFragment extends Fragment {
         }
         if (!patientInfo[2].equals("null")) {
             patient_currFacility.setText(patientInfo[2], TextView.BufferType.EDITABLE);
+        }
+        if (!patientInfo[6].equals("null")) {
+            outcome.setText(patientInfo[6], TextView.BufferType.EDITABLE);
+        }
+        if (!patientInfo[8].equals("null")) {
+            location.setText(patientInfo[8], TextView.BufferType.EDITABLE);
+        }
+        if (!patientInfo[9].equals("null")) {
+            contact.setText(patientInfo[9], TextView.BufferType.EDITABLE);
+        }
+        if (!patientInfo[7].equals("null")) {
+            treatment_start.setText(patientInfo[7], TextView.BufferType.EDITABLE);
         }
         // Instantiate Progress Dialog object
         prgDialog = new ProgressDialog(UpdatePatientFragment.this.getActivity());
@@ -108,7 +141,15 @@ public class UpdatePatientFragment extends Fragment {
                 sname = patient_sname.getText().toString();
                 curr_facility = patient_currFacility.getText().toString();
                 dob = patient_dob.getText().toString();
-                communicator.patientUpdate(Long.parseLong(patientInfo[4]), fname, sname, curr_facility, dob);
+                patientSex = String.valueOf(sex.getSelectedItem()).substring(0,1);
+                patientContact = contact.getText().toString();
+                patientLocation = location.getText().toString();
+                interimOutcome = outcome.getText().toString();
+                tx_start = treatment_start.getText().toString();
+
+                communicator.patientUpdate(Long.parseLong(patientInfo[4]), fname, sname,
+                        curr_facility, dob, patientSex, patientContact, patientLocation,
+                        interimOutcome, tx_start);
             }
         });
 

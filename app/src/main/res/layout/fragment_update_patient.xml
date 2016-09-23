@@ -53,22 +53,6 @@
             android:id="@+id/patient_sname" />
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Sex"
-            android:id="@+id/textView3"
-            android:textStyle="bold"
-            android:textSize="20dp"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"/>
-
-        <Spinner
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/sexSpinner"
-            android:spinnerMode="dropdown" />
-
-        <TextView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:text="@string/dob"
@@ -85,6 +69,22 @@
             android:inputType="date"
             android:ems="10"
             android:id="@+id/patient_dob" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sex"
+            android:id="@+id/textView3"
+            android:textStyle="bold"
+            android:textSize="20dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"/>
+
+        <Spinner
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/sexSpinner"
+            android:spinnerMode="dropdown" />
 
         <TextView
             android:layout_width="fill_parent"
@@ -140,6 +140,24 @@
             android:hint="@string/currFacility_text"
             android:ems="10"
             android:id="@+id/interim_outcome"/>
+
+        <TextView
+            android:text="Location"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView17"
+            android:textStyle="bold"
+            android:textSize="20dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"/>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPersonName"
+            android:text="Patient's location"
+            android:ems="10"
+            android:id="@+id/patient_location" />
 
         <TextView
             android:layout_width="fill_parent"

@@ -235,7 +235,9 @@ public class Communicator {
     }
 
 
-    public void patientUpdate(long id, String firstName, String lastName, String facility, String dob){
+    public void patientUpdate(long id, String firstName, String lastName, String facility, String dob,
+                              String sex, String contact, String location, String outcome,
+                              String txStart){
         Interface communicatorInterface = Auth.getInterface();
         Callback<Users> callback = new Callback<Users>() {
 
@@ -258,7 +260,8 @@ public class Communicator {
                 BusProvider.getInstance().post(produceErrorEvent(-200,error.getMessage()));
             }
         };
-        communicatorInterface.updatePatient(id, firstName, lastName, dob, facility, callback);
+        communicatorInterface.updatePatient(id, firstName, lastName, dob, facility, sex, contact,
+                txStart, location, outcome, callback);
     }
 
 

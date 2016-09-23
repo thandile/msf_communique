@@ -239,7 +239,7 @@ public class PatientInfoFragment extends Fragment {
                         last_name.getText().toString(), health_centre.getText().toString(),
                         dob.getText().toString(), id, sex.getText().toString(),
                         outcome.getText().toString(), startDate.getText().toString(),
-                        address.getText().toString(), health_centre.getText().toString()};
+                        address.getText().toString(),  contact.getText().toString()};
                 UpdatePatientFragment updatePatientFragment =
                         new UpdatePatientFragment().newInstance(patientInfo);
                 FragmentManager manager = getActivity().getSupportFragmentManager();

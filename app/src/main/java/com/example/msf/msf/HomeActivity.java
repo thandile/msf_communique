@@ -4,9 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -115,9 +118,32 @@ public class HomeActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.home, menu);
+        // show menu only when home fragment is selected
+       if (navItemIndex == 0) {
+            getMenuInflater().inflate(R.menu.home, menu);
+        }
+
+        // when fragment is notifications, load the menu created for notifications
+      /**  if (navItemIndex == 5) {
+            getMenuInflater().inflate(R.menu.menu_search, menu);
+            MenuItem item = menu.findItem(R.id.menuSearch);
+            SearchView searchView = (SearchView) item.getActionView();
+
+            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String Query) {
+                    return false;
+                }
+                @Override
+                public boolean onQueryTextChange(String newText){
+                    return true;
+
+            }
+            });
+        }**/
         return true;
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -142,7 +168,10 @@ public class HomeActivity extends AppCompatActivity
             startActivity(intent);
             //onDestroy();
             return true;
+
         }
+
+
 
         return super.onOptionsItemSelected(item);
     }
@@ -217,6 +246,7 @@ public class HomeActivity extends AppCompatActivity
         }
         else if (id == R.id.nav_patient_list){
             navItemIndex = 5;
+            Toast.makeText(this, ""+navItemIndex, Toast.LENGTH_SHORT).show();
             PatientFragment patientFragment = new PatientFragment();
             FragmentManager manager = getSupportFragmentManager();
             manager.beginTransaction().replace(R.id.rel_layout_for_frag,
@@ -259,9 +289,21 @@ public class HomeActivity extends AppCompatActivity
                     .commit();
             setToolbarTitle("Pilot Enrollments");
         }
+        else {
+            HomeFragment home = new HomeFragment();
+            FragmentManager manager = getSupportFragmentManager();
+            manager.beginTransaction().replace(R.id.rel_layout_for_frag,
+                    home,
+                    home.getTag())
+                    .addToBackStack(null)
+                    .commit();
+            setToolbarTitle("Home");
+        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
+        // refresh toolbar menu
+        invalidateOptionsMenu();
         return true;
     }
 
