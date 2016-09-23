@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +26,8 @@ import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.API.PatientsDeserialiser;
 import com.example.msf.msf.API.ServerEvent;
+import com.example.msf.msf.Dialogs.DateDialog;
+import com.example.msf.msf.Dialogs.TimeDialog;
 import com.example.msf.msf.Fragments.PatientFragments.PatientFragment;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.WriteRead;
@@ -117,6 +120,33 @@ public class UpdateAppointmentFragment extends Fragment {
         endTimeET = (EditText) view.findViewById(R.id.endTimeET);
         notesET = (EditText) view.findViewById(R.id.noteET);
         users = (Spinner) view.findViewById(R.id.ownerSpinner);
+        dateET.setOnFocusChangeListener(new View.OnFocusChangeListener(){
+            public void onFocusChange(View view, boolean hasfocus){
+                if(hasfocus){
+                    DateDialog dialog=new DateDialog(view);
+                    FragmentTransaction ft =getFragmentManager().beginTransaction();
+                    dialog.show(ft, "DatePicker");
+                }
+            }
+        });
+        startTimeET.setOnFocusChangeListener(new View.OnFocusChangeListener(){
+            public void onFocusChange(View view, boolean hasfocus){
+                if(hasfocus){
+                    TimeDialog dialog= TimeDialog.newInstance(view);
+                    FragmentTransaction ft =getFragmentManager().beginTransaction();
+                    dialog.show(ft, "TimeDialog");
+                }
+            }
+        });
+        endTimeET.setOnFocusChangeListener(new View.OnFocusChangeListener(){
+            public void onFocusChange(View view, boolean hasfocus){
+                if(hasfocus){
+                    TimeDialog dialog= TimeDialog.newInstance(view);
+                    FragmentTransaction ft =getFragmentManager().beginTransaction();
+                    dialog.show(ft, "TimeDialog");
+                }
+            }
+        });
         patientsGet();
         usersGet();
         appointmentTypeET.setText(mParam1[0].split(": ")[1], TextView.BufferType.EDITABLE);

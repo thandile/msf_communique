@@ -228,8 +228,8 @@ public class CreateAppointmentFragment extends Fragment {
         notesET.setText("");
         dateET.setText("");
         appointmentTypeET.setText("");
-        String endTime = endTimeET.getText().toString();
-        String startTime = startTimeET.getText().toString();
+        endTimeET.setText("");
+        startTimeET.setText("");
 
         //patientNames.setText("");
         //notesTV.setText("");

@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +24,7 @@ import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.API.PatientsDeserialiser;
 import com.example.msf.msf.API.PilotsDeserializer;
 import com.example.msf.msf.API.ServerEvent;
+import com.example.msf.msf.Dialogs.DateDialog;
 import com.example.msf.msf.Fragments.PatientFragments.PatientFragment;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.WriteRead;
@@ -108,6 +110,17 @@ public class UpdateEnrollmentFragment extends Fragment {
         pilotPrograms = (Spinner) view.findViewById(R.id.pilotSpinner);
         comment = (EditText) view.findViewById(R.id.enrollmentComment);
         enrollment_date = (EditText) view.findViewById(R.id.enrollmentDate);
+        enrollment_date.setOnFocusChangeListener(new View.OnFocusChangeListener(){
+            public void onFocusChange(View view, boolean hasfocus){
+                if(hasfocus){
+                    DateDialog dialog=new DateDialog(view);
+                    FragmentTransaction ft =getFragmentManager().beginTransaction();
+                    dialog.show(ft, "DatePicker");
+
+                }
+            }
+
+        });
         submit = (Button) view.findViewById(R.id.submit_enrollment);
         patientsGet();
         pilotsGet();
@@ -234,7 +247,7 @@ public class UpdateEnrollmentFragment extends Fragment {
                 String[] program = String.valueOf(pilotPrograms.getSelectedItem()).split(":");
                 String enrollment_comment = comment.getText().toString();
                 String date = enrollment_date.getText().toString();
-                communicator.enrollmentUpdate(Long.parseLong(enrollmentInfo[4]), patient_id[1],
+                communicator.enrollmentUpdate(Long.parseLong(enrollmentInfo[4]), patient_id[0],
                         enrollment_comment, program[0], date);
             }
         });
