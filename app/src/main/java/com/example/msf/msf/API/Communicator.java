@@ -400,6 +400,59 @@ public class Communicator {
         communicatorInterface.updateEnrollments(enrollmentID, patient, comment, program, date, callback);
     }
 
+    public void counsellingDelete(final long counsellingID){
+        Interface communicatorInterface = Auth.getInterface();
+        Callback<AddCounsellingResponse> callback = new Callback<AddCounsellingResponse>() {
+            @Override
+            public void success(AddCounsellingResponse serverResponse, Response response2) {
+                //if(serverResponse.getResponseCode() == 0){
+                BusProvider.getInstance().post(produceCounsellingServerEvent(serverResponse));
+                // }else{
+                //  BusProvider.getInstance().post(produceErrorEvent(serverResponse.getResponseCode(),
+                // serverResponse.getMessage()));
+                // }**/
+                Log.d(TAG,"Success, appointment deleted "+ counsellingID);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                if(error != null ){
+                    Log.e(TAG, error.getMessage());
+                    error.printStackTrace();
+                }
+                BusProvider.getInstance().post(produceErrorEvent(-200,error.getMessage()));
+            }
+        };
+        communicatorInterface.deleteSession(counsellingID, callback);
+    }
+
+    public void counsellingUpdate(long counsellingID, String  patient, String  sessionType,
+                                  String notes){
+        Interface communicatorInterface = Auth.getInterface();
+        Callback<AddCounsellingResponse> callback = new Callback<AddCounsellingResponse>() {
+
+            @Override
+            public void success(AddCounsellingResponse serverResponse, Response response2) {
+                if(serverResponse.getResponseCode() == 0){
+                    BusProvider.getInstance().post(produceCounsellingServerEvent(serverResponse));
+                }else{
+                    BusProvider.getInstance().post(produceErrorEvent(serverResponse.getResponseCode(),
+                            serverResponse.getMessage()));
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                if(error != null ){
+                    Log.e(TAG, error.getMessage());
+                    error.printStackTrace();
+                }
+                BusProvider.getInstance().post(produceErrorEvent(-200,error.getMessage()));
+            }
+        };
+        communicatorInterface.updateCounselling(counsellingID, patient, sessionType, notes, callback);
+    }
+
 
 
     @Produce

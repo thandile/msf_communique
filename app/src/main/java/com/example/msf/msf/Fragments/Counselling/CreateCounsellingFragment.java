@@ -52,6 +52,9 @@ public class CreateCounsellingFragment extends Fragment {
     EditText notesET;
     Spinner sessionType;
     Button submit;
+
+    public static String PATIENTINFOFILE = "Patients";
+    public static String SESSIONTYPEFILE = "SessionType";
     private final String TAG = this.getClass().getSimpleName();
     public CreateCounsellingFragment() {
         // Required empty public constructor
@@ -83,7 +86,7 @@ public class CreateCounsellingFragment extends Fragment {
 
     public void patientsGet(){
         final List<String> patientList = new ArrayList<String>();
-        String patients = WriteRead.read(PatientFragment.FILENAME, getContext());
+        String patients = WriteRead.read(PATIENTINFOFILE, getContext());
         try{
             JSONArray jsonarray = new JSONArray(patients);
             // JSONArray jsonarray = new JSONArray(resp);
@@ -108,34 +111,20 @@ public class CreateCounsellingFragment extends Fragment {
 
     public void sessionGet(){
         final List<String> sessionList = new ArrayList<String>();
-        Interface communicatorInterface = Auth.getInterface();
-        Callback<List<SessionDeserialiser>> callback = new Callback<List<SessionDeserialiser>>() {
-            @Override
-            public void success(List<SessionDeserialiser> serverResponse, Response response2) {
-                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
-                try{
-                    JSONArray jsonarray = new JSONArray(resp);
-                    for (int i = 0; i < jsonarray.length(); i++) {
-                        JSONObject jsonobject = jsonarray.getJSONObject(i);
-                        String id_name =jsonobject.getString("id")+": "+jsonobject.getString("name");
-                        sessionList.add(id_name);
-                    }
-                    addItemsOnSessionSpinner(sessionList);
-                }
-                catch (JSONException e){
-                    System.out.print("unsuccessful");
-                }
+        String sessionTypes = WriteRead.read(SESSIONTYPEFILE, getContext());
+        try {
+            JSONArray jsonarray = new JSONArray(sessionTypes);
+            for (int i = 0; i < jsonarray.length(); i++) {
+                JSONObject jsonobject = jsonarray.getJSONObject(i);
+                String id_name =jsonobject.getString("id")+": "+jsonobject.getString("name");
+                sessionList.add(id_name);
             }
+            addItemsOnSessionSpinner(sessionList);
+        }
+        catch (JSONException e){
+            System.out.print("unsuccessful");
+        }
 
-            @Override
-            public void failure(RetrofitError error) {
-                if(error != null ){
-                    Log.e(TAG, error.getMessage());
-                    error.printStackTrace();
-                }
-            }
-        };
-        communicatorInterface.getSessions(callback);
     }
 
     // add items into spinner dynamically

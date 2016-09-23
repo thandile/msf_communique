@@ -1,4 +1,4 @@
-package com.example.msf.msf.Fragments.PatientFragments;
+package com.example.msf.msf.Fragments.PatientFragments.PatientTabs;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -13,13 +13,11 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.BusProvider;
 import com.example.msf.msf.API.Communicator;
-import com.example.msf.msf.API.Deserializers.Users;
 import com.example.msf.msf.API.ErrorEvent;
-import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.API.ServerEvent;
+import com.example.msf.msf.Fragments.PatientFragments.UpdatePatientFragment;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.WriteRead;
 import com.squareup.otto.Subscribe;
@@ -27,14 +25,6 @@ import com.squareup.otto.Subscribe;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
-import retrofit.mime.TypedByteArray;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -142,16 +132,6 @@ public class PatientInfoFragment extends Fragment {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(String data);
@@ -197,26 +177,6 @@ public class PatientInfoFragment extends Fragment {
         }
     }
 
-  /**  public void patientGet(long patientID){
-        final List<String> patientList = new ArrayList<String>();
-        Interface communicatorInterface = Auth.getInterface();
-        Callback<Users> callback = new Callback<Users>() {
-            @Override
-            public void success(Users serverResponse, Response response2) {
-                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
-                WriteRead.write(FILENAME, resp, getContext());
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                if(error != null ){
-                    Log.e(TAG, error.getMessage());
-                    error.printStackTrace();
-                }
-            }
-        };
-        communicatorInterface.getPatient(patientID,callback);
-    }**/
 
     public void deleteListener() {
         delete.setOnClickListener(new View.OnClickListener() {
@@ -226,7 +186,6 @@ public class PatientInfoFragment extends Fragment {
                 communicator.patientDelete(Long.parseLong(id));
             }
         });
-        //patientsGet();
     }
 
     public void editListener() {

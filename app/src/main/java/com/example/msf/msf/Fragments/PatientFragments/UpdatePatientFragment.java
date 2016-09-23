@@ -216,6 +216,10 @@ public class UpdatePatientFragment extends Fragment {
         patient_sname.setText("");
         patient_dob.setText("");
         patient_currFacility.setText("");
+        contact.setText("");
+        location.setText("");
+        outcome.setText("");
+        treatment_start.setText("");
     }
 
     @Subscribe

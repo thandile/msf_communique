@@ -26,6 +26,7 @@ import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.Deserializers.Patients;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.API.PatientsDeserialiser;
+import com.example.msf.msf.Fragments.PatientFragments.PatientTabs.TabFragment;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.WriteRead;
 
@@ -72,7 +73,7 @@ public class PatientFragment extends Fragment implements SwipeRefreshLayout.OnRe
                 String id_name = patientLv.getItemAtPosition(i).toString();
                 String id = id_name.split(":")[0];
                 Log.e(TAG, id_name);
-                PatientInfoFragment patientInfoFragment = new PatientInfoFragment().newInstance(id);
+                TabFragment patientInfoFragment = new TabFragment().newInstance(id);
                 FragmentManager manager = getActivity().getSupportFragmentManager();
                 manager.beginTransaction()
                         .replace(R.id.rel_layout_for_frag, patientInfoFragment,
@@ -101,29 +102,7 @@ public class PatientFragment extends Fragment implements SwipeRefreshLayout.OnRe
     }
 
 
-    public Patients createPatients(JSONObject jsonobject) {
-        Patients patient = null;
-        try {
-            String id = jsonobject.getString("id");
-            String firstName = jsonobject.getString("other_names");
-            String lastName = jsonobject.getString("last_name");
-            String dob = jsonobject.getString("birth_date");
-            String location = jsonobject.getString("location");
-            String contact = jsonobject.getString("contact_number");
-            JSONArray enrollmentsJson = jsonobject.getJSONArray("enrolled_programs");
-            String[] enrollments = new String[enrollmentsJson.length()];
-            for (int j = 0; j < enrollmentsJson.length(); j++) {
-                enrollments[j] = enrollmentsJson.getString(j);
-            }
-            String health_centre = jsonobject.getString("reference_health_centre");
-            patient = new Patients(id, firstName, lastName, dob, contact,
-                    location, enrollments, health_centre);
-        } catch (Exception e) {
-        }
-        return patient;
-    }
-
-    public void loadFromFile(){//BindDictionary<Patients> dictionary, ArrayList<Patients> patientList ){
+    public void loadFromFile(){
         String patients = WriteRead.read(FILENAME, getContext());
         ArrayList<String> patientList = new ArrayList<>();
         Patients patient = new Patients();
@@ -138,42 +117,10 @@ public class PatientFragment extends Fragment implements SwipeRefreshLayout.OnRe
                     patientList.add(id+": " +firstName +" " + lastName);//(createPatients(jsonobject));
                 }
                 Log.d(TAG, patientList.toString());
-                /**dictionary.addStringField(R.id.titleTV, new StringExtractor<Patients>() {
-                    @Override
-                    public String getStringValue(Patients patient, int position) {
-                        return patient.getFirst_name();
-                    }
-                });
-                dictionary.addStringField(R.id.personTV, new StringExtractor<Patients>() {
-                    @Override
-                    public String getStringValue(Patients patient, int position) {
-                        return "Contact: " + patient.getContact_number();
-                    }
-                });
-                dictionary.addStringField(R.id.idTV, new StringExtractor<Patients>() {
-                    @Override
-                    public String getStringValue(Patients patient, int position) {
-                        return "ID: " + patient.getId();
-                    }
-                });**/
                 adapter = new ArrayAdapter<String>(PatientFragment.this.getActivity(),
                         android.R.layout.simple_list_item_1, patientList);
                 patientLv.setAdapter(adapter);
             }
-            //else {
-               /** dictionary.addStringField(R.id.titleTV, new StringExtractor<Patients>() {
-                    @Override
-                    public String getStringValue(Patients patient, int position) {
-                        return "No registered patients";
-                    }
-                });
-
-                adapter = new FunDapter(PatientFragment.this.getActivity(), patientList,
-                        R.layout.list_layout,);
-                patientLv.setAdapter(adapter);
-                Toast.makeText(PatientFragment.this.getActivity(),
-                        "No registered patients", Toast.LENGTH_SHORT).show();*/
-           // }
         }
         catch (JSONException e) {
             System.out.print("unsuccessful");
@@ -182,8 +129,6 @@ public class PatientFragment extends Fragment implements SwipeRefreshLayout.OnRe
     }
 
     public void patientsGet(){
-        final BindDictionary<Patients> dictionary = new BindDictionary<>();
-        final ArrayList<Patients> patientList = new ArrayList<Patients>();
         Interface communicatorInterface = Auth.getInterface();
         if (fileExistance(FILENAME)) {
             loadFromFile();//dictionary, patientList);
@@ -196,9 +141,8 @@ public class PatientFragment extends Fragment implements SwipeRefreshLayout.OnRe
                 public void success(List<PatientsDeserialiser> serverResponse, Response response2) {
                     String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
                     Patients patient = new Patients();
-                    //JSONArray jsonarray = new JSONArray(resp);
                     WriteRead.write(FILENAME, resp, getContext());
-                    loadFromFile();//dictionary, patientList);
+                    loadFromFile();
                     // stopping swipe refresh
                     swipeRefreshLayout.setRefreshing(false);
                     Log.d(TAG, "read from server");

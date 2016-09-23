@@ -11,14 +11,17 @@ public class AddCounsellingResponse {
     private int id;
     @SerializedName("patient")
     private int patient;
+    private String patient_name;
     @SerializedName("counselling_session_type")
     private int counselling_session_type;
+    private String session_type;
     @SerializedName("notes ")
     private String notes;
     @SerializedName("message")
     private String message;
     @SerializedName("response_code")
     private int responseCode;
+
 
 
     public AddCounsellingResponse(int patient, int counselling_session_type, String notes,
@@ -40,11 +43,34 @@ public class AddCounsellingResponse {
         this.notes = notes;
     }
 
+    public AddCounsellingResponse(int id, String patient_name, String session_type, String notes){
+
+        this.id = id;
+        this.patient_name = patient_name;
+        this.session_type = session_type;
+        this.notes = notes;
+    }
+
     public AddCounsellingResponse()
     {
 
     }
 
+    public String getSession_type() {
+        return session_type;
+    }
+
+    public void setSession_type(String session_type) {
+        this.session_type = session_type;
+    }
+
+    public String getPatient_name() {
+        return patient_name;
+    }
+
+    public void setPatient_name(String patient_name) {
+        this.patient_name = patient_name;
+    }
     public int getPatient() {
         return patient;
     }

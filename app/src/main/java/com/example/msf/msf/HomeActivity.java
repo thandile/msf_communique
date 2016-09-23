@@ -1,16 +1,9 @@
 package com.example.msf.msf;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
-import android.os.StrictMode;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.widget.SearchView;
-import android.util.Log;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -28,15 +21,18 @@ import com.example.msf.msf.Fragments.AppointmentFragments.UpdateAppointmentFragm
 import com.example.msf.msf.Fragments.Counselling.CounsellingFragment;
 import com.example.msf.msf.Fragments.Counselling.CounsellingInfoFragment;
 import com.example.msf.msf.Fragments.Counselling.CreateCounsellingFragment;
+import com.example.msf.msf.Fragments.Counselling.UpdateCounsellingFragment;
 import com.example.msf.msf.Fragments.Enrollments.CreateEnrollmentFragment;
 import com.example.msf.msf.Fragments.Enrollments.EnrollmentFragment;
 import com.example.msf.msf.Fragments.Enrollments.EnrollmentInfoFragment;
 import com.example.msf.msf.Fragments.Enrollments.UpdateEnrollmentFragment;
 import com.example.msf.msf.Fragments.HomeFragment;
-import com.example.msf.msf.Fragments.PatientFragments.CreatePatientFragment;
 import com.example.msf.msf.Fragments.PatientFragments.PatientFragment;
-import com.example.msf.msf.Fragments.AppointmentFragments.AppointmentInfoFragment;
-import com.example.msf.msf.Fragments.PatientFragments.PatientInfoFragment;
+import com.example.msf.msf.Fragments.PatientFragments.PatientTabs.PatientInfoFragment;
+import com.example.msf.msf.Fragments.PatientFragments.PatientTabs.AdmissionsTab;
+import com.example.msf.msf.Fragments.PatientFragments.PatientTabs.MedicalRecordTab;
+import com.example.msf.msf.Fragments.PatientFragments.PatientTabs.MedicationTab;
+import com.example.msf.msf.Fragments.PatientFragments.PatientTabs.TabFragment;
 import com.example.msf.msf.Fragments.PatientFragments.UpdatePatientFragment;
 
 public class HomeActivity extends AppCompatActivity
@@ -47,7 +43,12 @@ public class HomeActivity extends AppCompatActivity
         UpdatePatientFragment.OnFragmentInteractionListener,
         EnrollmentInfoFragment.OnFragmentInteractionListener,
         UpdateEnrollmentFragment.OnFragmentInteractionListener,
-        CounsellingInfoFragment.OnFragmentInteractionListener{
+        CounsellingInfoFragment.OnFragmentInteractionListener,
+        UpdateCounsellingFragment.OnFragmentInteractionListener,
+        TabFragment.OnFragmentInteractionListener,
+        AdmissionsTab.OnFragmentInteractionListener,
+        MedicationTab.OnFragmentInteractionListener,
+        MedicalRecordTab.OnFragmentInteractionListener{
 
     // flag to load home fragment when user presses back key
     private boolean shouldLoadHomeFragOnBackPress = true;
@@ -80,7 +81,6 @@ public class HomeActivity extends AppCompatActivity
                     .addToBackStack(null)
                     .commit();
             setToolbarTitle("Home");
-
         }
     }
 
@@ -123,24 +123,6 @@ public class HomeActivity extends AppCompatActivity
             getMenuInflater().inflate(R.menu.home, menu);
         }
 
-        // when fragment is notifications, load the menu created for notifications
-      /**  if (navItemIndex == 5) {
-            getMenuInflater().inflate(R.menu.menu_search, menu);
-            MenuItem item = menu.findItem(R.id.menuSearch);
-            SearchView searchView = (SearchView) item.getActionView();
-
-            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-                @Override
-                public boolean onQueryTextSubmit(String Query) {
-                    return false;
-                }
-                @Override
-                public boolean onQueryTextChange(String newText){
-                    return true;
-
-            }
-            });
-        }**/
         return true;
     }
 
@@ -199,7 +181,7 @@ public class HomeActivity extends AppCompatActivity
                     .commit();
             setToolbarTitle("Home");
         }
-        else if (id == R.id.nav_camera) {
+        /**else if (id == R.id.nav_camera) {
             // Handle the camera action
             navItemIndex = 1;
             CreatePatientFragment createPatientFragment = new CreatePatientFragment();
@@ -210,7 +192,7 @@ public class HomeActivity extends AppCompatActivity
                     .addToBackStack(null)
                     .commit();
             setToolbarTitle("Patient Registration");
-        }
+        }**/
         else if (id == R.id.nav_gallery) {
             navItemIndex = 2;
             CreateAppointmentFragment createAppointmentFragment = new CreateAppointmentFragment();
@@ -317,6 +299,11 @@ public class HomeActivity extends AppCompatActivity
 
     @Override
     public void onFragmentInteraction(String[] data) {
+
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
 
     }
 }

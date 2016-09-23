@@ -28,7 +28,7 @@ public interface Interface {
     @GET("/programs/")
     void getPilots(Callback<List<PilotsDeserializer>> serverResponseCallback);
 
-    @GET("/programs/{id}")
+    @GET("/programs/{id}/")
     void getPilot(@Path("id") long pilotID,
                    Callback<PilotsDeserializer> serverResponseCallback);
 
@@ -42,35 +42,35 @@ public interface Interface {
     @GET("/enrollments/")
     void getEnrollments(Callback<List<Enrollment>> serverResponseCallback);
 
-    @GET("/enrollments/{id}")
+    @GET("/enrollments/{id}/")
     void getEnrollment(@Path("id") long id,
                         Callback<Enrollment> serverResponseCallback);
 
     @GET("/users/")
     void getUsers(Callback<List<PatientsDeserialiser>> serverResponseCallback);
 
-    @GET("/users/{id}")
+    @GET("/users/{id}/")
     void getUser(@Path("id") long userID,
                  Callback<Users> serverResponseCallback);
 
     @GET("/session/")
     void getSessions(Callback<List<SessionDeserialiser>> serverResponseCallback);
 
-    @GET("/session/{id}")
+    @GET("/session/{id}/")
     void getSession(@Path("id") long sessionTypeID,
             Callback<SessionDeserialiser> serverResponseCallback);
 
     @GET("/counselling/")
     void getCounselling(Callback<List<AddCounsellingResponse>> serverResponseCallback);
 
-    @GET("/counselling/{id}")
+    @GET("/counselling/{id}/")
     void getCounsellingSession(@Path("id") long counsellingID,
             Callback<AddCounsellingResponse> serverResponseCallback);
 
     @GET("/appointments/")
     void getAppointments(Callback<List<Appointment>> serverResponseCallback);
 
-    @GET("/appointments/{id}")
+    @GET("/appointments/{id}/")
     void getAppointment(@Path("id") long appointmentID,
                         Callback<Appointment> serverResponseCallback);
 
@@ -142,7 +142,7 @@ public interface Interface {
                             @Part("start_time") String startTime,
                             Callback<Appointment> serverResponseCallback);
     @Multipart
-    @PUT("/counselling/{id}")
+    @PUT("/counselling/{id}/")
     void updateCounselling(@Path("id") long sessionID,
                            @Part("patient") String patient,
                            @Part("counselling_session_type") String sessionType,
@@ -150,7 +150,7 @@ public interface Interface {
                            Callback<AddCounsellingResponse> serverResponseCallback);
 
     @Multipart
-    @PUT("/enrollments/{id}")
+    @PUT("/enrollments/{id}/")
     void updateEnrollments(@Path("id") long enrollmentID,
                            @Part("patient") String patient,
                            @Part("comment") String comment,
@@ -168,7 +168,7 @@ public interface Interface {
 
     @DELETE("/counselling/{id}/")
     void deleteSession(@Path("id") long sessionID,
-                       Callback<Users> callback);
+                       Callback<AddCounsellingResponse> callback);
 
     @DELETE("/enrollments/{id}/")
     void deleteEnrollment(@Path("id") long enrollmentID,

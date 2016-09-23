@@ -173,12 +173,12 @@ public class AppointmentInfoFragment extends Fragment {
                     endTimeTV.setText(jsonObject.getString("end_time"));
                     //ownerTV.setText(jsonObject.getString("owner"));
                     //patientTV.setText(jsonObject.getString("patient"));
-
                 }
                 catch (JSONException e){
                     System.out.print("unsuccessful");
                 }
             }
+
 
             @Override
             public void failure(RetrofitError error) {
@@ -190,6 +190,7 @@ public class AppointmentInfoFragment extends Fragment {
         };
         communicatorInterface.getAppointment(appointmentID,callback);
     }
+
 
     public void patientGet(long patientID){
         final List<String> patientList = new ArrayList<String>();
@@ -225,6 +226,7 @@ public class AppointmentInfoFragment extends Fragment {
         };
         communicatorInterface.getPatient(patientID,callback);
     }
+
 
     public void userGet(long userID){
         final List<String> userList = new ArrayList<String>();

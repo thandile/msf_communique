@@ -52,8 +52,7 @@ public class CreateAppointmentFragment extends Fragment {
     AutoCompleteTextView patientNames;
     Spinner users;
     EditText notesET, appointmentTypeET, dateET, startTimeET, endTimeET;
-    DatePicker appDatePicker;
-    TimePicker startTImePicker, endTimePicker;
+
     private final String TAG = this.getClass().getSimpleName();
 
     public CreateAppointmentFragment() {
@@ -87,8 +86,6 @@ public class CreateAppointmentFragment extends Fragment {
         endTimeET = (EditText) view.findViewById(R.id.endTimeET);
         notesET = (EditText) view.findViewById(R.id.noteET);
         //appDatePicker = (DatePicker) view.findViewById(R.id.app_datePicker);
-        startTImePicker = (TimePicker) view.findViewById(R.id.start_timePicker);
-        endTimePicker = (TimePicker) view.findViewById(R.id.end_timePicker2);
         submit = (Button) view.findViewById(R.id.appointment_submit);
         patientsGet();
         usersGet();

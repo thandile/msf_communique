@@ -4,10 +4,12 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -15,12 +17,20 @@ import com.amigold.fundapter.BindDictionary;
 import com.amigold.fundapter.FunDapter;
 import com.amigold.fundapter.extractors.StringExtractor;
 import com.example.msf.msf.API.Auth;
+import com.example.msf.msf.API.BusProvider;
+import com.example.msf.msf.API.Communicator;
 import com.example.msf.msf.API.Deserializers.AddCounsellingResponse;
 import com.example.msf.msf.API.Deserializers.Appointment;
 import com.example.msf.msf.API.Deserializers.SessionDeserialiser;
 import com.example.msf.msf.API.Deserializers.Users;
+import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.Interface;
+import com.example.msf.msf.API.ServerEvent;
+import com.example.msf.msf.Fragments.AppointmentFragments.AppointmentInfoFragment;
+import com.example.msf.msf.Fragments.AppointmentFragments.UpdateAppointmentFragment;
 import com.example.msf.msf.R;
+import com.example.msf.msf.Utils.WriteRead;
+import com.squareup.otto.Subscribe;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -50,7 +60,11 @@ public class CounsellingInfoFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String id;
     TextView patient, sessionType, notes;
+    Button edit, delete;
     private final String TAG = this.getClass().getSimpleName();
+    public static String FILENAME = "Patients";
+    public static String SESSIONTYPEFILE = "SessionType";
+    private Communicator communicator;
 
 
     private OnFragmentInteractionListener mListener;
@@ -91,7 +105,12 @@ public class CounsellingInfoFragment extends Fragment {
         patient = (TextView) view.findViewById(R.id.patient);
         sessionType = (TextView) view.findViewById(R.id.sessionTypeTv);
         notes = (TextView) view.findViewById(R.id.notesTV);
+        edit = (Button) view.findViewById(R.id.editButton);
+        delete = (Button) view.findViewById(R.id.delBtn);
+        communicator = new Communicator();
         sessionGet(Long.parseLong(id));
+        deleteListener();
+        editListener();
         return view;
     }
 
@@ -142,15 +161,10 @@ public class CounsellingInfoFragment extends Fragment {
             public void success(AddCounsellingResponse serverResponse, Response response2) {
                 String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
                 try{
-                    AddCounsellingResponse counselling = new AddCounsellingResponse();
-                    //JSONArray jsonarray = new JSONArray(resp);
                     JSONObject jsonobject = new JSONObject(resp);
                     sessionTypeGet(Long.parseLong(jsonobject.getString("counselling_session_type")));
-                    sessionType.setText(jsonobject.getString("id"));
-                    patientGet(Long.parseLong(jsonobject.getString("patient")));
+                    getPatientInfo(Long.parseLong(jsonobject.getString("patient")));
                     notes.setText(jsonobject.getString("notes"));
-                    //int session = Integer.parseInt(jsonobject.getString("counselling_session_type"));
-
                 }
                 catch (JSONException e){
                     System.out.print("unsuccessful");
@@ -176,10 +190,10 @@ public class CounsellingInfoFragment extends Fragment {
                 String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
                 try{
                     JSONObject jsonObject = new JSONObject(resp);
-                    String id = jsonObject.getString("id");
+                    String pid = jsonObject.getString("pid");
                     String first_name = jsonObject.getString("other_names");
                     String last_name = jsonObject.getString("last_name");
-                    String full_name = id + ": " +first_name + " " + last_name;
+                    String full_name = pid + ": " +first_name + " " + last_name;
                     patient.setText(full_name);
                     /**contact.setText(jsonObject.getString("contact_number"));
                      dob.setText(jsonObject.getString("birth_date"));
@@ -203,31 +217,111 @@ public class CounsellingInfoFragment extends Fragment {
     }
 
     public void sessionTypeGet(long sessionID){
+        String session = "";
+        String sessionTypes = WriteRead.read(SESSIONTYPEFILE, getContext());
         final List<String> sessionList = new ArrayList<String>();
-        Interface communicatorInterface = Auth.getInterface();
-        Callback<SessionDeserialiser> callback = new Callback<SessionDeserialiser>() {
-            @Override
-            public void success(SessionDeserialiser serverResponse, Response response2) {
-                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
-                try{
-                        JSONObject jsonobject = new JSONObject(resp);
-                        sessionType.setText(jsonobject.getString("id")+": "
-                                +jsonobject.getString("name"));
-                }
-                catch (JSONException e){
-                    System.out.print("unsuccessful");
+        try {
+            JSONArray jsonarray = new JSONArray(sessionTypes);
+            for (int i = 0; i < jsonarray.length(); i++) {
+                JSONObject jsonobject = jsonarray.getJSONObject(i);
+                if (jsonobject.getString("id").equals(""+sessionID)) {
+                    //JSONObject jsonobject = new JSONObject(sessionTypes);
+                    String id_name = jsonobject.getString("id") + ": " + jsonobject.getString("name");
+                    sessionType.setText(id_name);
+                    Log.d(TAG,jsonobject.getString("name"));
+                    break;
                 }
             }
+        } catch (JSONException e) {
+            System.out.print("unsuccessful");
+        }
+    }
 
-            @Override
-            public void failure(RetrofitError error) {
-                if(error != null ){
-                    Log.e(TAG, error.getMessage());
-                    error.printStackTrace();
+    public void getPatientInfo(Long pid) {
+        String patients = WriteRead.read(FILENAME, getContext());
+        try {
+            JSONArray jsonarray = new JSONArray(patients);
+            for (int i = 0; i < jsonarray.length(); i++) {
+                JSONObject jsonobject = jsonarray.getJSONObject(i);
+                Log.d(TAG, "ID: " + jsonobject.getString("id"));
+                if (jsonobject.getString("id").equals(""+pid)) {
+                    String id = jsonobject.getString("id");
+                    String first_name = jsonobject.getString("other_names");
+                    String last_name = jsonobject.getString("last_name");
+                    String full_name = id+": "+first_name + " " + last_name;
+                    patient.setText(full_name);
+
+                    break;
+
                 }
             }
-        };
-        communicatorInterface.getSession(sessionID, callback);
+        } catch (JSONException e) {
+            System.out.print("unsuccessful");
+        }
+    }
+
+    public void deleteListener() {
+        delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //prgDialog.show();
+                communicator.counsellingDelete(Long.parseLong(id));
+
+            }
+        });
+
+    }
+
+    public void editListener() {
+
+        edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //prgDialog.show();
+                String app_id = id;
+                Log.e(TAG, id.toString());
+                String[] counsellingInfo = {sessionType.getText().toString(),
+                        notes.getText().toString(), patient.getText().toString(),id};
+                UpdateCounsellingFragment updateCounsellingFragment =
+                        new UpdateCounsellingFragment().newInstance(counsellingInfo);
+                FragmentManager manager = getActivity().getSupportFragmentManager();
+
+                manager.beginTransaction()
+                        .replace(R.id.rel_layout_for_frag, updateCounsellingFragment,
+                                updateCounsellingFragment.getTag())
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        BusProvider.getInstance().register(this);
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        BusProvider.getInstance().unregister(this);
+    }
+
+    @Subscribe
+    public void onServerEvent(ServerEvent serverEvent){
+        //prgDialog.hide();
+        Toast.makeText(CounsellingInfoFragment.this.getActivity(),
+                "You have successfully deleted a counselling session", Toast.LENGTH_LONG).show();
+        patient.setText("");
+        notes.setText("");
+        sessionType.setText("");
+
+    }
+
+    @Subscribe
+    public void onErrorEvent(ErrorEvent errorEvent){
+        //prgDialog.hide();
+        Toast.makeText(CounsellingInfoFragment.this.getActivity(), "" + errorEvent.getErrorMsg(), Toast.LENGTH_LONG).show();
     }
 
 }

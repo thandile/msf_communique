@@ -6,10 +6,7 @@
             android:id="@+id/nav_home"
             android:icon="@drawable/ic_home"
             android:title="Home" />
-        <item
-            android:id="@+id/nav_camera"
-            android:icon="@drawable/ic_patient"
-            android:title="Register Patient" />
+
         <item
             android:id="@+id/nav_gallery"
             android:icon="@drawable/ic_appointment"
@@ -17,11 +14,11 @@
         <item
             android:id="@+id/nav_slideshow"
             android:icon="@drawable/ic_counsel"
-            android:title="Record Counselling Session" />
+            android:title="Counselling Sessions" />
         <item
             android:id="@+id/nav_manage"
             android:icon="@drawable/ic_enrol"
-            android:title="Record Pilot Enrollments" />
+            android:title="Pilot Enrollments" />
     </group>
 
     <item android:title="Information">
