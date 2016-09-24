@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -270,6 +271,13 @@ public class UpdatePatientFragment extends Fragment implements Validator.Validat
         location.setText("");
         outcome.setText("");
         treatment_start.setText("");
+        PatientFragment patientFragment = new PatientFragment();
+        FragmentManager manager = getActivity().getSupportFragmentManager();
+        manager.beginTransaction()
+                .replace(R.id.rel_layout_for_frag, patientFragment,
+                        patientFragment.getTag())
+                .addToBackStack(null)
+                .commit();
     }
 
     @Subscribe

@@ -3,6 +3,7 @@ package com.example.msf.msf.Fragments.AppointmentFragments;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,6 +21,7 @@ import android.widget.Toast;
 import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.BusProvider;
 import com.example.msf.msf.API.Communicator;
+import com.example.msf.msf.API.Deserializers.Users;
 import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.API.PatientsDeserialiser;
@@ -33,6 +35,7 @@ import com.mobsandgeeks.saripaar.ValidationError;
 import com.mobsandgeeks.saripaar.Validator;
 import com.mobsandgeeks.saripaar.annotation.Future;
 import com.mobsandgeeks.saripaar.annotation.NotEmpty;
+import com.mobsandgeeks.saripaar.annotation.Select;
 import com.squareup.otto.Subscribe;
 
 import org.json.JSONArray;
@@ -56,6 +59,7 @@ public class CreateAppointmentFragment extends Fragment implements Validator.Val
     ProgressDialog prgDialog;
     @NotEmpty
     AutoCompleteTextView patientNames;
+    @Select(message = "Select a appointment owner")
     Spinner users;
     EditText notesET;
     @NotEmpty
@@ -166,9 +170,9 @@ public class CreateAppointmentFragment extends Fragment implements Validator.Val
     public void usersGet(){
         final List<String> userList = new ArrayList<String>();
         final Interface communicatorInterface = Auth.getInterface();
-        Callback<List<PatientsDeserialiser>> callback = new Callback<List<PatientsDeserialiser>>() {
+        Callback<List<Users>> callback = new Callback<List<Users>>() {
             @Override
-            public void success(List<PatientsDeserialiser> serverResponse, Response response2) {
+            public void success(List<Users> serverResponse, Response response2) {
                 String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
                 try{
                     JSONArray jsonarray = new JSONArray(resp);
@@ -237,9 +241,13 @@ public class CreateAppointmentFragment extends Fragment implements Validator.Val
         appointmentTypeET.setText("");
         endTimeET.setText("");
         startTimeET.setText("");
-
-        //patientNames.setText("");
-        //notesTV.setText("");
+        AppointmentFragment appointmentFragment = new AppointmentFragment();
+        FragmentManager manager = getActivity().getSupportFragmentManager();
+        manager.beginTransaction()
+                .replace(R.id.rel_layout_for_frag, appointmentFragment,
+                        appointmentFragment.getTag())
+                .addToBackStack(null)
+                .commit();
     }
 
     @Subscribe

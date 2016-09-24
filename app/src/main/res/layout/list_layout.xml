@@ -8,6 +8,7 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text=""
+        android:textColor="#2E2A29"
         android:id="@+id/titleTV"
         android:layout_marginTop="10dp" />
 

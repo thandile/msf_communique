@@ -2,8 +2,10 @@ package com.example.msf.msf.Fragments.Enrollments;
 
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -233,6 +235,13 @@ public class CreateEnrollmentFragment extends Fragment implements Validator.Vali
         comment.setText("");
         enrollment_date.setText("");
         patientNames.setText("");
+        EnrollmentFragment enrollmentFragment = new EnrollmentFragment();
+        FragmentManager manager = getActivity().getSupportFragmentManager();
+        manager.beginTransaction()
+                .replace(R.id.rel_layout_for_frag, enrollmentFragment,
+                        enrollmentFragment.getTag())
+                .addToBackStack(null)
+                .commit();
     }
 
     @Subscribe

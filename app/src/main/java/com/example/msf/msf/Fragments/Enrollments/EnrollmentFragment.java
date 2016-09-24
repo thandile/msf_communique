@@ -3,6 +3,7 @@ package com.example.msf.msf.Fragments.Enrollments;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,13 +20,16 @@ import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.Deserializers.Enrollment;
 import com.example.msf.msf.API.Deserializers.Users;
 import com.example.msf.msf.API.Interface;
+import com.example.msf.msf.API.PilotsDeserializer;
 import com.example.msf.msf.Fragments.AppointmentFragments.AppointmentInfoFragment;
 import com.example.msf.msf.R;
+import com.example.msf.msf.Utils.WriteRead;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,11 +38,17 @@ import retrofit.RetrofitError;
 import retrofit.client.Response;
 import retrofit.mime.TypedByteArray;
 
-public class EnrollmentFragment extends Fragment {
+public class EnrollmentFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener{
 
     private ListView enrollmentLV;
     private final String TAG = this.getClass().getSimpleName();
+    public static String PATIENTINFOFILE = "Patients";
+    public static String PILOTINFOFILE = "Pilots";
+    private SwipeRefreshLayout swipeRefreshLayout;
+
+
     public EnrollmentFragment() {
+
         // Required empty public constructor
     }
 
@@ -48,6 +58,8 @@ public class EnrollmentFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_enrollment, container, false);
+        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
+        swipeRefreshLayout.setOnRefreshListener(this);
         enrollmentLV = (ListView) view.findViewById(R.id.enrollmentLV);
         enrollmentsGet();
         enrollmentLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -68,6 +80,11 @@ public class EnrollmentFragment extends Fragment {
         return view;
     }
 
+    public boolean fileExistance(String FILENAME){
+        File file = getContext().getFileStreamPath(FILENAME);
+        return file.exists();
+    }
+
     public void enrollmentsGet(){
         final ArrayList<Enrollment> enrollmentList = new ArrayList<Enrollment>();
         Interface communicatorInterface = Auth.getInterface();
@@ -83,8 +100,22 @@ public class EnrollmentFragment extends Fragment {
                         for (int i = 0; i < jsonarray.length(); i++) {
                             JSONObject jsonobject = jsonarray.getJSONObject(i);
                             int id = Integer.parseInt(jsonobject.getString("id"));
-                            int program = Integer.parseInt(jsonobject.getString("program"));
-                            int patient = Integer.parseInt(jsonobject.getString("patient"));
+                            String program = "";
+                            if (fileExistance(PILOTINFOFILE)) {
+
+                                program =loadPilots(Long.parseLong(jsonobject.getString("program")));
+                                Log.d(TAG, "read from storage");
+                                Log.d(TAG, "program "+program);
+
+                            }
+                            else {
+                                swipeRefreshLayout.setRefreshing(true);
+                                pilotsGet();
+                                Log.d(TAG, "False");
+                                program =loadPilots(Long.parseLong(jsonobject.getString("program")));
+                            }
+                            String patient = getPatientInfo(Long.parseLong(jsonobject.getString("patient")));
+                            Log.d(TAG, "patient "+patient);
                             String date = jsonobject.getString("date_enrolled");
                             String comment = jsonobject.getString("comment");
                             Log.d(TAG, "enrollment "+date);
@@ -97,13 +128,13 @@ public class EnrollmentFragment extends Fragment {
                         dictionary.addStringField(R.id.titleTV, new StringExtractor<Enrollment>() {
                             @Override
                             public String getStringValue(Enrollment enrollment, int position) {
-                                return ""+enrollment.getProgram();
+                                return ""+enrollment.getProgramName();
                             }
                         });
                         dictionary.addStringField(R.id.personTV, new StringExtractor<Enrollment>() {
                             @Override
                             public String getStringValue(Enrollment enrollment, int position) {
-                                return ""+enrollment.getPatient();
+                                return ""+enrollment.getPatientName();
                             }
                         });
 
@@ -142,8 +173,6 @@ public class EnrollmentFragment extends Fragment {
                                 "No recorded enrollments", Toast.LENGTH_SHORT).show();
                         //appointmentList.add("No scheduled appointments.");
                     }
-
-
                 }
                 catch (JSONException e){
                     System.out.print("unsuccessful");
@@ -161,48 +190,79 @@ public class EnrollmentFragment extends Fragment {
         communicatorInterface.getEnrollments(callback);
     }
 
-    /**public void userGet(long userID){
-        final ArrayList<Users> userList = new ArrayList<Users>();
-        final Interface communicatorInterface = Auth.getInterface();
-        Callback<Users> callback = new Callback<Users>() {
-            @Override
-            public void success(Users serverResponse, Response response2) {
-                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
-                try{
-                    Users user = new Users();
-                    JSONObject jsonObject = new JSONObject(resp);
-                    int id = Integer.parseInt(jsonObject.getString("id"));
-                    final String username = jsonObject.getString("username");
-                    user = new Users(id, username);
-                    userList.add(user);
-                    BindDictionary<Users> dictionary = new BindDictionary<>();
-                    dictionary.addStringField(R.id.personTV, new StringExtractor<Users>() {
-                        @Override
-                        public String getStringValue(Users user, int position) {
-                            return ""+user.getUsername();
-                        }
-                    });
-                    FunDapter adapter = new FunDapter(EnrollmentFragment.this.getActivity(),
-                            userList,
-                            R.layout.appointment_list_layout, dictionary);
-                    enrollmentLV.setAdapter(adapter);
-                }
-                catch (JSONException e){
-                    System.out.print("unsuccessful");
+    public String getPatientInfo(Long pid) {
+        String patients = WriteRead.read(PATIENTINFOFILE, getContext());
+        String full_name = "";
+        try {
+            JSONArray jsonarray = new JSONArray(patients);
+            for (int i = 0; i < jsonarray.length(); i++) {
+                JSONObject jsonobject = jsonarray.getJSONObject(i);
+                Log.d(TAG, "ID: " + jsonobject.getString("id"));
+                if (jsonobject.getString("id").equals(""+pid)) {
+                    //String id = jsonobject.getString("id");
+                    final String first_name = jsonobject.getString("other_names");
+                    String last_name = jsonobject.getString("last_name");
+                    full_name = first_name + " " + last_name;
+                    break;
                 }
             }
+        } catch (JSONException e) {
+            System.out.print("unsuccessful");
+        }
+        return full_name;
+    }
 
-            @Override
-            public void failure(RetrofitError error) {
-                if(error != null ){
-                    Log.e(TAG, error.getMessage());
-                    error.printStackTrace();
+    public String  loadPilots(Long pid){
+        String pilots = WriteRead.read(PILOTINFOFILE, getContext());
+        String pilot ="";
+        try {
+            JSONArray jsonarray = new JSONArray(pilots);
+            for (int i = 0; i < jsonarray.length(); i++) {
+                JSONObject jsonobject = jsonarray.getJSONObject(i);
+                if (jsonobject.getString("id").equals(""+pid)) {
+                    String id_name = jsonobject.getString("id") + ": " + jsonobject.getString("name");
+                    pilot = id_name;
                 }
             }
-        };
-        communicatorInterface.getUser(userID, callback);
-    }**/
+        }catch (JSONException e) {
+            System.out.print("unsuccessful");
+        }
+        return pilot;
 
+    }
+
+
+    public void pilotsGet(){
+        final List<String>pilotNames = new ArrayList<String>();
+            Interface communicatorInterface = Auth.getInterface();
+            Callback<List<PilotsDeserializer>> callback = new Callback<List<PilotsDeserializer>>() {
+                @Override
+                public void success(List<PilotsDeserializer> serverResponse, Response response2) {
+                    String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
+                    WriteRead.write(PILOTINFOFILE, resp, getContext());
+                    enrollmentsGet();
+                    swipeRefreshLayout.setRefreshing(false);
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+                    if (error != null) {
+                        Log.e(TAG, error.getMessage());
+                        error.printStackTrace();
+                    }
+                    swipeRefreshLayout.setRefreshing(false);
+                }
+            };
+            communicatorInterface.getPilots(callback);
+            Log.d(TAG, "read from server");
+    }
+
+
+    @Override
+    public void onRefresh() {
+        getContext().deleteFile(PILOTINFOFILE);
+        enrollmentsGet();
+    }
 
 
 

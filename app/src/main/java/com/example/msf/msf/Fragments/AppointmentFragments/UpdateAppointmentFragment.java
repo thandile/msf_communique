@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,6 +23,7 @@ import android.widget.Toast;
 import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.BusProvider;
 import com.example.msf.msf.API.Communicator;
+import com.example.msf.msf.API.Deserializers.Users;
 import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.API.PatientsDeserialiser;
@@ -287,9 +289,9 @@ public class UpdateAppointmentFragment extends Fragment implements Validator.Val
     public void usersGet(){
         final List<String> userList = new ArrayList<String>();
         final Interface communicatorInterface = Auth.getInterface();
-        Callback<List<PatientsDeserialiser>> callback = new Callback<List<PatientsDeserialiser>>() {
+        Callback<List<Users>> callback = new Callback<List<Users>>() {
             @Override
-            public void success(List<PatientsDeserialiser> serverResponse, Response response2) {
+            public void success(List<Users> serverResponse, Response response2) {
                 String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
                 try{
                     JSONArray jsonarray = new JSONArray(resp);
@@ -344,8 +346,13 @@ public class UpdateAppointmentFragment extends Fragment implements Validator.Val
         startTimeET.setText("");
         endTimeET.setText("");
         notesET.setText("");
-        //patientNames.setText("");
-        //notesTV.setText("");
+        AppointmentFragment appointmentFragment = new AppointmentFragment();
+        FragmentManager manager = getActivity().getSupportFragmentManager();
+        manager.beginTransaction()
+                .replace(R.id.rel_layout_for_frag, appointmentFragment,
+                        appointmentFragment.getTag())
+                .addToBackStack(null)
+                .commit();
     }
 
     @Subscribe

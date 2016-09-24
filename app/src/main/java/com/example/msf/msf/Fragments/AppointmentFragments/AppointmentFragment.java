@@ -4,6 +4,7 @@ package com.example.msf.msf.Fragments.AppointmentFragments;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,11 +22,13 @@ import com.example.msf.msf.API.Deserializers.Appointment;
 import com.example.msf.msf.API.Deserializers.Users;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.R;
+import com.example.msf.msf.Utils.WriteRead;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,9 +38,13 @@ import retrofit.client.Response;
 import retrofit.mime.TypedByteArray;
 
 
-public class AppointmentFragment extends Fragment {
+public class AppointmentFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener{
     private final String TAG = this.getClass().getSimpleName();
+    public static String PATIENTINFOFILE = "Patients";
+    public static String USERINFOFILE = "Users";
     ListView appointmentLV;
+    private SwipeRefreshLayout swipeRefreshLayout;
+
     public AppointmentFragment() {
         // Required empty public constructor
     }
@@ -49,6 +56,8 @@ public class AppointmentFragment extends Fragment {
 
         View view  = inflater.inflate(R.layout.fragment_appointment, container, false);
         appointmentsGet();
+        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
+        swipeRefreshLayout.setOnRefreshListener(this);
         appointmentLV = (ListView) view.findViewById(R.id.appointmentLV);
         appointmentLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -90,8 +99,15 @@ public class AppointmentFragment extends Fragment {
                             String date = jsonobject.getString("appointment_date");
                             String startTime = jsonobject.getString("start_time");
                             String endTime = jsonobject.getString("end_time");
-                            int patient = Integer.parseInt(jsonobject.getString("patient"));
-                            int owner = Integer.parseInt(jsonobject.getString("owner"));
+                            String patient = getPatientInfo(Long.parseLong(jsonobject.getString("patient")));
+                            String owner = "";
+                            if (fileExistance(USERINFOFILE)) {
+                                Log.d(TAG, "file exists");
+                                owner = loadUserFromFile(Long.parseLong(jsonobject.getString("owner")));
+                            }
+                            else {
+                                usersGet();
+                            }
                             String title = jsonobject.getString("title");
                             String notes = jsonobject.getString("notes");
 
@@ -112,7 +128,7 @@ public class AppointmentFragment extends Fragment {
                         dictionary.addStringField(R.id.personTV, new StringExtractor<Appointment>() {
                             @Override
                             public String getStringValue(Appointment appointment, int position) {
-                                return ""+appointment.getOwner();
+                                return appointment.getOwnerName();
                             }
                         });
 
@@ -151,6 +167,7 @@ public class AppointmentFragment extends Fragment {
                                 "No Scheduled appointments", Toast.LENGTH_LONG).show();
                         //appointmentList.add("No scheduled appointments.");
                     }
+                    swipeRefreshLayout.setRefreshing(false);
                    //appointmentLV.setAdapter(adapter);
                 }
                 catch (JSONException e){
@@ -169,35 +186,46 @@ public class AppointmentFragment extends Fragment {
         communicatorInterface.getAppointments(callback);
     }
 
-    public void userGet(long userID){
-        final ArrayList<Users> userList = new ArrayList<Users>();
-        final Interface communicatorInterface = Auth.getInterface();
-        Callback<Users> callback = new Callback<Users>() {
-            @Override
-            public void success(Users serverResponse, Response response2) {
-                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
-                try{
-                    Users user = new Users();
-                    JSONObject jsonObject = new JSONObject(resp);
+    public boolean fileExistance(String FILENAME){
+        File file = getContext().getFileStreamPath(FILENAME);
+        return file.exists();
+    }
+
+    public String loadUserFromFile(Long uid){
+        String user = "";
+        String users = WriteRead.read(USERINFOFILE, getContext());
+        try{
+            JSONArray jsonarray = new JSONArray(users);
+            for (int i = 0; i < jsonarray.length(); i++) {
+                JSONObject jsonObject = jsonarray.getJSONObject(i);
+                if (jsonObject.getString("id").equals("" + uid)) {
+                    Log.d(TAG, "userid"+ uid);
                     int id = Integer.parseInt(jsonObject.getString("id"));
-                    final String username = jsonObject.getString("username");
-                    user = new Users(id, username);
-                    userList.add(user);
-                    BindDictionary<Users> dictionary = new BindDictionary<>();
-                    dictionary.addStringField(R.id.personTV, new StringExtractor<Users>() {
-                        @Override
-                        public String getStringValue(Users user, int position) {
-                            return ""+user.getUsername();
-                        }
-                    });
-                    FunDapter adapter = new FunDapter(AppointmentFragment.this.getActivity(),
-                            userList,
-                            R.layout.appointment_list_layout, dictionary);
-                    appointmentLV.setAdapter(adapter);
+                    String username = jsonObject.getString("username");
+                    user = id+ ": "+ username;
+                    break;
                 }
-                catch (JSONException e){
-                    System.out.print("unsuccessful");
-                }
+            }
+        }
+        catch (JSONException e){
+            System.out.print("unsuccessful");
+        }
+        swipeRefreshLayout.setRefreshing(false);
+        Log.d(TAG, "username"+user);
+        return user;
+    }
+
+    public void usersGet(){
+        swipeRefreshLayout.setRefreshing(true);
+        final Interface communicatorInterface = Auth.getInterface();
+        Callback<List<Users>> callback = new Callback<List<Users>>() {
+            @Override
+            public void success(List<Users> serverResponse, Response response2) {
+                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
+                WriteRead.write(USERINFOFILE, resp, getContext());
+                Log.d(TAG, "read from server");
+                appointmentsGet();
+                swipeRefreshLayout.setRefreshing(false);
             }
 
             @Override
@@ -208,7 +236,34 @@ public class AppointmentFragment extends Fragment {
                 }
             }
         };
-        communicatorInterface.getUser(userID, callback);
+        communicatorInterface.getUsers(callback);
     }
 
+    public String getPatientInfo(Long pid) {
+        String patients = WriteRead.read(PATIENTINFOFILE, getContext());
+        String full_name = "";
+        try {
+            JSONArray jsonarray = new JSONArray(patients);
+            for (int i = 0; i < jsonarray.length(); i++) {
+                JSONObject jsonobject = jsonarray.getJSONObject(i);
+                Log.d(TAG, "ID: " + jsonobject.getString("id"));
+                if (jsonobject.getString("id").equals(""+pid)) {
+                    //String id = jsonobject.getString("id");
+                    final String first_name = jsonobject.getString("other_names");
+                    String last_name = jsonobject.getString("last_name");
+                    full_name = first_name + " " + last_name;
+                    break;
+                }
+            }
+        } catch (JSONException e) {
+            System.out.print("unsuccessful");
+        }
+        return full_name;
+    }
+
+    @Override
+    public void onRefresh() {
+        getContext().deleteFile(USERINFOFILE);
+        usersGet();
+    }
 }

@@ -107,9 +107,9 @@ public class TabFragment extends Fragment {
         {
             switch (position){
                 case 0 : return new PatientInfoFragment().newInstance(id);
-                case 1 : return new EnrollmentsTab();
-                case 2 : return new SessionsTab();
-                case 3 : return new AppointmentsTab();
+                case 1 : return new EnrollmentsTab().newInstance(id);
+                case 2 : return new SessionsTab().newInstance(id);
+                case 3 : return new AppointmentsTab().newInstance(id);
                 case 4 : return new AdmissionsTab();
                 case 5 : return new MedicationTab();
                 case 6 : return new MedicalRecordTab();

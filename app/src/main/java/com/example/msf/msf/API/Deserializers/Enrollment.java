@@ -11,8 +11,10 @@ public class Enrollment {
     private int id;
     @SerializedName("patient")
     private int patient;
+    private String patientName;
     @SerializedName("program")
     private int program;
+    private String programName;
     @SerializedName("date_enrolled ")
     private String date;
     @SerializedName("comment ")
@@ -42,8 +44,35 @@ public class Enrollment {
         this.comment = comment;
     }
 
+
+    public Enrollment(int id, String  patient, String  program, String comment, String date){
+        this.id = id;
+        this.patientName = patient;
+        this.programName = program;
+        this.date = date;
+        this.comment = comment;
+    }
+
+
     public Enrollment(){
 
+    }
+
+    public String getProgramName() {
+        return programName;
+    }
+
+    public void setProgramName(String programName) {
+        this.programName = programName;
+    }
+
+
+    public String getPatientName() {
+        return patientName;
+    }
+
+    public void setPatientName(String patientName) {
+        this.patientName = patientName;
     }
 
     public int getId() {

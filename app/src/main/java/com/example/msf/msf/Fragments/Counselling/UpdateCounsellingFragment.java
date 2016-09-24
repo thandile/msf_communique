@@ -5,6 +5,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -260,6 +261,13 @@ public class UpdateCounsellingFragment extends Fragment implements Validator.Val
                 Toast.LENGTH_LONG).show();
         patientNames.setText("");
         notesET.setText("");
+        CounsellingFragment counsellingFragment = new CounsellingFragment();
+        FragmentManager manager = getActivity().getSupportFragmentManager();
+        manager.beginTransaction()
+                .replace(R.id.rel_layout_for_frag, counsellingFragment,
+                        counsellingFragment.getTag())
+                .addToBackStack(null)
+                .commit();
     }
 
     @Subscribe

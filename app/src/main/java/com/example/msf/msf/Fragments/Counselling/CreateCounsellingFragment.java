@@ -4,6 +4,7 @@ package com.example.msf.msf.Fragments.Counselling;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +25,7 @@ import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.API.PatientsDeserialiser;
 import com.example.msf.msf.API.ServerEvent;
 import com.example.msf.msf.Fragments.AppointmentFragments.CreateAppointmentFragment;
+import com.example.msf.msf.Fragments.Enrollments.EnrollmentFragment;
 import com.example.msf.msf.Fragments.PatientFragments.CreatePatientFragment;
 import com.example.msf.msf.Fragments.PatientFragments.PatientFragment;
 import com.example.msf.msf.R;
@@ -176,6 +178,13 @@ public class CreateCounsellingFragment extends Fragment implements Validator.Val
                 Toast.LENGTH_LONG).show();
         patientNames.setText("");
         notesET.setText("");
+        CounsellingFragment counsellingFragment = new CounsellingFragment();
+        FragmentManager manager = getActivity().getSupportFragmentManager();
+        manager.beginTransaction()
+                .replace(R.id.rel_layout_for_frag, counsellingFragment,
+                        counsellingFragment.getTag())
+                .addToBackStack(null)
+                .commit();
     }
 
     @Subscribe

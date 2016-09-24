@@ -24,8 +24,13 @@ public class Appointment {
     private String notes;
     @SerializedName("owner")
     private int owner;
+
+
+
+    private String ownerName;
     @SerializedName("patient")
     private int patient;
+    private String patientName;
     @SerializedName("start_time")
     private String startTime;
     @SerializedName("title")
@@ -47,6 +52,18 @@ public class Appointment {
         this.notes = notes;
         this.owner = owner;
         this.patient = patient;
+        this.startTime = startTime;
+        this.title = title;
+    }
+
+    public Appointment(int id, String date, String owner, String patient,String startTime, String title,
+                       String notes, String endTime){
+        this.id = id;
+        this.date = date;
+        this.endTime = endTime;
+        this.notes = notes;
+        this.ownerName = owner;
+        this.patientName = patient;
         this.startTime = startTime;
         this.title = title;
     }
@@ -83,6 +100,22 @@ public class Appointment {
 
     public void setDate(String date) {
         this.date = date;
+    }
+
+    public String getOwnerName() {
+        return ownerName;
+    }
+
+    public void setOwnerName(String ownerName) {
+        this.ownerName = ownerName;
+    }
+
+    public String getPatientName() {
+        return patientName;
+    }
+
+    public void setPatientName(String patientName) {
+        this.patientName = patientName;
     }
 
     public int getCreatedBy() {

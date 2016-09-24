@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.msf.msf.API.Auth;
+import com.example.msf.msf.API.Deserializers.Users;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.API.PatientsDeserialiser;
 
@@ -88,9 +89,9 @@ public class LoginActivity extends AppCompatActivity {
     public void usersGet() {
         final List<String> patientList = new ArrayList<String>();
         Interface communicatorInterface = Auth.getInterface();
-        Callback<List<PatientsDeserialiser>> callback = new Callback<List<PatientsDeserialiser>>() {
+        Callback<List<Users>> callback = new Callback<List<Users>>() {
             @Override
-            public void success(List<PatientsDeserialiser> serverResponse, Response response2) {
+            public void success(List<Users> serverResponse, Response response2) {
                 navigateToHomeActivity();
                 prgDialog.hide();
             }

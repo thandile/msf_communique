@@ -82,7 +82,7 @@ public class CounsellingFragment extends Fragment implements SwipeRefreshLayout.
     }
 
     public void counsellingGet(){
-        final ArrayList<AddCounsellingResponse> appointmentList = new ArrayList<AddCounsellingResponse>();
+        final ArrayList<AddCounsellingResponse> counsellingList = new ArrayList<AddCounsellingResponse>();
         Interface communicatorInterface;
         communicatorInterface = Auth.getInterface();
         Callback<List<AddCounsellingResponse>> callback = new Callback<List<AddCounsellingResponse>>() {
@@ -104,6 +104,7 @@ public class CounsellingFragment extends Fragment implements SwipeRefreshLayout.
                                 Log.d(TAG, session);
                             }
                             else {
+                                swipeRefreshLayout.setRefreshing(true);
                                 sessionTypeGet();
                                 Log.d(TAG, "False");
                                 session = sessionTypeLoad(Long.parseLong(jsonobject.getString("counselling_session_type")));
@@ -115,14 +116,14 @@ public class CounsellingFragment extends Fragment implements SwipeRefreshLayout.
 
                             counselling = new AddCounsellingResponse(id, patient, session, notes);
                             //userGet(owner);
-                            appointmentList.add(counselling);
+                            counsellingList.add(counselling);
                         }
-                        Log.d(TAG, appointmentList.toString());
+                        Log.d(TAG, counsellingList.toString());
                         BindDictionary<AddCounsellingResponse> dictionary = new BindDictionary<>();
                         dictionary.addStringField(R.id.titleTV, new StringExtractor<AddCounsellingResponse>() {
                             @Override
                             public String getStringValue(AddCounsellingResponse counselling, int position) {
-                                return ""+counselling.getSession_type();
+                                return counselling.getSession_type();
                             }
                         });
                         dictionary.addStringField(R.id.personTV, new StringExtractor<AddCounsellingResponse>() {
@@ -132,34 +133,34 @@ public class CounsellingFragment extends Fragment implements SwipeRefreshLayout.
                             }
                         });
 
-
-                        dictionary.addStringField(R.id.idTV, new StringExtractor<AddCounsellingResponse>() {
+                        dictionary.addStringField(R.id.dateTV, new StringExtractor<AddCounsellingResponse>() {
                             @Override
                             public String getStringValue(AddCounsellingResponse counselling, int position) {
+                                Log.d(TAG, "counselling "+counselling.getId());
                                 return "ID: "+counselling.getId();
                             }
                         });
                         FunDapter adapter = new FunDapter(CounsellingFragment.this.getActivity(),
-                                appointmentList,
+                                counsellingList,
                                 R.layout.appointment_list_layout, dictionary);
                         counsellingLV.setAdapter(adapter);
                     }
                     else{
-                        BindDictionary<Appointment> dictionary = new BindDictionary<>();
-                        dictionary.addStringField(R.id.titleTV, new StringExtractor<Appointment>() {
+                        BindDictionary<AddCounsellingResponse> dictionary = new BindDictionary<>();
+                        dictionary.addStringField(R.id.titleTV, new StringExtractor<AddCounsellingResponse>() {
                             @Override
-                            public String getStringValue(Appointment appointment, int position) {
+                            public String getStringValue(AddCounsellingResponse appointment, int position) {
                                 return "No recorded counselling sessions";
                             }
                         });
 
                         FunDapter adapter = new FunDapter(CounsellingFragment.this.getActivity(),
-                                appointmentList,
+                                counsellingList,
                                 R.layout.appointment_list_layout, dictionary);
                         counsellingLV.setAdapter(adapter);
                         Toast.makeText(CounsellingFragment.this.getActivity(),
                                 "No recorded counselling sessions", Toast.LENGTH_SHORT).show();
-                        //appointmentList.add("No scheduled appointments.");
+                        //counsellingList.add("No scheduled appointments.");
                     }
                     swipeRefreshLayout.setRefreshing(false);
                     //appointmentLV.setAdapter(adapter);
@@ -216,14 +217,12 @@ public class CounsellingFragment extends Fragment implements SwipeRefreshLayout.
     private String sessionTypeLoad(Long sid) {
         String session = "";
         String sessionTypes = WriteRead.read(SESSIONTYPEFILE, getContext());
-        final List<String> sessionList = new ArrayList<String>();
         try {
             JSONArray jsonarray = new JSONArray(sessionTypes);
             for (int i = 0; i < jsonarray.length(); i++) {
                 JSONObject jsonobject = jsonarray.getJSONObject(i);
                 if (jsonobject.getString("id").equals(""+sid)) {
                     String id_name = jsonobject.getString("id") + ": " + jsonobject.getString("name");
-                    sessionList.add(id_name);
                     session = id_name;
                     break;
                 }

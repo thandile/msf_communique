@@ -2,8 +2,10 @@ package com.example.msf.msf.Fragments.Enrollments;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,6 +21,7 @@ import android.widget.Toast;
 import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.BusProvider;
 import com.example.msf.msf.API.Communicator;
+import com.example.msf.msf.API.Deserializers.Enrollment;
 import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.API.PatientsDeserialiser;
@@ -273,6 +276,7 @@ public class UpdateEnrollmentFragment extends Fragment implements Validator.Vali
     // add items into spinner dynamically
     public void addItemsOnPilotSpinner(List<String> pilots) {
         //adding to the pilot name spinner
+        pilots.add(0,"");
         ArrayAdapter<String> pilotSpinnerAdapter = new ArrayAdapter<String>(
                 UpdateEnrollmentFragment.this.getActivity(),
                 android.R.layout.simple_spinner_item, pilots);
@@ -312,6 +316,13 @@ public class UpdateEnrollmentFragment extends Fragment implements Validator.Vali
         comment.setText("");
         enrollment_date.setText("");
         patientsTV.setText("");
+        EnrollmentFragment enrollmentFragment = new EnrollmentFragment();
+        FragmentManager manager = getActivity().getSupportFragmentManager();
+        manager.beginTransaction()
+                .replace(R.id.rel_layout_for_frag, enrollmentFragment,
+                        enrollmentFragment.getTag())
+                .addToBackStack(null)
+                .commit();
     }
 
     @Subscribe

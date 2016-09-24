@@ -1,7 +1,8 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/swipe_refresh_layout"
     tools:context=".Fragments.Enrollments.EnrollmentFragment">
 
     <ListView
@@ -10,4 +11,4 @@
         android:id="@+id/enrollmentLV"
         android:layout_weight="1" />
 
-</LinearLayout>
+</android.support.v4.widget.SwipeRefreshLayout>

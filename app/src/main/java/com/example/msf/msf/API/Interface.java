@@ -47,7 +47,7 @@ public interface Interface {
                         Callback<Enrollment> serverResponseCallback);
 
     @GET("/users/")
-    void getUsers(Callback<List<PatientsDeserialiser>> serverResponseCallback);
+    void getUsers(Callback<List<Users>> serverResponseCallback);
 
     @GET("/users/{id}/")
     void getUser(@Path("id") long userID,
