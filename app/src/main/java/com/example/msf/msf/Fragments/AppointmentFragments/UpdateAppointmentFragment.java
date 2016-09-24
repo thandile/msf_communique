@@ -28,9 +28,14 @@ import com.example.msf.msf.API.PatientsDeserialiser;
 import com.example.msf.msf.API.ServerEvent;
 import com.example.msf.msf.Dialogs.DateDialog;
 import com.example.msf.msf.Dialogs.TimeDialog;
+import com.example.msf.msf.Fragments.Enrollments.CreateEnrollmentFragment;
 import com.example.msf.msf.Fragments.PatientFragments.PatientFragment;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.WriteRead;
+import com.mobsandgeeks.saripaar.ValidationError;
+import com.mobsandgeeks.saripaar.Validator;
+import com.mobsandgeeks.saripaar.annotation.Future;
+import com.mobsandgeeks.saripaar.annotation.NotEmpty;
 import com.squareup.otto.Subscribe;
 
 import org.json.JSONArray;
@@ -53,14 +58,24 @@ import retrofit.mime.TypedByteArray;
  * Use the {@link UpdateAppointmentFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class UpdateAppointmentFragment extends Fragment {
+public class UpdateAppointmentFragment extends Fragment implements Validator.ValidationListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    Validator validator;
     private static final String ARG_PARAM1 = "param1";
     private final String TAG = this.getClass().getSimpleName();
     Button submit;
-    EditText notesET, appointmentTypeET, dateET, startTimeET, endTimeET;
+    EditText notesET;
+    @NotEmpty
+    EditText appointmentTypeET;
+    @Future
+    @NotEmpty
+    EditText dateET;
+    @NotEmpty
+    EditText startTimeET;
+    EditText endTimeET;
     String notes, appointmentType, date, startTime, endTime, patient, owner;
+    @NotEmpty
     AutoCompleteTextView patientNames;
     Spinner users;
     ProgressDialog prgDialog;
@@ -103,6 +118,11 @@ public class UpdateAppointmentFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         onButtonPressed(mParam1);
+        /* Create Validator object to
+         * call the setValidationListener method of Validator class*/
+        validator = new Validator(this);
+        // Call the validation listener method.
+        validator.setValidationListener(this);
         View view = inflater.inflate(R.layout.fragment_update_appointment, container, false);
         communicator = new Communicator();
         // Instantiate Progress Dialog object
@@ -160,17 +180,7 @@ public class UpdateAppointmentFragment extends Fragment {
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                prgDialog.show();
-                appointmentType = appointmentTypeET.getText().toString();
-                owner = String.valueOf(users.getSelectedItem()).split(":")[0];
-                patient = patientNames.getText().toString().split(":")[0];
-                date = dateET.getText().toString();
-                startTime = startTimeET.getText().toString();
-                endTime = endTimeET.getText().toString();
-                notes = notesET.getText().toString();
-                communicator.appointmentUpdate(Long.parseLong(mParam1[0].split(":")[0]),
-                        appointmentType, owner,
-                        patient, date, startTime, endTime, notes);
+                validator.validate();
             }
         });
 
@@ -199,6 +209,39 @@ public class UpdateAppointmentFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onValidationSucceeded() {
+        Toast.makeText(UpdateAppointmentFragment.this.getActivity(),
+                "YASS!",
+                Toast.LENGTH_SHORT).show();
+        prgDialog.show();
+        appointmentType = appointmentTypeET.getText().toString();
+        owner = String.valueOf(users.getSelectedItem()).split(":")[0];
+        patient = patientNames.getText().toString().split(":")[0];
+        date = dateET.getText().toString();
+        startTime = startTimeET.getText().toString();
+        endTime = endTimeET.getText().toString();
+        notes = notesET.getText().toString();
+        communicator.appointmentUpdate(Long.parseLong(mParam1[0].split(":")[0]),
+                appointmentType, owner,
+                patient, date, startTime, endTime, notes);
+    }
+
+    @Override
+    public void onValidationFailed(List<ValidationError> errors) {
+        for (ValidationError error : errors) {
+            View view = error.getView();
+            String message = error.getCollatedErrorMessage(UpdateAppointmentFragment.this.getActivity());
+
+            // Display error messages ;)
+            if (view instanceof EditText) {
+                ((EditText) view).setError(message);
+            } else {
+                Toast.makeText(UpdateAppointmentFragment.this.getActivity(), message, Toast.LENGTH_LONG).show();
+            }
+        }
     }
 
     /**
@@ -256,6 +299,7 @@ public class UpdateAppointmentFragment extends Fragment {
                         String username = jsonobject.getString("username");
                         userList.add(id+": "+username);
                     }
+                    userList.add(0, "");
                     ArrayAdapter<String> adapter = new ArrayAdapter<String>(UpdateAppointmentFragment.this.getActivity(),
                             android.R.layout.simple_dropdown_item_1line, userList);
                     users.setAdapter(adapter);

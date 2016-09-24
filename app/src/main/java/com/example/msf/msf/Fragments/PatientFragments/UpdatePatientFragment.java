@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,10 +21,18 @@ import com.example.msf.msf.API.BusProvider;
 import com.example.msf.msf.API.Communicator;
 import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.ServerEvent;
+import com.example.msf.msf.Dialogs.DateDialog;
+import com.example.msf.msf.Fragments.Enrollments.CreateEnrollmentFragment;
 import com.example.msf.msf.R;
+import com.mobsandgeeks.saripaar.ValidationError;
+import com.mobsandgeeks.saripaar.Validator;
+import com.mobsandgeeks.saripaar.annotation.NotEmpty;
+import com.mobsandgeeks.saripaar.annotation.Past;
+import com.mobsandgeeks.saripaar.annotation.Select;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -33,15 +42,26 @@ import java.util.ArrayList;
  * Use the {@link UpdatePatientFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class UpdatePatientFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+public class UpdatePatientFragment extends Fragment implements Validator.ValidationListener {
+    Validator validator;
     private static final String ARG_PARAM1 = "param1";
     private final String TAG = this.getClass().getSimpleName();
     ProgressDialog prgDialog;
     Button submit;
-    EditText patient_fname, patient_sname, patient_currFacility, patient_dob, contact, outcome,
-            location, treatment_start;
+    @NotEmpty
+    EditText patient_fname;
+    @NotEmpty
+    EditText patient_sname;
+    EditText patient_currFacility;
+    @NotEmpty
+    @Past
+    EditText patient_dob;
+    EditText contact;
+    EditText outcome;
+    EditText location;
+    @Past
+    EditText treatment_start;
+    @Select(message = "Select a sex")
     Spinner sex;
     String sname, fname, curr_facility, dob, patientSex, patientLocation, tx_start, patientContact,
             interimOutcome;
@@ -93,17 +113,50 @@ public class UpdatePatientFragment extends Fragment {
         location = (EditText) view.findViewById(R.id.patient_location);
         outcome = (EditText) view.findViewById(R.id.interim_outcome);
         treatment_start = (EditText) view.findViewById(R.id.tx_start_date) ;
+        treatment_start.setOnFocusChangeListener(new View.OnFocusChangeListener(){
+            public void onFocusChange(View view, boolean hasfocus){
+                if(hasfocus){
+                    DateDialog dialog=new DateDialog(view);
+                    FragmentTransaction ft =getFragmentManager().beginTransaction();
+                    dialog.show(ft, "DatePicker");
+                }
+            }
+        });
         sex = (Spinner) view.findViewById(R.id.sexSpinner);
         ArrayList<String> sexes = new ArrayList<String>();
         sexes.add("");
         sexes.add("Female");
         sexes.add("Male");
+        /* Create Validator object to
+         * call the setValidationListener method of Validator class*/
+        validator = new Validator(this);
+        // Call the validation listener method.
+        validator.setValidationListener(this);
         ArrayAdapter<String> sessionSpinnerAdapter = new ArrayAdapter<String>(
                 UpdatePatientFragment.this.getActivity(),
                 android.R.layout.simple_spinner_item, sexes);
         sessionSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sex.setAdapter(sessionSpinnerAdapter);
         onButtonPressed(patientInfo);
+        // Instantiate Progress Dialog object
+        prgDialog = new ProgressDialog(UpdatePatientFragment.this.getActivity());
+        // Set Progress Dialog Text
+        prgDialog.setMessage("Please wait...");
+        // Set Cancelable as False
+        prgDialog.setCancelable(false);
+        fillPatientInfo();
+
+        submit = (Button) view.findViewById(R.id.submit_newPatient);
+        submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                validator.validate();
+            }
+        });
+        return view;
+    }
+
+    public void fillPatientInfo(){
         patient_fname.setText(patientInfo[0], TextView.BufferType.EDITABLE);
         patient_sname.setText(patientInfo[1], TextView.BufferType.EDITABLE);
         if (!patientInfo[3].equals("null")) {
@@ -124,37 +177,11 @@ public class UpdatePatientFragment extends Fragment {
         if (!patientInfo[7].equals("null")) {
             treatment_start.setText(patientInfo[7], TextView.BufferType.EDITABLE);
         }
-        // Instantiate Progress Dialog object
-        prgDialog = new ProgressDialog(UpdatePatientFragment.this.getActivity());
-        // Set Progress Dialog Text
-        prgDialog.setMessage("Please wait...");
-        // Set Cancelable as False
-        prgDialog.setCancelable(false);
-
-
-        submit = (Button) view.findViewById(R.id.submit_newPatient);
-        submit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                prgDialog.show();
-                fname = patient_fname.getText().toString();
-                sname = patient_sname.getText().toString();
-                curr_facility = patient_currFacility.getText().toString();
-                dob = patient_dob.getText().toString();
-                patientSex = String.valueOf(sex.getSelectedItem()).substring(0,1);
-                patientContact = contact.getText().toString();
-                patientLocation = location.getText().toString();
-                interimOutcome = outcome.getText().toString();
-                tx_start = treatment_start.getText().toString();
-
-                communicator.patientUpdate(Long.parseLong(patientInfo[4]), fname, sname,
-                        curr_facility, dob, patientSex, patientContact, patientLocation,
-                        interimOutcome, tx_start);
-            }
-        });
-
-        return view;
     }
+
+
+
+
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(String[] patientInfo) {
@@ -180,18 +207,41 @@ public class UpdatePatientFragment extends Fragment {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
+    @Override
+    public void onValidationSucceeded() {
+        prgDialog.show();
+        fname = patient_fname.getText().toString();
+        sname = patient_sname.getText().toString();
+        curr_facility = patient_currFacility.getText().toString();
+        dob = patient_dob.getText().toString();
+        patientSex = String.valueOf(sex.getSelectedItem()).substring(0,1);
+        patientContact = contact.getText().toString();
+        patientLocation = location.getText().toString();
+        interimOutcome = outcome.getText().toString();
+        tx_start = treatment_start.getText().toString();
+
+        communicator.patientUpdate(Long.parseLong(patientInfo[4]), fname, sname,
+                curr_facility, dob, patientSex, patientContact, patientLocation,
+                interimOutcome, tx_start);
+    }
+
+    @Override
+    public void onValidationFailed(List<ValidationError> errors) {
+        for (ValidationError error : errors) {
+            View view = error.getView();
+            String message = error.getCollatedErrorMessage(UpdatePatientFragment.this.getActivity());
+
+            // Display error messages ;)
+            if (view instanceof EditText) {
+                ((EditText) view).setError(message);
+            } else {
+                Toast.makeText(UpdatePatientFragment.this.getActivity(), message, Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(String[] patientInfo);
     }
 

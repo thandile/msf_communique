@@ -28,6 +28,10 @@ import com.example.msf.msf.Fragments.PatientFragments.CreatePatientFragment;
 import com.example.msf.msf.Fragments.PatientFragments.PatientFragment;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.WriteRead;
+import com.mobsandgeeks.saripaar.ValidationError;
+import com.mobsandgeeks.saripaar.Validator;
+import com.mobsandgeeks.saripaar.annotation.NotEmpty;
+import com.mobsandgeeks.saripaar.annotation.Select;
 import com.squareup.otto.Subscribe;
 
 import org.json.JSONArray;
@@ -45,11 +49,15 @@ import retrofit.mime.TypedByteArray;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class CreateCounsellingFragment extends Fragment {
+public class CreateCounsellingFragment extends Fragment implements Validator.ValidationListener {
+    Validator validator;
     private Communicator communicator;
     ProgressDialog prgDialog;
+    @NotEmpty
     AutoCompleteTextView patientNames;
+    @NotEmpty
     EditText notesET;
+    @Select(message = "Select a session type")
     Spinner sessionType;
     Button submit;
 
@@ -72,6 +80,11 @@ public class CreateCounsellingFragment extends Fragment {
         prgDialog.setMessage("Please wait...");
         // Set Cancelable as False
         prgDialog.setCancelable(false);
+        /* Create Validator object to
+         * call the setValidationListener method of Validator class*/
+        validator = new Validator(this);
+        // Call the validation listener method.
+        validator.setValidationListener(this);
         // Get a reference to the AutoCompleteTextView in the layout
         patientNames = (AutoCompleteTextView) view.findViewById(R.id.autocomplete_patients);
         sessionType = (Spinner) view.findViewById(R.id.session_spinner);
@@ -80,7 +93,12 @@ public class CreateCounsellingFragment extends Fragment {
         submit = (Button) view.findViewById(R.id.session_submit);
         patientsGet();
         sessionGet();
-        addListenerOnButton();
+        submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                validator.validate();
+            }
+        });
         return view;
     }
 
@@ -119,6 +137,7 @@ public class CreateCounsellingFragment extends Fragment {
                 String id_name =jsonobject.getString("id")+": "+jsonobject.getString("name");
                 sessionList.add(id_name);
             }
+            sessionList.add(0, "");
             addItemsOnSessionSpinner(sessionList);
         }
         catch (JSONException e){
@@ -135,21 +154,6 @@ public class CreateCounsellingFragment extends Fragment {
                 android.R.layout.simple_spinner_item, sessions);
         sessionSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sessionType.setAdapter(sessionSpinnerAdapter);
-    }
-
-    // get the selected dropdown list value
-    public void addListenerOnButton() {
-        submit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                prgDialog.show();
-                String[] patientId = patientNames.getText().toString().split(":");
-                String[] counsellingSession = String.valueOf(sessionType.getSelectedItem()).split(":");
-                String notes = notesET.getText().toString();
-                Log.d(TAG,  counsellingSession +" "+patientId);
-                communicator.counsellingPost(patientId[0], counsellingSession[0], notes);
-            }
-        });
     }
 
     @Override
@@ -181,4 +185,28 @@ public class CreateCounsellingFragment extends Fragment {
                 + errorEvent.getErrorMsg(), Toast.LENGTH_SHORT).show();
     }
 
+    @Override
+    public void onValidationSucceeded() {
+        prgDialog.show();
+        String[] patientId = patientNames.getText().toString().split(":");
+        String[] counsellingSession = String.valueOf(sessionType.getSelectedItem()).split(":");
+        String notes = notesET.getText().toString();
+        Log.d(TAG,  counsellingSession +" "+patientId);
+        communicator.counsellingPost(patientId[0], counsellingSession[0], notes);
+    }
+
+    @Override
+    public void onValidationFailed(List<ValidationError> errors) {
+        for (ValidationError error : errors) {
+            View view = error.getView();
+            String message = error.getCollatedErrorMessage(CreateCounsellingFragment.this.getActivity());
+
+            // Display error messages ;)
+            if (view instanceof EditText) {
+                ((EditText) view).setError(message);
+            } else {
+                Toast.makeText(CreateCounsellingFragment.this.getActivity(), message, Toast.LENGTH_LONG).show();
+            }
+        }
+    }
 }

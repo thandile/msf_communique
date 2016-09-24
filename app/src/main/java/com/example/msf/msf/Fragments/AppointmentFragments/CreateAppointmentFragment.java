@@ -29,6 +29,10 @@ import com.example.msf.msf.Dialogs.TimeDialog;
 import com.example.msf.msf.Fragments.PatientFragments.PatientFragment;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.WriteRead;
+import com.mobsandgeeks.saripaar.ValidationError;
+import com.mobsandgeeks.saripaar.Validator;
+import com.mobsandgeeks.saripaar.annotation.Future;
+import com.mobsandgeeks.saripaar.annotation.NotEmpty;
 import com.squareup.otto.Subscribe;
 
 import org.json.JSONArray;
@@ -44,14 +48,24 @@ import retrofit.client.Response;
 import retrofit.mime.TypedByteArray;
 
 
-public class CreateAppointmentFragment extends Fragment {
+public class CreateAppointmentFragment extends Fragment implements Validator.ValidationListener{
 
     Button submit;
+    Validator validator;
     private Communicator communicator;
     ProgressDialog prgDialog;
+    @NotEmpty
     AutoCompleteTextView patientNames;
     Spinner users;
-    EditText notesET, appointmentTypeET, dateET, startTimeET, endTimeET;
+    EditText notesET;
+    @NotEmpty
+    EditText appointmentTypeET;
+    @Future
+    @NotEmpty
+    EditText dateET;
+    @NotEmpty
+    EditText startTimeET;
+    EditText endTimeET;
 
     private final String TAG = this.getClass().getSimpleName();
 
@@ -66,8 +80,11 @@ public class CreateAppointmentFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_create_appointment, container, false);
         communicator = new Communicator();
-
-
+        /* Create Validator object to
+         * call the setValidationListener method of Validator class*/
+        validator = new Validator(this);
+        // Call the validation listener method.
+        validator.setValidationListener(this);
         // Instantiate Progress Dialog object
         prgDialog = new ProgressDialog(CreateAppointmentFragment.this.getActivity());
         // Set Progress Dialog Text
@@ -161,6 +178,7 @@ public class CreateAppointmentFragment extends Fragment {
                         String username = jsonobject.getString("username");
                         userList.add(id+": "+username);
                     }
+                    userList.add(0,"");
                     ArrayAdapter<String> adapter = new ArrayAdapter<String>(
                             CreateAppointmentFragment.this.getActivity(),
                             android.R.layout.simple_dropdown_item_1line, userList);
@@ -189,18 +207,7 @@ public class CreateAppointmentFragment extends Fragment {
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                prgDialog.show();
-
-                String[] patientId = patientNames.getText().toString().split(":");
-                String[] owner = String.valueOf(users.getSelectedItem()).split(":");
-                String notes = notesET.getText().toString();
-                String date = dateET.getText().toString();
-                String appointmentType = appointmentTypeET.getText().toString();
-                String endTime = endTimeET.getText().toString();
-                String startTime = startTimeET.getText().toString();
-                // Log.d(TAG,  counsellingSession +" "+patientId);
-                communicator.appointmentPost(patientId[0], owner[0], notes, date, appointmentType,
-                        endTime, startTime);//, counsellingSession, notes);
+                validator.validate();
             }
         });
     }
@@ -242,4 +249,34 @@ public class CreateAppointmentFragment extends Fragment {
                 errorEvent.getErrorMsg(), Toast.LENGTH_SHORT).show();
     }
 
+    @Override
+    public void onValidationSucceeded() {
+        prgDialog.show();
+
+        String[] patientId = patientNames.getText().toString().split(":");
+        String[] owner = String.valueOf(users.getSelectedItem()).split(":");
+        String notes = notesET.getText().toString();
+        String date = dateET.getText().toString();
+        String appointmentType = appointmentTypeET.getText().toString();
+        String endTime = endTimeET.getText().toString();
+        String startTime = startTimeET.getText().toString();
+        // Log.d(TAG,  counsellingSession +" "+patientId);
+        communicator.appointmentPost(patientId[0], owner[0], notes, date, appointmentType,
+                endTime, startTime);//, counsellingSession, notes);
+    }
+
+    @Override
+    public void onValidationFailed(List<ValidationError> errors) {
+        for (ValidationError error : errors) {
+            View view = error.getView();
+            String message = error.getCollatedErrorMessage(CreateAppointmentFragment.this.getActivity());
+
+            // Display error messages ;)
+            if (view instanceof EditText) {
+                ((EditText) view).setError(message);
+            } else {
+                Toast.makeText(CreateAppointmentFragment.this.getActivity(), message, Toast.LENGTH_LONG).show();
+            }
+        }
+    }
 }

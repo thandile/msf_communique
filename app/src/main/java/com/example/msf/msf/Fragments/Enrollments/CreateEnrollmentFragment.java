@@ -29,6 +29,12 @@ import com.example.msf.msf.Dialogs.DateDialog;
 import com.example.msf.msf.Fragments.PatientFragments.PatientFragment;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.WriteRead;
+import com.mobsandgeeks.saripaar.Rule;
+import com.mobsandgeeks.saripaar.ValidationError;
+import com.mobsandgeeks.saripaar.Validator;
+import com.mobsandgeeks.saripaar.annotation.Email;
+import com.mobsandgeeks.saripaar.annotation.NotEmpty;
+import com.mobsandgeeks.saripaar.annotation.Select;
 import com.squareup.otto.Subscribe;
 
 import org.json.JSONArray;
@@ -47,18 +53,21 @@ import retrofit.mime.TypedByteArray;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class CreateEnrollmentFragment extends Fragment  {
+public class CreateEnrollmentFragment extends Fragment implements Validator.ValidationListener {
     private final String TAG = this.getClass().getSimpleName();
     private Communicator communicator;
     ProgressDialog prgDialog;
+    @Select(message = "Select a pilot")
     Spinner pilotPrograms;
+    @NotEmpty
     AutoCompleteTextView patientNames;
-    EditText comment, enrollment_date;
-    AutoCompleteTextView patientsTV;
+    Validator validator;
+    @NotEmpty
+    private EditText comment;
+    @NotEmpty
+    private EditText enrollment_date;
     Button submit;
     public static String FILENAME = "Pilots";
-    DatePicker enroll_datePicker;
-    String date;
     public CreateEnrollmentFragment() {
         // Required empty public constructor
     }
@@ -76,14 +85,17 @@ public class CreateEnrollmentFragment extends Fragment  {
         // Set Cancelable as False
         prgDialog.setCancelable(false);
         // Get a reference to the AutoCompleteTextView in the layout
-        patientsTV = (AutoCompleteTextView) view.findViewById(R.id.autocomplete_patients);
         pilotPrograms = (Spinner) view.findViewById(R.id.pilotSpinner);
         patientNames = (AutoCompleteTextView) view.findViewById(R.id.autocomplete_patients);
         pilotPrograms = (Spinner) view.findViewById(R.id.pilotSpinner);
         comment = (EditText) view.findViewById(R.id.enrollmentComment);
         //EditText txtDate=(EditText)findViewById(R.id.enrollmentDate);
         enrollment_date = (EditText) view.findViewById(R.id.enrollmentDate);
-        //enroll_datePicker = (DatePicker) view.findViewById(R.id.enrollment_datePicker);
+        /* Create Validator object to
+         * call the setValidationListener method of Validator class*/
+        validator = new Validator(this);
+        // Call the validation listener method.
+        validator.setValidationListener(this);
         submit = (Button) view.findViewById(R.id.submit_enrollment);
         patientsGet();
         pilotsGet();
@@ -93,12 +105,17 @@ public class CreateEnrollmentFragment extends Fragment  {
                     DateDialog dialog=new DateDialog(view);
                     FragmentTransaction ft =getFragmentManager().beginTransaction();
                     dialog.show(ft, "DatePicker");
-
                 }
             }
 
         });
-        addListenerOnButton();
+        submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                validator.validate();
+
+            }
+        });
         return view;
     }
 
@@ -135,7 +152,7 @@ public class CreateEnrollmentFragment extends Fragment  {
                 ArrayAdapter<String> adapter = new ArrayAdapter<String>(
                         CreateEnrollmentFragment.this.getActivity(),
                         android.R.layout.simple_dropdown_item_1line, patientList);
-                patientsTV.setAdapter(adapter);
+                patientNames.setAdapter(adapter);
             }
 
     public void loadPilots(List<String>pilotNames){
@@ -185,6 +202,7 @@ public class CreateEnrollmentFragment extends Fragment  {
 
     // add items into spinner dynamically
     public void addItemsOnPilotSpinner(List<String> pilots) {
+        pilots.add(0, "");
         //adding to the pilot name spinner
         ArrayAdapter<String> pilotSpinnerAdapter = new ArrayAdapter<String>(
                 CreateEnrollmentFragment.this.getActivity(),
@@ -192,24 +210,6 @@ public class CreateEnrollmentFragment extends Fragment  {
         pilotSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         pilotPrograms.setAdapter(pilotSpinnerAdapter);
     }
-
-    // get the selected dropdown list value
-    public void addListenerOnButton() {
-        submit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                prgDialog.show();
-
-                String[] patient_id = patientNames.getText().toString().split(":");
-                String[] program = String.valueOf(pilotPrograms.getSelectedItem()).split(":");
-                String enrollment_comment = comment.getText().toString();
-                String date = enrollment_date.getText().toString();
-                Toast.makeText(CreateEnrollmentFragment.this.getActivity(), date, Toast.LENGTH_SHORT).show();
-                communicator.enrollmentPost(patient_id[0], enrollment_comment, program[0], date);
-            }
-        });
-    }
-
 
 
     @Override
@@ -240,5 +240,35 @@ public class CreateEnrollmentFragment extends Fragment  {
         prgDialog.hide();
         Toast.makeText(CreateEnrollmentFragment.this.getActivity(),
                 "" + errorEvent.getErrorMsg(), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onValidationSucceeded() {
+        Toast.makeText(CreateEnrollmentFragment.this.getActivity(),
+                "YASS!",
+                Toast.LENGTH_SHORT).show();
+        prgDialog.show();
+        String[] patient_id = patientNames.getText().toString().split(":");
+        String[] program = String.valueOf(pilotPrograms.getSelectedItem()).split(":");
+        String enrollment_comment = comment.getText().toString();
+        String date = enrollment_date.getText().toString();
+        Toast.makeText(CreateEnrollmentFragment.this.getActivity(), date, Toast.LENGTH_SHORT).show();
+        communicator.enrollmentPost(patient_id[0], enrollment_comment, program[0], date);
+        prgDialog.hide();
+    }
+
+    @Override
+    public void onValidationFailed(List<ValidationError> errors) {
+        for (ValidationError error : errors) {
+            View view = error.getView();
+            String message = error.getCollatedErrorMessage(CreateEnrollmentFragment.this.getActivity());
+
+            // Display error messages ;)
+            if (view instanceof EditText) {
+                ((EditText) view).setError(message);
+            } else {
+                Toast.makeText(CreateEnrollmentFragment.this.getActivity(), message, Toast.LENGTH_LONG).show();
+            }
+        }
     }
 }

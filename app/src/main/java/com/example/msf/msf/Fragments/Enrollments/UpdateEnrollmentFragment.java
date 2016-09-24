@@ -28,6 +28,10 @@ import com.example.msf.msf.Dialogs.DateDialog;
 import com.example.msf.msf.Fragments.PatientFragments.PatientFragment;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.WriteRead;
+import com.mobsandgeeks.saripaar.ValidationError;
+import com.mobsandgeeks.saripaar.Validator;
+import com.mobsandgeeks.saripaar.annotation.NotEmpty;
+import com.mobsandgeeks.saripaar.annotation.Select;
 import com.squareup.otto.Subscribe;
 
 import org.json.JSONArray;
@@ -50,13 +54,18 @@ import retrofit.mime.TypedByteArray;
  * Use the {@link UpdateEnrollmentFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class UpdateEnrollmentFragment extends Fragment {
+public class UpdateEnrollmentFragment extends Fragment implements Validator.ValidationListener {
     private final String TAG = this.getClass().getSimpleName();
+    Validator validator;
     private Communicator communicator;
     ProgressDialog prgDialog;
+    @Select(message = "Select a pilot")
     Spinner pilotPrograms;
-    AutoCompleteTextView patientNames;
-    EditText comment, enrollment_date;
+    @NotEmpty
+    EditText comment;
+    @NotEmpty
+    EditText enrollment_date;
+    @NotEmpty
     AutoCompleteTextView patientsTV;
     Button submit;
     private static final String ARG_PARAM1 = "param1";
@@ -106,6 +115,11 @@ public class UpdateEnrollmentFragment extends Fragment {
         // Set Cancelable as False
         prgDialog.setCancelable(false);
         // Get a reference to the AutoCompleteTextView in the layout
+        /* Create Validator object to
+         * call the setValidationListener method of Validator class*/
+        validator = new Validator(this);
+        // Call the validation listener method.
+        validator.setValidationListener(this);
         patientsTV = (AutoCompleteTextView) view.findViewById(R.id.autocomplete_patients);
         pilotPrograms = (Spinner) view.findViewById(R.id.pilotSpinner);
         comment = (EditText) view.findViewById(R.id.enrollmentComment);
@@ -153,6 +167,35 @@ public class UpdateEnrollmentFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onValidationSucceeded() {
+        Toast.makeText(UpdateEnrollmentFragment.this.getActivity(),
+                "YASS!",
+                Toast.LENGTH_SHORT).show();
+        prgDialog.show();
+        String[] patient_id = patientsTV.getText().toString().split(":");
+        String[] program = String.valueOf(pilotPrograms.getSelectedItem()).split(":");
+        String enrollment_comment = comment.getText().toString();
+        String date = enrollment_date.getText().toString();
+        communicator.enrollmentUpdate(Long.parseLong(enrollmentInfo[4]), patient_id[0],
+                enrollment_comment, program[0], date);
+    }
+
+    @Override
+    public void onValidationFailed(List<ValidationError> errors) {
+        for (ValidationError error : errors) {
+            View view = error.getView();
+            String message = error.getCollatedErrorMessage(UpdateEnrollmentFragment.this.getActivity());
+
+            // Display error messages ;)
+            if (view instanceof EditText) {
+                ((EditText) view).setError(message);
+            } else {
+                Toast.makeText(UpdateEnrollmentFragment.this.getActivity(), message, Toast.LENGTH_LONG).show();
+            }
+        }
     }
 
     /**
@@ -242,13 +285,7 @@ public class UpdateEnrollmentFragment extends Fragment {
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                prgDialog.show();
-                String[] patient_id = patientsTV.getText().toString().split(":");
-                String[] program = String.valueOf(pilotPrograms.getSelectedItem()).split(":");
-                String enrollment_comment = comment.getText().toString();
-                String date = enrollment_date.getText().toString();
-                communicator.enrollmentUpdate(Long.parseLong(enrollmentInfo[4]), patient_id[0],
-                        enrollment_comment, program[0], date);
+                validator.validate();
             }
         });
     }

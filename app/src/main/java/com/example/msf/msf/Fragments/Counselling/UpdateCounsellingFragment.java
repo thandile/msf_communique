@@ -20,9 +20,14 @@ import com.example.msf.msf.API.BusProvider;
 import com.example.msf.msf.API.Communicator;
 import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.ServerEvent;
+import com.example.msf.msf.Fragments.Enrollments.CreateEnrollmentFragment;
 import com.example.msf.msf.Fragments.PatientFragments.PatientFragment;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.WriteRead;
+import com.mobsandgeeks.saripaar.ValidationError;
+import com.mobsandgeeks.saripaar.Validator;
+import com.mobsandgeeks.saripaar.annotation.NotEmpty;
+import com.mobsandgeeks.saripaar.annotation.Select;
 import com.squareup.otto.Subscribe;
 
 import org.json.JSONArray;
@@ -40,15 +45,17 @@ import java.util.List;
  * Use the {@link UpdateCounsellingFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class UpdateCounsellingFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+public class UpdateCounsellingFragment extends Fragment implements Validator.ValidationListener  {
+
     private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    Validator validator;
     private Communicator communicator;
     ProgressDialog prgDialog;
+    @NotEmpty
     AutoCompleteTextView patientNames;
+    @NotEmpty
     EditText notesET;
+    @Select(message = "Select a session type")
     Spinner sessionType;
     Button submit;
     public static String PATIENTINFOFILE = "Patients";
@@ -106,24 +113,21 @@ public class UpdateCounsellingFragment extends Fragment {
         notesET = (EditText) view.findViewById(R.id.notesET);
         //sessionType = (Spinner) view.findViewById(R.id.session_spinner);
         submit = (Button) view.findViewById(R.id.session_submit);
-
+        /* Create Validator object to
+         * call the setValidationListener method of Validator class*/
+        validator = new Validator(this);
+        // Call the validation listener method.
+        validator.setValidationListener(this);
         patientNames.setText(counsellingInfo[2]);
         notesET.setText(counsellingInfo[1]);
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                prgDialog.show();
-                String[] patientId = patientNames.getText().toString().split(":");
-                String[] counsellingSession = String.valueOf(sessionType.getSelectedItem()).split(":");
-                String notes = notesET.getText().toString();
-                Log.d(TAG, "heyyo " + counsellingSession[0] +" "+patientId[0] + " " + notes);
-                communicator.counsellingUpdate(Long.parseLong(counsellingInfo[3]), patientId[0],
-                        counsellingSession[0], notes);
+               validator.validate();
             }
         });
         patientsGet();
         sessionGet();
-        //addListenerOnButton();
         return view;
     }
 
@@ -151,16 +155,33 @@ public class UpdateCounsellingFragment extends Fragment {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
+    @Override
+    public void onValidationSucceeded() {
+        prgDialog.show();
+        String[] patientId = patientNames.getText().toString().split(":");
+        String[] counsellingSession = String.valueOf(sessionType.getSelectedItem()).split(":");
+        String notes = notesET.getText().toString();
+        Log.d(TAG, "heyyo " + counsellingSession[0] +" "+patientId[0] + " " + notes);
+        communicator.counsellingUpdate(Long.parseLong(counsellingInfo[3]), patientId[0],
+                counsellingSession[0], notes);
+    }
+
+    @Override
+    public void onValidationFailed(List<ValidationError> errors) {
+        for (ValidationError error : errors) {
+            View view = error.getView();
+            String message = error.getCollatedErrorMessage(UpdateCounsellingFragment.this.getActivity());
+
+            // Display error messages ;)
+            if (view instanceof EditText) {
+                ((EditText) view).setError(message);
+            } else {
+                Toast.makeText(UpdateCounsellingFragment.this.getActivity(), message, Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(String[] data);
@@ -200,6 +221,7 @@ public class UpdateCounsellingFragment extends Fragment {
                 String id_name =jsonobject.getString("id")+": "+jsonobject.getString("name");
                 sessionList.add(id_name);
             }
+            sessionList.add(0, "");
             addItemsOnSessionSpinner(sessionList);
         }
         catch (JSONException e){
@@ -217,21 +239,6 @@ public class UpdateCounsellingFragment extends Fragment {
         sessionType.setAdapter(sessionSpinnerAdapter);
     }
 
-    // get the selected dropdown list value
-    public void addListenerOnButton() {
-        submit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                prgDialog.show();
-                String[] patientId = patientNames.getText().toString().split(":");
-                String[] counsellingSession = String.valueOf(sessionType.getSelectedItem()).split(":");
-                String notes = notesET.getText().toString();
-                Log.d(TAG, "heyyo" + counsellingSession[0] +" "+patientId[0]);
-                communicator.counsellingUpdate(Long.parseLong(counsellingInfo[3]), patientId[0],
-                        counsellingSession[0], notes);
-            }
-        });
-    }
 
     @Override
     public void onResume(){
