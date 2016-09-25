@@ -38,6 +38,7 @@ import com.mobsandgeeks.saripaar.ValidationError;
 import com.mobsandgeeks.saripaar.Validator;
 import com.mobsandgeeks.saripaar.annotation.Future;
 import com.mobsandgeeks.saripaar.annotation.NotEmpty;
+import com.mobsandgeeks.saripaar.annotation.Select;
 import com.squareup.otto.Subscribe;
 
 import org.json.JSONArray;
@@ -79,6 +80,7 @@ public class UpdateAppointmentFragment extends Fragment implements Validator.Val
     String notes, appointmentType, date, startTime, endTime, patient, owner;
     @NotEmpty
     AutoCompleteTextView patientNames;
+    @Select(message = "Select a appointment owner")
     Spinner users;
     ProgressDialog prgDialog;
     private Communicator communicator;

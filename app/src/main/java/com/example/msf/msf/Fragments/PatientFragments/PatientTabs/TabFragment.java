@@ -42,7 +42,7 @@ public class TabFragment extends Fragment {
      * this fragment using the provided parameters.
      *
      * @param param1 Parameter 1.
-     * @return A new instance of fragment PatientInfoFragment.
+     * @return A new instance of fragment PatientInfoTab.
      */
     // TODO: Rename and change types and number of parameters
     public static TabFragment newInstance(String param1) {
@@ -106,7 +106,7 @@ public class TabFragment extends Fragment {
         public Fragment getItem(int position)
         {
             switch (position){
-                case 0 : return new PatientInfoFragment().newInstance(id);
+                case 0 : return new PatientInfoTab().newInstance(id);
                 case 1 : return new EnrollmentsTab().newInstance(id);
                 case 2 : return new SessionsTab().newInstance(id);
                 case 3 : return new AppointmentsTab().newInstance(id);
@@ -161,7 +161,7 @@ public class TabFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof PatientInfoFragment.OnFragmentInteractionListener) {
+        if (context instanceof PatientInfoTab.OnFragmentInteractionListener) {
             mListener = (TabFragment.OnFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()

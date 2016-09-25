@@ -65,7 +65,7 @@ public class CounsellingFragment extends Fragment implements SwipeRefreshLayout.
         counsellingLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                TextView idTV = (TextView) view.findViewById(R.id.idTV);
+                TextView idTV = (TextView) view.findViewById(R.id.dateTV);
                 String id = idTV.getText().toString().split(" ")[1];
                 Log.e(TAG, id.toString());
                 CounsellingInfoFragment counsellingInfoFragment = new CounsellingInfoFragment()

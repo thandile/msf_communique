@@ -29,12 +29,12 @@ import org.json.JSONObject;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link PatientInfoFragment.OnFragmentInteractionListener} interface
+ * {@link PatientInfoTab.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link PatientInfoFragment#newInstance} factory method to
+ * Use the {@link PatientInfoTab#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class PatientInfoFragment extends Fragment {
+public class PatientInfoTab extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -49,7 +49,7 @@ public class PatientInfoFragment extends Fragment {
     public static String FILENAME = "Patients";
     private OnFragmentInteractionListener mListener;
 
-    public PatientInfoFragment() {
+    public PatientInfoTab() {
         // Required empty public constructor
     }
 
@@ -58,11 +58,11 @@ public class PatientInfoFragment extends Fragment {
      * this fragment using the provided parameters.
      *
      * @param param1 Parameter 1.
-     * @return A new instance of fragment PatientInfoFragment.
+     * @return A new instance of fragment PatientInfoTab.
      */
     // TODO: Rename and change types and number of parameters
-    public static PatientInfoFragment newInstance(String param1) {
-        PatientInfoFragment fragment = new PatientInfoFragment();
+    public static PatientInfoTab newInstance(String param1) {
+        PatientInfoTab fragment = new PatientInfoTab();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         fragment.setArguments(args);
@@ -83,7 +83,7 @@ public class PatientInfoFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_patient_info, container, false);
         // Instantiate Progress Dialog object
-        prgDialog = new ProgressDialog(PatientInfoFragment.this.getActivity());
+        prgDialog = new ProgressDialog(PatientInfoTab.this.getActivity());
         // Set Progress Dialog Text
         prgDialog.setMessage("Please wait...");
         // Set Cancelable as False
@@ -226,7 +226,7 @@ public class PatientInfoFragment extends Fragment {
     @Subscribe
     public void onServerEvent(ServerEvent serverEvent){
         prgDialog.hide();
-        Toast.makeText(PatientInfoFragment.this.getActivity(),
+        Toast.makeText(PatientInfoTab.this.getActivity(),
                 "You have successfully deleted a patient", Toast.LENGTH_LONG).show();
         first_name.setText("");
         last_name.setText("");
@@ -242,7 +242,7 @@ public class PatientInfoFragment extends Fragment {
     @Subscribe
     public void onErrorEvent(ErrorEvent errorEvent){
         //prgDialog.hide();
-        Toast.makeText(PatientInfoFragment.this.getActivity(), ""
+        Toast.makeText(PatientInfoTab.this.getActivity(), ""
                 + errorEvent.getErrorMsg(), Toast.LENGTH_LONG).show();
     }
 }

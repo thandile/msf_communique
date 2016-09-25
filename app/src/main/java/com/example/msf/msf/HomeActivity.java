@@ -28,7 +28,7 @@ import com.example.msf.msf.Fragments.Enrollments.EnrollmentInfoFragment;
 import com.example.msf.msf.Fragments.Enrollments.UpdateEnrollmentFragment;
 import com.example.msf.msf.Fragments.HomeFragment;
 import com.example.msf.msf.Fragments.PatientFragments.PatientFragment;
-import com.example.msf.msf.Fragments.PatientFragments.PatientTabs.PatientInfoFragment;
+import com.example.msf.msf.Fragments.PatientFragments.PatientTabs.PatientInfoTab;
 import com.example.msf.msf.Fragments.PatientFragments.PatientTabs.AdmissionsTab;
 import com.example.msf.msf.Fragments.PatientFragments.PatientTabs.MedicalRecordTab;
 import com.example.msf.msf.Fragments.PatientFragments.PatientTabs.MedicationTab;
@@ -39,7 +39,7 @@ public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         AppointmentInfoFragment.OnFragmentInteractionListener,
         UpdateAppointmentFragment.OnFragmentInteractionListener,
-        PatientInfoFragment.OnFragmentInteractionListener,
+        PatientInfoTab.OnFragmentInteractionListener,
         UpdatePatientFragment.OnFragmentInteractionListener,
         EnrollmentInfoFragment.OnFragmentInteractionListener,
         UpdateEnrollmentFragment.OnFragmentInteractionListener,

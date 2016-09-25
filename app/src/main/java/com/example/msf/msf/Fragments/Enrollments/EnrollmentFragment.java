@@ -228,7 +228,6 @@ public class EnrollmentFragment extends Fragment implements SwipeRefreshLayout.O
             System.out.print("unsuccessful");
         }
         return pilot;
-
     }
 
 

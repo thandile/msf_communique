@@ -21,6 +21,8 @@ public class AddCounsellingResponse {
     private String message;
     @SerializedName("response_code")
     private int responseCode;
+    @SerializedName("date_created")
+    private String date;
 
 
 
@@ -35,12 +37,13 @@ public class AddCounsellingResponse {
         this.message = message;
     }
 
-    public AddCounsellingResponse(int id, int patient, int counselling_session_type, String notes){
+    public AddCounsellingResponse(int id, int patient, String  counselling_session_type, String notes, String date){
 
         this.id = id;
         this.patient = patient;
-        this.counselling_session_type = counselling_session_type;
+        this.session_type = counselling_session_type;
         this.notes = notes;
+        this.date = date;
     }
 
     public AddCounsellingResponse(int id, String patient_name, String session_type, String notes){
@@ -86,6 +89,16 @@ public class AddCounsellingResponse {
     public void setCounselling_session_type(int program) {
         this.counselling_session_type = program;
     }
+
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
 
     public int getId() {
         return id;

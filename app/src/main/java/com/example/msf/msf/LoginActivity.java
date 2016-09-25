@@ -74,20 +74,19 @@ public class LoginActivity extends AppCompatActivity {
                 username = usernameET.getText().toString();
                 // Get Password Edit View Value
                 password = pwdET.getText().toString();
-                SharedPreferences.Editor editor = sharedpreferences.edit();
+                /**SharedPreferences.Editor editor = sharedpreferences.edit();
                 editor.putString(Username, usernameET.getText().toString());
                 editor.putString(Password, pwdET.getText().toString());
                 editor.commit();
                 String pass = sharedpreferences.getString(Password, null);
                 String uname = sharedpreferences.getString(Username, null);
-                Toast.makeText(LoginActivity.this, uname+ " " + pass,Toast.LENGTH_LONG).show();
+                Toast.makeText(LoginActivity.this, uname+ " " + pass,Toast.LENGTH_LONG).show();**/
                 usersGet();
 
             }
         });
     }
     public void usersGet() {
-        final List<String> patientList = new ArrayList<String>();
         Interface communicatorInterface = Auth.getInterface();
         Callback<List<Users>> callback = new Callback<List<Users>>() {
             @Override
