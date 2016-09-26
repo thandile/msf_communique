@@ -1,11 +1,18 @@
 package com.example.msf.msf.API;
 
+import android.widget.ListView;
+
 import com.example.msf.msf.API.Deserializers.AddCounsellingResponse;
+import com.example.msf.msf.API.Deserializers.Admission;
 import com.example.msf.msf.API.Deserializers.Enrollment;
 import com.example.msf.msf.API.Deserializers.AddPilotResponse;
 import com.example.msf.msf.API.Deserializers.Appointment;
+import com.example.msf.msf.API.Deserializers.Events;
+import com.example.msf.msf.API.Deserializers.MedicalRecord;
+import com.example.msf.msf.API.Deserializers.MedicalRecordType;
 import com.example.msf.msf.API.Deserializers.Users;
 import com.example.msf.msf.API.Deserializers.SessionDeserialiser;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
@@ -74,6 +81,33 @@ public interface Interface {
     void getAppointment(@Path("id") long appointmentID,
                         Callback<Appointment> serverResponseCallback);
 
+    @GET("/admissions/")
+    void getAdmissions(Callback<List<Admission>> serverResponseCallback);
+
+    @GET("/admissions/{id}/")
+    void getAdmission(@Path("id") long admissionID,
+                      Callback<Admission> serverResponseCallback);
+
+    @GET("/medicalReportType/")
+    void getMedicalReportTypes(Callback<List<MedicalRecordType>> serverResponseCallback);
+
+    @GET("/medicalReportType/{id}/")
+    void getMedicalReportType(@Path("id") long medicalReportTypeID,
+                              Callback<List<MedicalRecordType>> serverResponseCallback);
+
+    @GET("/medicalReport/")
+    void getMedicalReports(Callback<List<MedicalRecord>> serverResponseCallback);
+
+    @GET("/medicalReport/{id}/")
+    void getMedicalReport(@Path("id") long reportID,
+                          Callback<List<MedicalRecord>> serverResponseCallback);
+
+    @GET("/events/")
+    void getEvents(Callback<List<Events>> serverResponseCallback);
+
+    @GET("/events/{id}")
+    void getEvent(@Path("id") long eventID,
+                  Callback<Events> serverResponseCallback);
 
     @FormUrlEncoded
     @POST("/programs/")
@@ -115,6 +149,31 @@ public interface Interface {
                           @Field("end_time") String endTime,
                           @Field("start_time") String startTime,
                           Callback<Enrollment> serverResponseCallback);
+
+    @FormUrlEncoded
+    @POST("/admissions/")
+    void postAdmissions(@Field("patient") String patientID,
+                        @Field("admission_date") String admissionDate,
+                        @Field("discharge_date") String dischargeDate,
+                        @Field("health_centre") String healthCentre,
+                        @Field("notes") String notes,
+                        Callback<Admission> serverResponseCallback);
+
+    @FormUrlEncoded
+    @POST("/medicalReport/")
+    void postMedicalReport(@Field("title") String title,
+                           @Field("report_type") String reportType,
+                           @Field("patient") String patient,
+                           Callback<MedicalRecord> serverResponseCallback);
+
+    @FormUrlEncoded
+    @POST("/events/")
+    void postEvent(@Field("name") String name,
+                   @Field("description") String description,
+                   @Field("event_date") String date,
+                   @Field("start_time") String startTime,
+                   @Field("end_time") String endTime,
+                   Callback<Events> serverResponseCallback);
 
     @Multipart
     @PUT("/patients/{id}/")
@@ -158,6 +217,34 @@ public interface Interface {
                            @Part("date_enrolled") String date,
                            Callback<Enrollment> serverResponseCallback);
 
+    @Multipart
+    @PUT("/admissions/{id}/")
+    void updateAdmissions(@Path("id") long admissionID,
+                        @Part("patient") String patientID,
+                        @Part("admission_date") String admissionDate,
+                        @Part("discharge_date") String dischargeDate,
+                        @Part("health_centre") String healthCentre,
+                        @Part("notes") String notes,
+                        Callback<Admission> serverResponseCallback);
+
+    @Multipart
+    @PUT("/medicalReport/{id}/")
+    void updateMedicalReport(@Path("id") long reportID,
+                             @Part("title") String title,
+                             @Part("report_type") String reportType,
+                             @Part("patient") String patient,
+                             Callback<MedicalRecord> serverResponseCallback);
+
+    @Multipart
+    @PUT("/events/{id}/")
+    void postEvent(@Path("id") long eventID,
+                   @Part("name") String name,
+                   @Part("description") String description,
+                   @Part("event_date") String date,
+                   @Part("start_time") String startTime,
+                   @Part("end_time") String endTime,
+                   Callback<Events> serverResponseCallback);
+
     @DELETE("/patients/{id}/")
     void deletePatient(@Path("id") long patientID,
                        Callback<Users> callback);
@@ -173,4 +260,16 @@ public interface Interface {
     @DELETE("/enrollments/{id}/")
     void deleteEnrollment(@Path("id") long enrollmentID,
                           Callback<Enrollment> callback);
+
+    @DELETE("/admissions/{id}/")
+    void deleteAdmissions(@Path("id") long admissionID,
+                          Callback<Admission> serverResponseCallback);
+
+    @DELETE("/medicalReport/{id}/")
+    void deleteMedicalReport(@Path("id") long reportID,
+                             Callback<MedicalRecord> serverResponseCallback);
+
+    @DELETE("/events/{id}/")
+    void deleteEvent(@Path("id") long eventID,
+                   Callback<Events> serverResponseCallback);
 }

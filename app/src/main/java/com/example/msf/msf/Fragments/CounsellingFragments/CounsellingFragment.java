@@ -1,4 +1,4 @@
-package com.example.msf.msf.Fragments.Counselling;
+package com.example.msf.msf.Fragments.CounsellingFragments;
 
 
 import android.os.Bundle;
@@ -19,9 +19,9 @@ import com.amigold.fundapter.FunDapter;
 import com.amigold.fundapter.extractors.StringExtractor;
 import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.Deserializers.AddCounsellingResponse;
-import com.example.msf.msf.API.Deserializers.Appointment;
 import com.example.msf.msf.API.Deserializers.SessionDeserialiser;
 import com.example.msf.msf.API.Interface;
+import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.WriteRead;
 
@@ -84,7 +84,7 @@ public class CounsellingFragment extends Fragment implements SwipeRefreshLayout.
     public void counsellingGet(){
         final ArrayList<AddCounsellingResponse> counsellingList = new ArrayList<AddCounsellingResponse>();
         Interface communicatorInterface;
-        communicatorInterface = Auth.getInterface();
+        communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
         Callback<List<AddCounsellingResponse>> callback = new Callback<List<AddCounsellingResponse>>() {
             @Override
             public void success(List<AddCounsellingResponse> serverResponse, Response response2) {
@@ -118,6 +118,7 @@ public class CounsellingFragment extends Fragment implements SwipeRefreshLayout.
                             //userGet(owner);
                             counsellingList.add(counselling);
                         }
+
                         Log.d(TAG, counsellingList.toString());
                         BindDictionary<AddCounsellingResponse> dictionary = new BindDictionary<>();
                         dictionary.addStringField(R.id.titleTV, new StringExtractor<AddCounsellingResponse>() {
@@ -235,7 +236,7 @@ public class CounsellingFragment extends Fragment implements SwipeRefreshLayout.
     }
 
     public void sessionTypeGet(){
-        Interface communicatorInterface = Auth.getInterface();
+        Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
         Callback<List<SessionDeserialiser>> callback = new Callback<List<SessionDeserialiser>>() {
             @Override
             public void success(List<SessionDeserialiser> serverResponse, Response response2) {

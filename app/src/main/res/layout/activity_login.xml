@@ -65,14 +65,6 @@
             android:onClick="loginUser"
             android:text="Login"
             android:textColor="#fff" />
-
-        <CheckBox
-            android:text="Remember Password"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/checkBox"
-            android:layout_marginTop="20dp" />
-
     </LinearLayout>
 
 </ScrollView>

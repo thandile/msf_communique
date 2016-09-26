@@ -2,8 +2,6 @@ package com.example.msf.msf.Fragments.AppointmentFragments;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -20,17 +18,12 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.BusProvider;
 import com.example.msf.msf.API.Communicator;
-import com.example.msf.msf.API.Deserializers.Users;
 import com.example.msf.msf.API.ErrorEvent;
-import com.example.msf.msf.API.Interface;
-import com.example.msf.msf.API.PatientsDeserialiser;
 import com.example.msf.msf.API.ServerEvent;
 import com.example.msf.msf.Dialogs.DateDialog;
 import com.example.msf.msf.Dialogs.TimeDialog;
-import com.example.msf.msf.Fragments.Enrollments.CreateEnrollmentFragment;
 import com.example.msf.msf.Fragments.PatientFragments.PatientFragment;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.WriteRead;
@@ -48,11 +41,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
-import retrofit.mime.TypedByteArray;
-
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
@@ -66,6 +54,7 @@ public class UpdateAppointmentFragment extends Fragment implements Validator.Val
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     Validator validator;
     private static final String ARG_PARAM1 = "param1";
+    public static String USERINFOFILE = "Users";
     private final String TAG = this.getClass().getSimpleName();
     Button submit;
     EditText notesET;
@@ -76,6 +65,7 @@ public class UpdateAppointmentFragment extends Fragment implements Validator.Val
     EditText dateET;
     @NotEmpty
     EditText startTimeET;
+    @NotEmpty
     EditText endTimeET;
     String notes, appointmentType, date, startTime, endTime, patient, owner;
     @NotEmpty
@@ -217,9 +207,9 @@ public class UpdateAppointmentFragment extends Fragment implements Validator.Val
 
     @Override
     public void onValidationSucceeded() {
-        Toast.makeText(UpdateAppointmentFragment.this.getActivity(),
-                "YASS!",
-                Toast.LENGTH_SHORT).show();
+        //Toast.makeText(UpdateAppointmentFragment.this.getActivity(),
+                //"YASS!",
+               // Toast.LENGTH_SHORT).show();
         prgDialog.show();
         appointmentType = appointmentTypeET.getText().toString();
         owner = String.valueOf(users.getSelectedItem()).split(":")[0];
@@ -290,39 +280,38 @@ public class UpdateAppointmentFragment extends Fragment implements Validator.Val
 
     public void usersGet(){
         final List<String> userList = new ArrayList<String>();
-        final Interface communicatorInterface = Auth.getInterface();
-        Callback<List<Users>> callback = new Callback<List<Users>>() {
-            @Override
-            public void success(List<Users> serverResponse, Response response2) {
-                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
-                try{
-                    JSONArray jsonarray = new JSONArray(resp);
-                    for (int i = 0; i < jsonarray.length(); i++) {
-                        JSONObject jsonobject = jsonarray.getJSONObject(i);
-                        String id = jsonobject.getString("id");
-                        String username = jsonobject.getString("username");
-                        userList.add(id+": "+username);
-                    }
-                    userList.add(0, "");
-                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(UpdateAppointmentFragment.this.getActivity(),
-                            android.R.layout.simple_dropdown_item_1line, userList);
-                    users.setAdapter(adapter);
+        String users = WriteRead.read(USERINFOFILE, getContext());
+        try{
+            JSONArray jsonarray = new JSONArray(users);
+            for (int i = 0; i < jsonarray.length(); i++)
+            {
+                JSONObject jsonobject = jsonarray.getJSONObject(i);
+
+                String id = jsonobject.getString("id");
+                String username = jsonobject.getString("username");
+                userList.add(id+": "+username);
+            }
+            userList.add(0,"");
+            addItemsOnUserSpinner(userList);
+
+
                 }
                 catch (JSONException e){
                     System.out.print("unsuccessful");
                 }
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                if(error != null ){
-                    Log.e(TAG, error.getMessage());
-                    error.printStackTrace();
-                }
-            }
-        };
-        communicatorInterface.getUsers(callback);
     }
+
+    // add items into spinner dynamically
+    public void addItemsOnUserSpinner(List<String> sessions) {
+        //adding to the pilot name spinner
+        ArrayAdapter<String> sessionSpinnerAdapter = new ArrayAdapter<String>(
+                UpdateAppointmentFragment.this.getActivity(),
+                android.R.layout.simple_spinner_item, sessions);
+        sessionSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        users.setAdapter(sessionSpinnerAdapter);
+    }
+
+
 
     @Override
     public void onResume(){

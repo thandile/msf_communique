@@ -1,7 +1,6 @@
-package com.example.msf.msf.Fragments.Counselling;
+package com.example.msf.msf.Fragments.CounsellingFragments;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -13,21 +12,15 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.amigold.fundapter.BindDictionary;
-import com.amigold.fundapter.FunDapter;
-import com.amigold.fundapter.extractors.StringExtractor;
 import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.BusProvider;
 import com.example.msf.msf.API.Communicator;
 import com.example.msf.msf.API.Deserializers.AddCounsellingResponse;
-import com.example.msf.msf.API.Deserializers.Appointment;
-import com.example.msf.msf.API.Deserializers.SessionDeserialiser;
 import com.example.msf.msf.API.Deserializers.Users;
 import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.API.ServerEvent;
-import com.example.msf.msf.Fragments.AppointmentFragments.AppointmentInfoFragment;
-import com.example.msf.msf.Fragments.AppointmentFragments.UpdateAppointmentFragment;
+import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.WriteRead;
 import com.squareup.otto.Subscribe;
@@ -155,7 +148,7 @@ public class CounsellingInfoFragment extends Fragment {
 
     public void sessionGet(long sessionID){
         Interface communicatorInterface;
-        communicatorInterface = Auth.getInterface();
+        communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
         Callback<AddCounsellingResponse> callback = new Callback<AddCounsellingResponse>() {
             @Override
             public void success(AddCounsellingResponse serverResponse, Response response2) {
@@ -183,7 +176,7 @@ public class CounsellingInfoFragment extends Fragment {
     }
 
     public void patientGet(long patientID){
-        Interface communicatorInterface = Auth.getInterface();
+        Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
         Callback<Users> callback = new Callback<Users>() {
             @Override
             public void success(Users serverResponse, Response response2) {

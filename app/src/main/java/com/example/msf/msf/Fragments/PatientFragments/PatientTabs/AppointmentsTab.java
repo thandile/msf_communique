@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.amigold.fundapter.BindDictionary;
@@ -20,6 +21,7 @@ import com.example.msf.msf.API.Deserializers.Appointment;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.Fragments.AppointmentFragments.AppointmentFragment;
 import com.example.msf.msf.Fragments.AppointmentFragments.CreateAppointmentFragment;
+import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.WriteRead;
 
@@ -124,7 +126,7 @@ public class AppointmentsTab extends Fragment {
     public void appointmentsGet(){
         final ArrayList<Appointment> appointmentList = new ArrayList<Appointment>();
         Interface communicatorInterface;
-        communicatorInterface = Auth.getInterface();
+        communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
         Callback<List<Appointment>> callback = new Callback<List<Appointment>>() {
             @Override
             public void success(List<Appointment> serverResponse, Response response2) {
@@ -132,7 +134,6 @@ public class AppointmentsTab extends Fragment {
                 try{
                     Appointment appointment = new Appointment();
                     JSONArray jsonarray = new JSONArray(resp);
-                    if (jsonarray.length()>0) {
                         for (int i = 0; i < jsonarray.length(); i++) {
                             JSONObject jsonobject = jsonarray.getJSONObject(i);
                             if(jsonobject.getString("patient").equals(id)) {
@@ -152,6 +153,7 @@ public class AppointmentsTab extends Fragment {
                                 appointmentList.add(appointment);
                             }
                         }
+                    if (appointmentList.size()>0) {
                         Log.d(TAG, appointmentList.toString());
                         BindDictionary<Appointment> dictionary = new BindDictionary<>();
                         dictionary.addStringField(R.id.titleTV, new StringExtractor<Appointment>() {
@@ -163,7 +165,7 @@ public class AppointmentsTab extends Fragment {
                         dictionary.addStringField(R.id.descriptionTV, new StringExtractor<Appointment>() {
                             @Override
                             public String getStringValue(Appointment appointment, int position) {
-                                return appointment.getOwnerName();
+                                return "Owner: " +appointment.getOwnerName();
                             }
                         });
 
@@ -174,32 +176,22 @@ public class AppointmentsTab extends Fragment {
                             }
                         });
 
-                       /** dictionary.addStringField(R.id.idTV, new StringExtractor<Appointment>() {
+                        dictionary.addStringField(R.id.patientTV, new StringExtractor<Appointment>() {
                             @Override
                             public String getStringValue(Appointment appointment, int position) {
-                                return "ID: "+appointment.getId();
+                                return "Patient: "+appointment.getPatientName();
                             }
-                        });**/
+                        });
                         FunDapter adapter = new FunDapter(AppointmentsTab.this.getActivity(),
                                 appointmentList,
-                                R.layout.tabs_list_layout, dictionary);
+                                R.layout.appointment_layout, dictionary);
                         appointmentLV.setAdapter(adapter);
                     }
                     else{
-                        BindDictionary<Appointment> dictionary = new BindDictionary<>();
-                        dictionary.addStringField(R.id.titleTV, new StringExtractor<Appointment>() {
-                            @Override
-                            public String getStringValue(Appointment appointment, int position) {
-                                return "No Scheduled appointments";
-                            }
-                        });
-
-                        FunDapter adapter = new FunDapter(AppointmentsTab.this.getActivity(),
-                                appointmentList,
-                                R.layout.tabs_list_layout, dictionary);
-                        appointmentLV.setAdapter(adapter);
-                        Toast.makeText(AppointmentsTab.this.getActivity(),
-                                "No Scheduled appointments", Toast.LENGTH_LONG).show();
+                        TextView text = (TextView) getView().findViewById(R.id.defaultText);
+                        text.setText("No Scheduled appointments");
+                        //Toast.makeText(AppointmentsTab.this.getActivity(),
+                               // "No Scheduled appointments", Toast.LENGTH_LONG).show();
                         //appointmentList.add("No scheduled appointments.");
                     }
                     //appointmentLV.setAdapter(adapter);

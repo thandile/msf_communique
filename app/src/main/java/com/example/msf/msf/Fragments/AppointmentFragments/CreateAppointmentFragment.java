@@ -29,6 +29,7 @@ import com.example.msf.msf.API.ServerEvent;
 import com.example.msf.msf.Dialogs.DateDialog;
 import com.example.msf.msf.Dialogs.TimeDialog;
 import com.example.msf.msf.Fragments.PatientFragments.PatientFragment;
+import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.WriteRead;
 import com.mobsandgeeks.saripaar.ValidationError;
@@ -69,8 +70,9 @@ public class CreateAppointmentFragment extends Fragment implements Validator.Val
     EditText dateET;
     @NotEmpty
     EditText startTimeET;
+    @NotEmpty
     EditText endTimeET;
-
+    public static String USERINFOFILE = "Users";
     private final String TAG = this.getClass().getSimpleName();
 
     public CreateAppointmentFragment() {
@@ -169,39 +171,35 @@ public class CreateAppointmentFragment extends Fragment implements Validator.Val
 
     public void usersGet(){
         final List<String> userList = new ArrayList<String>();
-        final Interface communicatorInterface = Auth.getInterface();
-        Callback<List<Users>> callback = new Callback<List<Users>>() {
-            @Override
-            public void success(List<Users> serverResponse, Response response2) {
-                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
-                try{
-                    JSONArray jsonarray = new JSONArray(resp);
-                    for (int i = 0; i < jsonarray.length(); i++) {
-                        JSONObject jsonobject = jsonarray.getJSONObject(i);
-                        String id = jsonobject.getString("id");
-                        String username = jsonobject.getString("username");
-                        userList.add(id+": "+username);
-                    }
-                    userList.add(0,"");
-                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-                            CreateAppointmentFragment.this.getActivity(),
-                            android.R.layout.simple_dropdown_item_1line, userList);
-                    users.setAdapter(adapter);
-                }
-                catch (JSONException e){
-                    System.out.print("unsuccessful");
-                }
-            }
+        String users = WriteRead.read(USERINFOFILE, getContext());
+        try{
+            JSONArray jsonarray = new JSONArray(users);
+            for (int i = 0; i < jsonarray.length(); i++)
+            {
+                JSONObject jsonobject = jsonarray.getJSONObject(i);
 
-            @Override
-            public void failure(RetrofitError error) {
-                if(error != null ){
-                    Log.e(TAG, error.getMessage());
-                    error.printStackTrace();
-                }
+                String id = jsonobject.getString("id");
+                String username = jsonobject.getString("username");
+                userList.add(id+": "+username);
             }
-        };
-        communicatorInterface.getUsers(callback);
+            userList.add(0,"");
+            addItemsOnUserSpinner(userList);
+
+
+        }
+        catch (JSONException e){
+            System.out.print("unsuccessful");
+        }
+    }
+
+    // add items into spinner dynamically
+    public void addItemsOnUserSpinner(List<String> sessions) {
+        //adding to the pilot name spinner
+        ArrayAdapter<String> sessionSpinnerAdapter = new ArrayAdapter<String>(
+                CreateAppointmentFragment.this.getActivity(),
+                android.R.layout.simple_spinner_item, sessions);
+        sessionSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        users.setAdapter(sessionSpinnerAdapter);
     }
 
 

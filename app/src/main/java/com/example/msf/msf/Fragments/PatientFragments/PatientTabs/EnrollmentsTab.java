@@ -10,7 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import com.amigold.fundapter.BindDictionary;
 import com.amigold.fundapter.FunDapter;
@@ -18,7 +18,8 @@ import com.amigold.fundapter.extractors.StringExtractor;
 import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.Deserializers.Enrollment;
 import com.example.msf.msf.API.Interface;
-import com.example.msf.msf.Fragments.Enrollments.CreateEnrollmentFragment;
+import com.example.msf.msf.Fragments.EnrollmentsFragments.CreateEnrollmentFragment;
+import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.WriteRead;
 
@@ -73,6 +74,7 @@ public class EnrollmentsTab extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_tab_enrollment, container, false);
         getPatientInfo();
+        enrollmentsGet();
         enrollmentLV = (ListView) view.findViewById(R.id.enrollmentsLV);
         fab = (FloatingActionButton) view.findViewById(R.id.btnFloatingAction);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -85,9 +87,10 @@ public class EnrollmentsTab extends Fragment {
                                 createEnrollmentFragment.getTag())
                         .addToBackStack(null)
                         .commit();
+
             }
         });
-        enrollmentsGet();
+
         return view;
     }
 
@@ -159,7 +162,7 @@ public class EnrollmentsTab extends Fragment {
 
     public void enrollmentsGet(){
         final ArrayList<Enrollment> enrollmentList = new ArrayList<Enrollment>();
-        Interface communicatorInterface = Auth.getInterface();
+        Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
         Callback<List<Enrollment>> callback = new Callback<List<Enrollment>>() {
             @Override
             public void success(List<Enrollment> serverResponse, Response response2) {
@@ -167,7 +170,6 @@ public class EnrollmentsTab extends Fragment {
                 try{
                     Enrollment enrollment = new Enrollment();
                     JSONArray jsonarray = new JSONArray(resp);
-                    if (jsonarray.length()>0) {
                         Log.d(TAG, jsonarray.toString());
                         for (int i = 0; i < jsonarray.length(); i++) {
                             JSONObject jsonobject = jsonarray.getJSONObject(i);
@@ -191,7 +193,7 @@ public class EnrollmentsTab extends Fragment {
                                 }
                             }
                         }
-
+                    if (enrollmentList.size()>0) {
                         //Log.d(TAG, "enrollment "+enrollmentList.toString());
                         BindDictionary<Enrollment> dictionary = new BindDictionary<>();
                         dictionary.addStringField(R.id.titleTV, new StringExtractor<Enrollment>() {
@@ -226,7 +228,9 @@ public class EnrollmentsTab extends Fragment {
                         enrollmentLV.setAdapter(adapter);
                     }
                     else{
-                        BindDictionary<Enrollment> dictionary = new BindDictionary<>();
+                        TextView text = (TextView) getView().findViewById(R.id.defaultText);
+                        text.setText("No recorded enrollments");
+                       /** BindDictionary<Enrollment> dictionary = new BindDictionary<>();
                         dictionary.addStringField(R.id.titleTV, new StringExtractor<Enrollment>() {
                             @Override
                             public String getStringValue(Enrollment enrollment, int position) {
@@ -240,7 +244,7 @@ public class EnrollmentsTab extends Fragment {
                         enrollmentLV.setAdapter(adapter);
                         Toast.makeText(EnrollmentsTab.this.getActivity(),
                                 "No recorded enrollments", Toast.LENGTH_SHORT).show();
-                        //appointmentList.add("No scheduled appointments.");
+                        //appointmentList.add("No scheduled appointments.");**/
                     }
                 }
                 catch (JSONException e){
@@ -267,7 +271,7 @@ public class EnrollmentsTab extends Fragment {
             for (int i = 0; i < jsonarray.length(); i++) {
                 JSONObject jsonobject = jsonarray.getJSONObject(i);
                 if (jsonobject.getString("id").equals(""+pid)) {
-                    String id_name = jsonobject.getString("id") + ": " + jsonobject.getString("name");
+                    String id_name =  jsonobject.getString("name");
                     pilot = id_name;
                 }
             }

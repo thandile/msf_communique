@@ -10,7 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import com.amigold.fundapter.BindDictionary;
 import com.amigold.fundapter.FunDapter;
@@ -18,8 +18,8 @@ import com.amigold.fundapter.extractors.StringExtractor;
 import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.Deserializers.AddCounsellingResponse;
 import com.example.msf.msf.API.Interface;
-import com.example.msf.msf.Fragments.Counselling.CounsellingFragment;
-import com.example.msf.msf.Fragments.Counselling.CreateCounsellingFragment;
+import com.example.msf.msf.Fragments.CounsellingFragments.CreateCounsellingFragment;
+import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.WriteRead;
 
@@ -122,7 +122,7 @@ public class SessionsTab extends Fragment {
     public void counsellingGet() {
         final ArrayList<AddCounsellingResponse> counsellingList = new ArrayList<AddCounsellingResponse>();
         Interface communicatorInterface;
-        communicatorInterface = Auth.getInterface();
+        communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
         Callback<List<AddCounsellingResponse>> callback = new Callback<List<AddCounsellingResponse>>() {
             @Override
             public void success(List<AddCounsellingResponse> serverResponse, Response response2) {
@@ -130,7 +130,6 @@ public class SessionsTab extends Fragment {
                 try {
                     AddCounsellingResponse counselling = new AddCounsellingResponse();
                     JSONArray jsonarray = new JSONArray(resp);
-                    if (jsonarray.length() > 0) {
                         for (int i = 0; i < jsonarray.length(); i++) {
                             JSONObject jsonobject = jsonarray.getJSONObject(i);
                             if (jsonobject.getString("patient").equals(id)) {
@@ -148,6 +147,7 @@ public class SessionsTab extends Fragment {
                                 counsellingList.add(counselling);
                             }
                         }
+                    if (counsellingList.size() > 0) {
                         Log.d(TAG, counsellingList.toString());
                         BindDictionary<AddCounsellingResponse> dictionary = new BindDictionary<>();
                         dictionary.addStringField(R.id.titleTV, new StringExtractor<AddCounsellingResponse>() {
@@ -175,7 +175,10 @@ public class SessionsTab extends Fragment {
                                 R.layout.tabs_list_layout, dictionary);
                         counsellingLV.setAdapter(adapter);
                     } else {
-                        BindDictionary<AddCounsellingResponse> dictionary = new BindDictionary<>();
+
+                        TextView text = (TextView) getView().findViewById(R.id.defaultText);
+                        text.setText("No recorded counselling sessions");
+                       /** BindDictionary<AddCounsellingResponse> dictionary = new BindDictionary<>();
                         dictionary.addStringField(R.id.titleTV, new StringExtractor<AddCounsellingResponse>() {
                             @Override
                             public String getStringValue(AddCounsellingResponse appointment, int position) {
@@ -189,7 +192,7 @@ public class SessionsTab extends Fragment {
                         counsellingLV.setAdapter(adapter);
                         Toast.makeText(SessionsTab.this.getActivity(),
                                 "No recorded counselling sessions", Toast.LENGTH_SHORT).show();
-                        //counsellingList.add("No scheduled appointments.");
+                        //counsellingList.add("No scheduled appointments.");**/
                     }
                     //appointmentLV.setAdapter(adapter);
                 } catch (JSONException e) {
@@ -238,7 +241,7 @@ public class SessionsTab extends Fragment {
             for (int i = 0; i < jsonarray.length(); i++) {
                 JSONObject jsonobject = jsonarray.getJSONObject(i);
                 if (jsonobject.getString("id").equals(""+sid)) {
-                    String id_name = jsonobject.getString("id") + ": " + jsonobject.getString("name");
+                    String id_name = jsonobject.getString("name");
                     session = id_name;
                     break;
                 }

@@ -4,6 +4,7 @@ import android.util.Log;
 import com.example.msf.msf.API.Deserializers.Users;
 import com.example.msf.msf.API.Deserializers.*;
 //import com.example.msf.msf.HomeActivity;
+import com.example.msf.msf.LoginActivity;
 import com.squareup.otto.Produce;
 
 import org.json.JSONArray;
@@ -31,7 +32,7 @@ public class Communicator {
 
 
     public void patientPost(String firstName, String lastName, String facility, String dob, String sex){
-        Interface communicatorInterface = Auth.getInterface();
+        Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
         Callback<Users> callback = new Callback<Users>() {
 
             @Override
@@ -58,7 +59,7 @@ public class Communicator {
 
 
     public List<String> pilotsGet(){
-        Interface communicatorInterface = Auth.getInterface();
+        Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
         Callback<List<PilotsDeserializer>> callback = new Callback<List<PilotsDeserializer>>() {
             @Override
             public void success(List<PilotsDeserializer> serverResponse, Response response2) {
@@ -92,7 +93,7 @@ public class Communicator {
 
 
     public List<String> patientsGet(){
-        Interface communicatorInterface = Auth.getInterface();
+        Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
         Callback<List<PatientsDeserialiser>> callback = new Callback<List<PatientsDeserialiser>>() {
             @Override
             public void success(List<PatientsDeserialiser> serverResponse, Response response2) {
@@ -128,7 +129,7 @@ public class Communicator {
 
 
     public void pilotPost(String program, String description){
-        Interface communicatorInterface = Auth.getInterface();
+        Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
         Callback<AddPilotResponse> callback = new Callback<AddPilotResponse>() {
 
             @Override
@@ -154,7 +155,7 @@ public class Communicator {
     }
 
     public void enrollmentPost(String patient, String comment, String program, String date){
-        Interface communicatorInterface = Auth.getInterface();
+        Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
         Callback<Enrollment> callback = new Callback<Enrollment>() {
 
             @Override
@@ -181,7 +182,7 @@ public class Communicator {
 
     public void appointmentPost(String patientId, String owner, String notes, String date,
                                 String appointmentType, String endTime, String startTime){
-        Interface communicatorInterface = Auth.getInterface();
+        Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
         Callback<Enrollment> callback = new Callback<Enrollment>() {
 
             @Override
@@ -209,7 +210,7 @@ public class Communicator {
 
 
     public void counsellingPost(String patient, String sessionType, String notes){
-        Interface communicatorInterface = Auth.getInterface();
+        Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
         Callback<AddCounsellingResponse> callback = new Callback<AddCounsellingResponse>() {
 
             @Override
@@ -238,7 +239,7 @@ public class Communicator {
     public void patientUpdate(long id, String firstName, String lastName, String facility, String dob,
                               String sex, String contact, String location, String outcome,
                               String txStart){
-        Interface communicatorInterface = Auth.getInterface();
+        Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
         Callback<Users> callback = new Callback<Users>() {
 
             @Override
@@ -266,7 +267,7 @@ public class Communicator {
 
 
     public void patientDelete(final long patientId){
-        Interface communicatorInterface = Auth.getInterface();
+        Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
         Callback<Users> callback = new Callback<Users>() {
             @Override
             public void success(Users serverResponse, Response response2) {
@@ -292,7 +293,7 @@ public class Communicator {
     }
 
     public void appointmentDelete(final long appointmentID){
-        Interface communicatorInterface = Auth.getInterface();
+        Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
         Callback<Appointment> callback = new Callback<Appointment>() {
             @Override
             public void success(Appointment serverResponse, Response response2) {
@@ -321,7 +322,7 @@ public class Communicator {
     public void appointmentUpdate(long appointmentID, String appointmentType, String owner,
                                   String patientId, String date, String startTime, String endTime,
                                   String notes){
-        Interface communicatorInterface = Auth.getInterface();
+        Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
         Callback<Appointment> callback = new Callback<Appointment>() {
 
             @Override
@@ -348,7 +349,7 @@ public class Communicator {
     }
 
     public void enrollmentDelete(final long enrollmentID){
-        Interface communicatorInterface = Auth.getInterface();
+        Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
         Callback<Enrollment> callback = new Callback<Enrollment>() {
             @Override
             public void success(Enrollment serverResponse, Response response2) {
@@ -375,7 +376,7 @@ public class Communicator {
 
     public void enrollmentUpdate(long enrollmentID, String patient, String comment,
                                   String program, String date){
-        Interface communicatorInterface = Auth.getInterface();
+        Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
         Callback<Enrollment> callback = new Callback<Enrollment>() {
 
             @Override
@@ -401,7 +402,7 @@ public class Communicator {
     }
 
     public void counsellingDelete(final long counsellingID){
-        Interface communicatorInterface = Auth.getInterface();
+        Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
         Callback<AddCounsellingResponse> callback = new Callback<AddCounsellingResponse>() {
             @Override
             public void success(AddCounsellingResponse serverResponse, Response response2) {
@@ -428,7 +429,7 @@ public class Communicator {
 
     public void counsellingUpdate(long counsellingID, String  patient, String  sessionType,
                                   String notes){
-        Interface communicatorInterface = Auth.getInterface();
+        Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
         Callback<AddCounsellingResponse> callback = new Callback<AddCounsellingResponse>() {
 
             @Override

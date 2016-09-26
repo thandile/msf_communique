@@ -21,6 +21,7 @@ import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.Deserializers.Appointment;
 import com.example.msf.msf.API.Deserializers.Users;
 import com.example.msf.msf.API.Interface;
+import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.WriteRead;
 
@@ -62,7 +63,6 @@ public class AppointmentFragment extends Fragment implements SwipeRefreshLayout.
         appointmentLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-
                 TextView idTV = (TextView) view.findViewById(R.id.idTV);
                 String id = idTV.getText().toString().split(" ")[1];
                 Log.e(TAG, id.toString());
@@ -84,7 +84,7 @@ public class AppointmentFragment extends Fragment implements SwipeRefreshLayout.
     public void appointmentsGet(){
         final ArrayList<Appointment> appointmentList = new ArrayList<Appointment>();
         Interface communicatorInterface;
-        communicatorInterface = Auth.getInterface();
+        communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
         Callback<List<Appointment>> callback = new Callback<List<Appointment>>() {
             @Override
             public void success(List<Appointment> serverResponse, Response response2) {
@@ -117,6 +117,7 @@ public class AppointmentFragment extends Fragment implements SwipeRefreshLayout.
                             appointmentList.add(appointment);
 
                         }
+
                         Log.d(TAG, appointmentList.toString());
                         BindDictionary<Appointment> dictionary = new BindDictionary<>();
                         dictionary.addStringField(R.id.titleTV, new StringExtractor<Appointment>() {
@@ -128,7 +129,7 @@ public class AppointmentFragment extends Fragment implements SwipeRefreshLayout.
                         dictionary.addStringField(R.id.personTV, new StringExtractor<Appointment>() {
                             @Override
                             public String getStringValue(Appointment appointment, int position) {
-                                return appointment.getOwnerName();
+                                return "Owner: "+appointment.getOwnerName();
                             }
                         });
 
@@ -202,7 +203,7 @@ public class AppointmentFragment extends Fragment implements SwipeRefreshLayout.
                     Log.d(TAG, "userid"+ uid);
                     int id = Integer.parseInt(jsonObject.getString("id"));
                     String username = jsonObject.getString("username");
-                    user = id+ ": "+ username;
+                    user =  username;
                     break;
                 }
             }
@@ -217,7 +218,7 @@ public class AppointmentFragment extends Fragment implements SwipeRefreshLayout.
 
     public void usersGet(){
         swipeRefreshLayout.setRefreshing(true);
-        final Interface communicatorInterface = Auth.getInterface();
+        final Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
         Callback<List<Users>> callback = new Callback<List<Users>>() {
             @Override
             public void success(List<Users> serverResponse, Response response2) {

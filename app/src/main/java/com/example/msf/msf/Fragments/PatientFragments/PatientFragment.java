@@ -1,6 +1,5 @@
 package com.example.msf.msf.Fragments.PatientFragments;
 
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -16,17 +15,16 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import com.amigold.fundapter.BindDictionary;
-import com.amigold.fundapter.FunDapter;
-import com.amigold.fundapter.extractors.StringExtractor;
 import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.Deserializers.Patients;
+import com.example.msf.msf.API.Deserializers.SessionDeserialiser;
+import com.example.msf.msf.API.Deserializers.Users;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.API.PatientsDeserialiser;
+import com.example.msf.msf.API.PilotsDeserializer;
 import com.example.msf.msf.Fragments.PatientFragments.PatientTabs.TabFragment;
+import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.WriteRead;
 
@@ -50,6 +48,9 @@ public class PatientFragment extends Fragment implements SwipeRefreshLayout.OnRe
     private final String TAG = this.getClass().getSimpleName();
     ListView patientLv;
     public static String FILENAME = "Patients";
+    public static String PILOTINFOFILE = "Pilots";
+    public static String SESSIONTYPEFILE = "SessionType";
+    public static String USERINFOFILE = "Users";
     private SwipeRefreshLayout swipeRefreshLayout;
     ArrayAdapter<String> adapter;
 
@@ -93,6 +94,12 @@ public class PatientFragment extends Fragment implements SwipeRefreshLayout.OnRe
     public void onRefresh() {
         getContext().deleteFile(FILENAME);
         patientsGet();
+        getContext().deleteFile(SESSIONTYPEFILE);
+        sessionTypeGet();
+        getContext().deleteFile(PILOTINFOFILE);
+        pilotsGet();
+        getContext().deleteFile(USERINFOFILE);
+        usersGet();
     }
 
 
@@ -129,7 +136,7 @@ public class PatientFragment extends Fragment implements SwipeRefreshLayout.OnRe
     }
 
     public void patientsGet(){
-        Interface communicatorInterface = Auth.getInterface();
+        Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
         if (fileExistance(FILENAME)) {
             loadFromFile();//dictionary, patientList);
         }
@@ -180,6 +187,79 @@ public class PatientFragment extends Fragment implements SwipeRefreshLayout.OnRe
                 return false;
             }
         });
+    }
+
+    public void pilotsGet(){
+        final List<String>pilotNames = new ArrayList<String>();
+        Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
+        Callback<List<PilotsDeserializer>> callback = new Callback<List<PilotsDeserializer>>() {
+            @Override
+            public void success(List<PilotsDeserializer> serverResponse, Response response2) {
+                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
+                WriteRead.write(PILOTINFOFILE, resp, getContext());
+                //enrollmentsGet();
+                //swipeRefreshLayout.setRefreshing(false);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                if (error != null) {
+                    Log.e(TAG, error.getMessage());
+                    error.printStackTrace();
+                }
+               // swipeRefreshLayout.setRefreshing(false);
+            }
+        };
+        communicatorInterface.getPilots(callback);
+        Log.d(TAG, "read from server");
+    }
+
+    public void sessionTypeGet(){
+        Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
+        Callback<List<SessionDeserialiser>> callback = new Callback<List<SessionDeserialiser>>() {
+            @Override
+            public void success(List<SessionDeserialiser> serverResponse, Response response2) {
+                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
+                WriteRead.write(SESSIONTYPEFILE, resp, getContext());
+                //counsellingGet();
+                //swipeRefreshLayout.setRefreshing(false);
+                Log.d(TAG, "read from server");
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                if (error != null) {
+                    Log.e(TAG, error.getMessage());
+                    error.printStackTrace();
+                }
+                //swipeRefreshLayout.setRefreshing(false);
+            }
+        };
+        communicatorInterface.getSessions(callback);
+    }
+
+    public void usersGet(){
+       // swipeRefreshLayout.setRefreshing(true);
+        final Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
+        Callback<List<Users>> callback = new Callback<List<Users>>() {
+            @Override
+            public void success(List<Users> serverResponse, Response response2) {
+                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
+                WriteRead.write(USERINFOFILE, resp, getContext());
+                Log.d(TAG, "read from server");
+                //appointmentsGet();
+                //swipeRefreshLayout.setRefreshing(false);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                if(error != null ){
+                    Log.e(TAG, error.getMessage());
+                    error.printStackTrace();
+                }
+            }
+        };
+        communicatorInterface.getUsers(callback);
     }
 
 }

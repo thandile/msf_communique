@@ -1,4 +1,4 @@
-package com.example.msf.msf.Fragments.Enrollments;
+package com.example.msf.msf.Fragments.EnrollmentsFragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -18,10 +18,9 @@ import com.amigold.fundapter.FunDapter;
 import com.amigold.fundapter.extractors.StringExtractor;
 import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.Deserializers.Enrollment;
-import com.example.msf.msf.API.Deserializers.Users;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.API.PilotsDeserializer;
-import com.example.msf.msf.Fragments.AppointmentFragments.AppointmentInfoFragment;
+import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.WriteRead;
 
@@ -87,7 +86,7 @@ public class EnrollmentFragment extends Fragment implements SwipeRefreshLayout.O
 
     public void enrollmentsGet(){
         final ArrayList<Enrollment> enrollmentList = new ArrayList<Enrollment>();
-        Interface communicatorInterface = Auth.getInterface();
+        Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
         Callback<List<Enrollment>> callback = new Callback<List<Enrollment>>() {
             @Override
             public void success(List<Enrollment> serverResponse, Response response2) {
@@ -233,7 +232,7 @@ public class EnrollmentFragment extends Fragment implements SwipeRefreshLayout.O
 
     public void pilotsGet(){
         final List<String>pilotNames = new ArrayList<String>();
-            Interface communicatorInterface = Auth.getInterface();
+            Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
             Callback<List<PilotsDeserializer>> callback = new Callback<List<PilotsDeserializer>>() {
                 @Override
                 public void success(List<PilotsDeserializer> serverResponse, Response response2) {

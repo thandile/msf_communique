@@ -21,6 +21,7 @@ import com.example.msf.msf.API.Deserializers.Users;
 import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.API.ServerEvent;
+import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
 import com.squareup.otto.Subscribe;
 
@@ -157,7 +158,7 @@ public class AppointmentInfoFragment extends Fragment {
 
     public void appointmentGet(long appointmentID){
         //final List<String> patientList = new ArrayList<String>();
-        Interface communicatorInterface = Auth.getInterface();
+        Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
         Callback<Appointment> callback = new Callback<Appointment>() {
             @Override
             public void success(Appointment serverResponse, Response response2) {
@@ -194,7 +195,7 @@ public class AppointmentInfoFragment extends Fragment {
 
     public void patientGet(long patientID){
         final List<String> patientList = new ArrayList<String>();
-        Interface communicatorInterface = Auth.getInterface();
+        Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
         Callback<Users> callback = new Callback<Users>() {
             @Override
             public void success(Users serverResponse, Response response2) {
@@ -230,7 +231,7 @@ public class AppointmentInfoFragment extends Fragment {
 
     public void userGet(long userID){
         final List<String> userList = new ArrayList<String>();
-        final Interface communicatorInterface = Auth.getInterface();
+        final Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
         Callback<Users> callback = new Callback<Users>() {
             @Override
             public void success(Users serverResponse, Response response2) {

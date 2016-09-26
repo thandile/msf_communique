@@ -43,9 +43,9 @@ public class LoginActivity extends AppCompatActivity {
     private final String TAG = this.getClass().getSimpleName();
     public static final String SERVER_URL =  "https://salty-tor-72502.herokuapp.com/api/";
     public static final String MyPREFERENCES = "MyLogin" ;
-    public static final String Username = "usernameKey";
-    public static final String Password = "passwordKey";
-    SharedPreferences sharedpreferences;
+    /**public String Username = "usernameKey";
+    public String Password = "passwordKey";
+    SharedPreferences sharedpreferences;**/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +65,7 @@ public class LoginActivity extends AppCompatActivity {
         // Set Cancelable as False
         prgDialog.setCancelable(false);
         login = (Button) findViewById(R.id.btnLogin);
-        sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+        //sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -87,7 +87,7 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
     public void usersGet() {
-        Interface communicatorInterface = Auth.getInterface();
+        Interface communicatorInterface = Auth.getInterface(username, password);
         Callback<List<Users>> callback = new Callback<List<Users>>() {
             @Override
             public void success(List<Users> serverResponse, Response response2) {

@@ -19,6 +19,19 @@
             android:id="@+id/nav_manage"
             android:icon="@drawable/ic_enrol"
             android:title="Pilot Enrollments" />
+        <item
+            android:id="@+id/nav_admission"
+            android:icon="@drawable/ic_enrol"
+            android:title="Record Admission" />
+        <item
+            android:id="@+id/nav_event"
+            android:icon="@drawable/ic_enrol"
+            android:title="Create Event" />
+        <item
+            android:id="@+id/nav_records"
+            android:icon="@drawable/ic_enrol"
+            android:title="Medical Records" />
+
     </group>
 
     <item android:title="Information">

@@ -1,8 +1,7 @@
-package com.example.msf.msf.Fragments.Enrollments;
+package com.example.msf.msf.Fragments.EnrollmentsFragments;
 
 
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -14,11 +13,9 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
-import android.support.v4.widget.SwipeRefreshLayout;
 
 import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.BusProvider;
@@ -29,12 +26,11 @@ import com.example.msf.msf.API.PilotsDeserializer;
 import com.example.msf.msf.API.ServerEvent;
 import com.example.msf.msf.Dialogs.DateDialog;
 import com.example.msf.msf.Fragments.PatientFragments.PatientFragment;
+import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.WriteRead;
-import com.mobsandgeeks.saripaar.Rule;
 import com.mobsandgeeks.saripaar.ValidationError;
 import com.mobsandgeeks.saripaar.Validator;
-import com.mobsandgeeks.saripaar.annotation.Email;
 import com.mobsandgeeks.saripaar.annotation.NotEmpty;
 import com.mobsandgeeks.saripaar.annotation.Select;
 import com.squareup.otto.Subscribe;
@@ -180,7 +176,7 @@ public class CreateEnrollmentFragment extends Fragment implements Validator.Vali
             Log.d(TAG, "read from storage");
         }
         else {
-            Interface communicatorInterface = Auth.getInterface();
+            Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
             Callback<List<PilotsDeserializer>> callback = new Callback<List<PilotsDeserializer>>() {
                 @Override
                 public void success(List<PilotsDeserializer> serverResponse, Response response2) {
@@ -253,15 +249,15 @@ public class CreateEnrollmentFragment extends Fragment implements Validator.Vali
 
     @Override
     public void onValidationSucceeded() {
-        Toast.makeText(CreateEnrollmentFragment.this.getActivity(),
-                "YASS!",
-                Toast.LENGTH_SHORT).show();
+       // Toast.makeText(CreateEnrollmentFragment.this.getActivity(),
+                //"YASS!",
+             //   Toast.LENGTH_SHORT).show();
         prgDialog.show();
         String[] patient_id = patientNames.getText().toString().split(":");
         String[] program = String.valueOf(pilotPrograms.getSelectedItem()).split(":");
         String enrollment_comment = comment.getText().toString();
         String date = enrollment_date.getText().toString();
-        Toast.makeText(CreateEnrollmentFragment.this.getActivity(), date, Toast.LENGTH_SHORT).show();
+       // Toast.makeText(CreateEnrollmentFragment.this.getActivity(), date, Toast.LENGTH_SHORT).show();
         communicator.enrollmentPost(patient_id[0], enrollment_comment, program[0], date);
         prgDialog.hide();
     }

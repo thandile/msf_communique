@@ -1,4 +1,4 @@
-package com.example.msf.msf.Fragments.Enrollments;
+package com.example.msf.msf.Fragments.EnrollmentsFragments;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -13,9 +13,6 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.amigold.fundapter.BindDictionary;
-import com.amigold.fundapter.FunDapter;
-import com.amigold.fundapter.extractors.StringExtractor;
 import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.BusProvider;
 import com.example.msf.msf.API.Communicator;
@@ -25,11 +22,10 @@ import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.API.PilotsDeserializer;
 import com.example.msf.msf.API.ServerEvent;
-import com.example.msf.msf.Fragments.AppointmentFragments.UpdateAppointmentFragment;
+import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
 import com.squareup.otto.Subscribe;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -158,7 +154,7 @@ public class EnrollmentInfoFragment extends Fragment {
 
     public void enrollmentGet(long enrollmentID){
         //final ArrayList<Enrollment> enrollmentList = new ArrayList<Enrollment>();
-        Interface communicatorInterface = Auth.getInterface();
+        Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
         Callback<Enrollment> callback = new Callback<Enrollment>() {
             @Override
             public void success(Enrollment serverResponse, Response response2) {
@@ -190,7 +186,7 @@ public class EnrollmentInfoFragment extends Fragment {
 
     public void patientGet(long patientID){
         final List<String> patientList = new ArrayList<String>();
-        Interface communicatorInterface = Auth.getInterface();
+        Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
         Callback<Users> callback = new Callback<Users>() {
             @Override
             public void success(Users serverResponse, Response response2) {
@@ -224,7 +220,7 @@ public class EnrollmentInfoFragment extends Fragment {
     }
 
     public void pilotGet(long pilotID){
-        Interface communicatorInterface = Auth.getInterface();
+        Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
         Callback<PilotsDeserializer> callback = new Callback<PilotsDeserializer>() {
             @Override
             public void success(PilotsDeserializer serverResponse, Response response2) {

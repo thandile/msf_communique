@@ -1,8 +1,7 @@
-package com.example.msf.msf.Fragments.Enrollments;
+package com.example.msf.msf.Fragments.EnrollmentsFragments;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -21,14 +20,13 @@ import android.widget.Toast;
 import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.BusProvider;
 import com.example.msf.msf.API.Communicator;
-import com.example.msf.msf.API.Deserializers.Enrollment;
 import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.Interface;
-import com.example.msf.msf.API.PatientsDeserialiser;
 import com.example.msf.msf.API.PilotsDeserializer;
 import com.example.msf.msf.API.ServerEvent;
 import com.example.msf.msf.Dialogs.DateDialog;
 import com.example.msf.msf.Fragments.PatientFragments.PatientFragment;
+import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.WriteRead;
 import com.mobsandgeeks.saripaar.ValidationError;
@@ -174,9 +172,9 @@ public class UpdateEnrollmentFragment extends Fragment implements Validator.Vali
 
     @Override
     public void onValidationSucceeded() {
-        Toast.makeText(UpdateEnrollmentFragment.this.getActivity(),
-                "YASS!",
-                Toast.LENGTH_SHORT).show();
+       // Toast.makeText(UpdateEnrollmentFragment.this.getActivity(),
+           //     "YASS!",
+          //      Toast.LENGTH_SHORT).show();
         prgDialog.show();
         String[] patient_id = patientsTV.getText().toString().split(":");
         String[] program = String.valueOf(pilotPrograms.getSelectedItem()).split(":");
@@ -243,7 +241,7 @@ public class UpdateEnrollmentFragment extends Fragment implements Validator.Vali
 
     public void pilotsGet(){
         final List<String>pilotNames = new ArrayList<String>();
-        Interface communicatorInterface = Auth.getInterface();
+        Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
         Callback<List<PilotsDeserializer>> callback = new Callback<List<PilotsDeserializer>>() {
             @Override
             public void success(List<PilotsDeserializer> serverResponse, Response response2) {

@@ -12,8 +12,9 @@ import retrofit.client.OkClient;
  * Created by Thandile on 2016/09/16.
  */
 public class Auth {
-    static private String credentials = LoginActivity.username+":"+ LoginActivity.password;
-    public static Interface getInterface() {
+    //static private String credentials = LoginActivity.username+":"+ LoginActivity.password;
+    public static Interface getInterface(String username, String password) {
+        String credentials = username+":"+password;
         RestAdapter.Builder builder = new RestAdapter.Builder()
                 .setEndpoint(LoginActivity.SERVER_URL)
                 .setLogLevel(RestAdapter.LogLevel.FULL)

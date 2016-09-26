@@ -4,10 +4,11 @@
     android:layout_height="match_parent"
     tools:context="com.example.msf.msf.Fragments.PatientFragments.PatientTabs.AdmissionsTab">
 
-    <ListView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/enrollmentsLV" />
+    <TextView
+        android:text="To be implemented"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView21" />
 
 
     <android.support.design.widget.FloatingActionButton
