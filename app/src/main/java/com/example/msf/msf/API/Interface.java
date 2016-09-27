@@ -164,6 +164,7 @@ public interface Interface {
     void postMedicalReport(@Field("title") String title,
                            @Field("report_type") String reportType,
                            @Field("patient") String patient,
+                           @Field("notes") String notes,
                            Callback<MedicalRecord> serverResponseCallback);
 
     @FormUrlEncoded
@@ -233,11 +234,12 @@ public interface Interface {
                              @Part("title") String title,
                              @Part("report_type") String reportType,
                              @Part("patient") String patient,
+                             @Path("notes") String notes,
                              Callback<MedicalRecord> serverResponseCallback);
 
     @Multipart
     @PUT("/events/{id}/")
-    void postEvent(@Path("id") long eventID,
+    void updateEvent(@Path("id") long eventID,
                    @Part("name") String name,
                    @Part("description") String description,
                    @Part("event_date") String date,

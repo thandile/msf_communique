@@ -16,6 +16,35 @@ public class ServerEvent {
     private SessionDeserialiser SessionDeserialiser;
     private AddCounsellingResponse AddCounsellingResponse;
     private Appointment Appointment;
+    private Events Events;
+    private Admission Admission;
+    private MedicalRecord MedicalRecord;
+
+
+    /*************/
+    public ServerEvent(MedicalRecord MedicalRecord) {
+        this.MedicalRecord = MedicalRecord;
+    }
+    public MedicalRecord getMedicalRecord() {
+        return MedicalRecord;
+    }
+
+    public void setMedicalRecord(MedicalRecord medicalRecord) {
+        MedicalRecord = medicalRecord;
+    }
+
+    /*************/
+    public ServerEvent(Admission Admission) {
+        this.Admission = Admission;
+    }
+
+    public Admission getAdmission() {
+        return Admission;
+    }
+
+    public void setAdmission(Admission admission) {
+        Admission = admission;
+    }
 
     /*************/
     public ServerEvent(Users Users) {
@@ -126,6 +155,20 @@ public class ServerEvent {
 
     public void setAppointment(Appointment Appointment) {
         this.Appointment = Appointment;
+    }
+
+    /*************/
+
+    public ServerEvent(Events Events) {
+        this.Events = Events;
+    }
+
+    public Events getEvents() {
+        return Events;
+    }
+
+    public void setEvents(Events Events) {
+        this.Events = Events;
     }
 
     /*************/
