@@ -268,13 +268,15 @@ public class UpdatePatientFragment extends Fragment implements Validator.Validat
         location.setText("");
         outcome.setText("");
         treatment_start.setText("");
-        PatientFragment patientFragment = new PatientFragment();
+        FragmentManager manager = getActivity().getSupportFragmentManager();
+        manager.popBackStackImmediate();
+        /**PatientFragment patientFragment = new PatientFragment();
         FragmentManager manager = getActivity().getSupportFragmentManager();
         manager.beginTransaction()
                 .replace(R.id.rel_layout_for_frag, patientFragment,
                         patientFragment.getTag())
                 .addToBackStack(null)
-                .commit();
+                .commit();**/
     }
 
     @Subscribe

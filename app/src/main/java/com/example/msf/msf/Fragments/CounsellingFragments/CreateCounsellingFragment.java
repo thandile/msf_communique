@@ -165,13 +165,14 @@ public class CreateCounsellingFragment extends Fragment implements Validator.Val
                 Toast.LENGTH_LONG).show();
         patientNames.setText("");
         notesET.setText("");
-        CounsellingFragment counsellingFragment = new CounsellingFragment();
+       //CounsellingFragment counsellingFragment = new CounsellingFragment();
         FragmentManager manager = getActivity().getSupportFragmentManager();
-        manager.beginTransaction()
+        manager.popBackStackImmediate();
+        /**manager.beginTransaction()
                 .replace(R.id.rel_layout_for_frag, counsellingFragment,
                         counsellingFragment.getTag())
                 .addToBackStack(null)
-                .commit();
+                .commit();**/
     }
 
     @Subscribe

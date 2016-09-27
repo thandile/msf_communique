@@ -231,13 +231,18 @@ public class CreateEnrollmentFragment extends Fragment implements Validator.Vali
         comment.setText("");
         enrollment_date.setText("");
         patientNames.setText("");
-        EnrollmentFragment enrollmentFragment = new EnrollmentFragment();
+        //EnrollmentFragment enrollmentFragment = new EnrollmentFragment();
         FragmentManager manager = getActivity().getSupportFragmentManager();
-        manager.beginTransaction()
+        manager.popBackStackImmediate();
+        //FragmentTransaction transaction = manager.beginTransaction();
+        //transaction.remove(enrollmentFragment);
+       // transaction.commit();
+
+         /**manager.beginTransaction()
                 .replace(R.id.rel_layout_for_frag, enrollmentFragment,
-                        enrollmentFragment.getTag())
-                .addToBackStack(null)
-                .commit();
+                      enrollmentFragment.getTag())
+                 .addToBackStack(null)
+                 .commit();**/
     }
 
     @Subscribe

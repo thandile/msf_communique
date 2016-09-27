@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -106,6 +107,8 @@ public class CreatePatientFragment extends Fragment {
         patient_sname.setText("");
         patient_dob.setText("");
         patient_currFacility.setText("");
+        FragmentManager manager = getActivity().getSupportFragmentManager();
+        manager.popBackStackImmediate();
     }
 
     @Subscribe

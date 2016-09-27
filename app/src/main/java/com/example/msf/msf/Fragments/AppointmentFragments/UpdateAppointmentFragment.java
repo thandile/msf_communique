@@ -337,13 +337,14 @@ public class UpdateAppointmentFragment extends Fragment implements Validator.Val
         startTimeET.setText("");
         endTimeET.setText("");
         notesET.setText("");
-        AppointmentFragment appointmentFragment = new AppointmentFragment();
+        //AppointmentFragment appointmentFragment = new AppointmentFragment();
         FragmentManager manager = getActivity().getSupportFragmentManager();
-        manager.beginTransaction()
+        manager.popBackStackImmediate();
+        /**manager.beginTransaction()
                 .replace(R.id.rel_layout_for_frag, appointmentFragment,
                         appointmentFragment.getTag())
                 .addToBackStack(null)
-                .commit();
+                .commit();**/
     }
 
     @Subscribe

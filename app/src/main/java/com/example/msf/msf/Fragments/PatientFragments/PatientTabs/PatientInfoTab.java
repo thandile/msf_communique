@@ -237,6 +237,8 @@ public class PatientInfoTab extends Fragment {
         startDate.setText("");
         address.setText("");
         health_centre.setText("");
+        FragmentManager manager = getActivity().getSupportFragmentManager();
+        manager.popBackStackImmediate();
     }
 
     @Subscribe

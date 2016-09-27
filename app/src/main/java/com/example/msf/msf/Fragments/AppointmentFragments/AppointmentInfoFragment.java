@@ -320,6 +320,8 @@ public class AppointmentInfoFragment extends Fragment {
         endTimeTV.setText("");
         ownerTV.setText("");
         patientTV.setText("");
+        FragmentManager manager = getActivity().getSupportFragmentManager();
+        manager.popBackStackImmediate();
     }
 
     @Subscribe

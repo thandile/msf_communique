@@ -307,6 +307,8 @@ public class EnrollmentInfoFragment extends Fragment {
         patientTV.setText("");
         dateTV.setText("");
         commentTV.setText("");
+        FragmentManager manager = getActivity().getSupportFragmentManager();
+        manager.popBackStackImmediate();
 
     }
 

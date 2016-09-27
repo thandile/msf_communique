@@ -314,13 +314,14 @@ public class UpdateEnrollmentFragment extends Fragment implements Validator.Vali
         comment.setText("");
         enrollment_date.setText("");
         patientsTV.setText("");
-        EnrollmentFragment enrollmentFragment = new EnrollmentFragment();
+        //EnrollmentFragment enrollmentFragment = new EnrollmentFragment();
         FragmentManager manager = getActivity().getSupportFragmentManager();
-        manager.beginTransaction()
+        manager.popBackStackImmediate();
+        /**manager.beginTransaction()
                 .replace(R.id.rel_layout_for_frag, enrollmentFragment,
                         enrollmentFragment.getTag())
                 .addToBackStack(null)
-                .commit();
+                .commit();**/
     }
 
     @Subscribe

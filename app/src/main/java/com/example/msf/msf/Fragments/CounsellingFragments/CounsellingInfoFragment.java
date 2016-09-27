@@ -308,6 +308,8 @@ public class CounsellingInfoFragment extends Fragment {
         patient.setText("");
         notes.setText("");
         sessionType.setText("");
+        FragmentManager manager = getActivity().getSupportFragmentManager();
+        manager.popBackStackImmediate();
 
     }
 
