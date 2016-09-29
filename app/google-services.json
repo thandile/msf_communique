@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "671001980660",
+    "firebase_url": "https://msf-communique.firebaseio.com",
+    "project_id": "msf-communique",
+    "storage_bucket": "msf-communique.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:671001980660:android:d5e82fcfcd316fcf",
+        "android_client_info": {
+          "package_name": "com.example.msf.msf"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "671001980660-ak0te7fvucknm2a5nmg4u5m1doltk5eg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC4AdaK-bBLqGyJhXzeHHQij4HeCgjNQsc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
