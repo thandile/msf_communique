@@ -22,7 +22,7 @@
         <item
             android:id="@+id/nav_admission"
             android:icon="@drawable/ic_enrol"
-            android:title="Record Admission" />
+            android:title="Admissions" />
         <item
             android:id="@+id/nav_event"
             android:icon="@drawable/ic_enrol"

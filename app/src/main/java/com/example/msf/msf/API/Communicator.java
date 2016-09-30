@@ -31,6 +31,32 @@ public class Communicator {
     List<String> patientNames = new ArrayList<String>();
     Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
 
+    public void registrationPost(String regID){
+        String type = "android";
+        Callback<Events> callback = new Callback<Events>() {
+
+            @Override
+            public void success(Events serverResponse, Response response2) {
+                if(serverResponse.getResponseCode() == 0){
+                    BusProvider.getInstance().post(produceEventServerResponse(serverResponse));
+                }else{
+                    BusProvider.getInstance().post(produceErrorEvent(serverResponse.getResponseCode(),
+                            serverResponse.getMessage()));
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                if(error != null ){
+                    Log.e(TAG, error.getMessage());
+                    error.printStackTrace();
+                }
+                BusProvider.getInstance().post(produceErrorEvent(-200,error.getMessage()));
+            }
+        };
+        communicatorInterface.postRegistration(regID, type, callback);
+    }
+
 
     public void patientPost(String firstName, String lastName, String facility, String dob, String sex){
 

@@ -41,7 +41,7 @@ public class LoginActivity extends AppCompatActivity {
     public static String password = null;
     Context context = this;
     private final String TAG = this.getClass().getSimpleName();
-    public static final String SERVER_URL =  "https://salty-tor-72502.herokuapp.com/api/";
+    public static final String SERVER_URL =  "https://secure-brushlands-18050.herokuapp.com/api/";
     public static final String MyPREFERENCES = "MyLogin" ;
     /**public String Username = "usernameKey";
     public String Password = "passwordKey";

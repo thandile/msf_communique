@@ -90,6 +90,9 @@ public class MedicalRecord {
     @SerializedName("response_code")
     private int responseCode;
 
+    public  MedicalRecord(){
+
+    }
     public MedicalRecord(int id, String title, String reportType, String patient, String notes, String date, String message, int responseCode) {
         this.id = id;
         this.title = title;

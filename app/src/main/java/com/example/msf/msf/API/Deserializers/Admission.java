@@ -7,8 +7,8 @@ import com.google.gson.annotations.SerializedName;
  */
 
 public class Admission {
-    public Admission(String id, String patient, String admissionDate, String dischargeDate, String healthCentre, String notes) {
-        this.id = id;
+    public Admission(int id, String patient, String admissionDate, String dischargeDate, String healthCentre, String notes) {
+        this.id_no = id;
         this.patient = patient;
         this.admissionDate = admissionDate;
         this.dischargeDate = dischargeDate;
@@ -16,6 +16,9 @@ public class Admission {
         this.notes = notes;
     }
 
+    public Admission(){
+
+    }
     public String getId() {
         return id;
     }
@@ -82,6 +85,16 @@ public class Admission {
 
     @SerializedName("id")
     private String id;
+
+    public int getId_no() {
+        return id_no;
+    }
+
+    public void setId_no(int id_no) {
+        this.id_no = id_no;
+    }
+
+    private int id_no;
     @SerializedName("patient")
     private String patient;
     @SerializedName("admission_date")

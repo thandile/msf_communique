@@ -53,7 +53,7 @@ public interface Interface {
     void getEnrollment(@Path("id") long id,
                         Callback<Enrollment> serverResponseCallback);
 
-    @GET("/users/")
+    @GET("/profiles/")
     void getUsers(Callback<List<Users>> serverResponseCallback);
 
     @GET("/users/{id}/")
@@ -174,6 +174,12 @@ public interface Interface {
                    @Field("event_date") String date,
                    @Field("start_time") String startTime,
                    @Field("end_time") String endTime,
+                   Callback<Events> serverResponseCallback);
+
+    @FormUrlEncoded
+    @POST("/devices/")
+    void postRegistration(@Field("registration_id") String regID,
+                   @Field("type") String type,
                    Callback<Events> serverResponseCallback);
 
     @Multipart

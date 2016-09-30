@@ -100,6 +100,10 @@ public class Events {
         this.responseCode = responseCode;
     }
 
+    public Events(){
+
+    }
+
 
     public Events(int id, String name, String description, String eventDate, String startTime, String endTime) {
         this.id = id;

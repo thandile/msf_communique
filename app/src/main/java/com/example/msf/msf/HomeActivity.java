@@ -10,9 +10,13 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
+import com.example.msf.msf.API.Communicator;
+import com.example.msf.msf.Fragments.AdmissionsFragments.AdmissionFragment;
 import com.example.msf.msf.Fragments.AdmissionsFragments.CreateAdmissionFragment;
 import com.example.msf.msf.Fragments.AppointmentFragments.AppointmentFragment;
 import com.example.msf.msf.Fragments.AppointmentFragments.AppointmentInfoFragment;
@@ -27,6 +31,7 @@ import com.example.msf.msf.Fragments.EnrollmentsFragments.EnrollmentFragment;
 import com.example.msf.msf.Fragments.EnrollmentsFragments.EnrollmentInfoFragment;
 import com.example.msf.msf.Fragments.EnrollmentsFragments.UpdateEnrollmentFragment;
 import com.example.msf.msf.Fragments.EventsFragments.CreateEventFragment;
+import com.example.msf.msf.Fragments.EventsFragments.EventsFragment;
 import com.example.msf.msf.Fragments.HomeFragment;
 import com.example.msf.msf.Fragments.MedicalRecordsFragment.CreateMedicalRecFragment;
 import com.example.msf.msf.Fragments.MedicalRecordsFragment.MedicalRecordFragment;
@@ -37,6 +42,8 @@ import com.example.msf.msf.Fragments.PatientFragments.PatientTabs.MedicalRecordT
 import com.example.msf.msf.Fragments.PatientFragments.PatientTabs.MedicationTab;
 import com.example.msf.msf.Fragments.PatientFragments.PatientTabs.TabFragment;
 import com.example.msf.msf.Fragments.PatientFragments.UpdatePatientFragment;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
@@ -60,13 +67,18 @@ public class HomeActivity extends AppCompatActivity
     private boolean shouldLoadHomeFragOnBackPress = false;
     // index to identify current nav menu item
     public static int navItemIndex = 0;
-
+    private final String TAG = this.getClass().getSimpleName();
+    Communicator communicator;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        communicator = new Communicator();
+        //FirebaseMessaging.getInstance().subscribeToTopic("test");
+        String token = FirebaseInstanceId.getInstance().getToken();
+        communicator.registrationPost(token);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -76,6 +88,7 @@ public class HomeActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
 
         if (savedInstanceState == null) {
             navItemIndex = 0;
@@ -235,33 +248,33 @@ public class HomeActivity extends AppCompatActivity
 
         else if (id == R.id.nav_admission) {
            // navItemIndex = 4;
-            CreateAdmissionFragment createAdmissionFragment = new CreateAdmissionFragment();
+            AdmissionFragment admissionFragment = new AdmissionFragment();
             FragmentManager manager = getSupportFragmentManager();
             manager.beginTransaction().replace(R.id.rel_layout_for_frag,
-                    createAdmissionFragment,
-                    createAdmissionFragment.getTag())
+                    admissionFragment,
+                    admissionFragment.getTag())
                     .addToBackStack(null)
                     .commit();
             setToolbarTitle("Hospital Admissions");
         }
 
         else if (id == R.id.nav_event) {
-            CreateEventFragment createEventFragment = new CreateEventFragment();
+            EventsFragment eventsFragment = new EventsFragment();
             FragmentManager manager = getSupportFragmentManager();
             manager.beginTransaction().replace(R.id.rel_layout_for_frag,
-                    createEventFragment,
-                    createEventFragment.getTag())
+                    eventsFragment,
+                    eventsFragment.getTag())
                     .addToBackStack(null)
                     .commit();
             setToolbarTitle("Events");
         }
         else if (id == R.id.nav_records) {
             navItemIndex = 4;
-            CreateMedicalRecFragment createMedicalRecFragment = new CreateMedicalRecFragment();
+            MedicalRecordFragment medicalRecordFragment = new MedicalRecordFragment();
             FragmentManager manager = getSupportFragmentManager();
             manager.beginTransaction().replace(R.id.rel_layout_for_frag,
-                    createMedicalRecFragment,
-                    createMedicalRecFragment.getTag())
+                    medicalRecordFragment,
+                    medicalRecordFragment.getTag())
                     .addToBackStack(null)
                     .commit();
             setToolbarTitle("Medical Records");

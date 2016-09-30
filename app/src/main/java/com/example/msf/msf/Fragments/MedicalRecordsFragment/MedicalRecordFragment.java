@@ -4,106 +4,272 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.amigold.fundapter.BindDictionary;
+import com.amigold.fundapter.FunDapter;
+import com.amigold.fundapter.extractors.StringExtractor;
+import com.example.msf.msf.API.Auth;
+import com.example.msf.msf.API.Deserializers.Appointment;
+import com.example.msf.msf.API.Deserializers.MedicalRecord;
+import com.example.msf.msf.API.Deserializers.Users;
+import com.example.msf.msf.API.Interface;
+import com.example.msf.msf.Fragments.AppointmentFragments.AppointmentFragment;
+import com.example.msf.msf.Fragments.AppointmentFragments.AppointmentInfoFragment;
+import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
+import com.example.msf.msf.Utils.WriteRead;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link MedicalRecordFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link MedicalRecordFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class MedicalRecordFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
-    private OnFragmentInteractionListener mListener;
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
+import retrofit.mime.TypedByteArray;
 
+
+public class MedicalRecordFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+    private final String TAG = this.getClass().getSimpleName();
+    public static String PATIENTINFOFILE = "Patients";
+    public static String RECORDINFOFILE = "Records";
+    ListView recordsLV;
+
+
+    private SwipeRefreshLayout swipeRefreshLayout;
     public MedicalRecordFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment MedicalRecordFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static MedicalRecordFragment newInstance(String param1, String param2) {
-        MedicalRecordFragment fragment = new MedicalRecordFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_medical_record, container, false);
+        View view = inflater.inflate(R.layout.fragment_medical_record, container, false);
+        appointmentsGet();
+        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
+        swipeRefreshLayout.setOnRefreshListener(this);
+        recordsLV = (ListView) view.findViewById(R.id.recordsLV);
+        recordsLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                TextView idTV = (TextView) view.findViewById(R.id.idTV);
+                String id = idTV.getText().toString().split(" ")[1];
+                Log.e(TAG, id.toString());
+                MedicalInfoFragment medicalInfoFragment = new MedicalInfoFragment().newInstance(id);
+                FragmentManager manager = getActivity().getSupportFragmentManager();
+
+                manager.beginTransaction()
+                        .replace(R.id.rel_layout_for_frag, medicalInfoFragment,
+                                medicalInfoFragment.getTag())
+                        .addToBackStack(null)
+                        .commit();
+                //intent.putExtra(EXTRA_MESSAGE,id);
+                //startActivity(intent);
+            }
+        });
+        return view;
+
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
+    public void appointmentsGet(){
+        final ArrayList<MedicalRecord> appointmentList = new ArrayList<MedicalRecord>();
+        Interface communicatorInterface;
+        communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
+        Callback<List<MedicalRecord>> callback = new Callback<List<MedicalRecord>>() {
+            @Override
+            public void success(List<MedicalRecord> serverResponse, Response response2) {
+                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
+                try{
+                    MedicalRecord appointment = new MedicalRecord();
+                    JSONArray jsonarray = new JSONArray(resp);
+                    if (jsonarray.length()>0) {
+                        for (int i = 0; i < jsonarray.length(); i++) {
+                            JSONObject jsonobject = jsonarray.getJSONObject(i);
+                            int id = Integer.parseInt(jsonobject.getString("id"));
+                            String date = jsonobject.getString("date_created");
+                            //String reportType = jsonobject.getString("start_time");
+                            String patient = getPatientInfo(Long.parseLong(jsonobject.getString("patient")));
+                            String reportType = "";
+                            if (fileExistance(RECORDINFOFILE)) {
+                                Log.d(TAG, "file exists");
+                                reportType = loadUserFromFile(Long.parseLong(jsonobject.getString("report_type")));
+                            }
+                            else {
+                                usersGet();
+                            }
+                            String title = jsonobject.getString("title");
+                            String notes = jsonobject.getString("notes");
+
+                            appointment = new MedicalRecord(id, title,reportType, patient, notes, date);
+                            //userGet(owner);
+                            appointmentList.add(appointment);
+
+                        }
+
+                        Log.d(TAG, appointmentList.toString());
+                        BindDictionary<MedicalRecord> dictionary = new BindDictionary<>();
+                        dictionary.addStringField(R.id.titleTV, new StringExtractor<MedicalRecord>() {
+                            @Override
+                            public String getStringValue(MedicalRecord appointment, int position) {
+                                return appointment.getTitle();
+                            }
+                        });
+                        dictionary.addStringField(R.id.personTV, new StringExtractor<MedicalRecord>() {
+                            @Override
+                            public String getStringValue(MedicalRecord appointment, int position) {
+                                return "Patient: "+appointment.getPatient();
+                            }
+                        });
+
+                        dictionary.addStringField(R.id.dateTV, new StringExtractor<MedicalRecord>() {
+                            @Override
+                            public String getStringValue(MedicalRecord appointment, int position) {
+                                return appointment.getDate();
+                            }
+                        });
+
+                        dictionary.addStringField(R.id.idTV, new StringExtractor<MedicalRecord>() {
+                            @Override
+                            public String getStringValue(MedicalRecord appointment, int position) {
+                                return "ID: "+appointment.getId();
+                            }
+                        });
+                        FunDapter adapter = new FunDapter(MedicalRecordFragment.this.getActivity(),
+                                appointmentList,
+                                R.layout.appointment_list_layout, dictionary);
+                        recordsLV.setAdapter(adapter);
+                    }
+                    else{
+                        BindDictionary<Appointment> dictionary = new BindDictionary<>();
+                        dictionary.addStringField(R.id.titleTV, new StringExtractor<Appointment>() {
+                            @Override
+                            public String getStringValue(Appointment appointment, int position) {
+                                return "No Scheduled appointments";
+                            }
+                        });
+
+                        FunDapter adapter = new FunDapter(MedicalRecordFragment.this.getActivity(),
+                                appointmentList,
+                                R.layout.appointment_list_layout, dictionary);
+                        recordsLV.setAdapter(adapter);
+                        Toast.makeText(MedicalRecordFragment.this.getActivity(),
+                                "No Scheduled appointments", Toast.LENGTH_LONG).show();
+                        //appointmentList.add("No scheduled appointments.");
+                    }
+                    swipeRefreshLayout.setRefreshing(false);
+                    //appointmentLV.setAdapter(adapter);
+                }
+                catch (JSONException e){
+                    System.out.print("unsuccessful");
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                if(error != null ){
+                    Log.e(TAG, error.getMessage());
+                    error.printStackTrace();
+                }
+            }
+        };
+        communicatorInterface.getMedicalReports(callback);
     }
+
+    public boolean fileExistance(String FILENAME){
+        File file = getContext().getFileStreamPath(FILENAME);
+        return file.exists();
+    }
+
+    public String loadUserFromFile(Long uid){
+        String user = "";
+        String users = WriteRead.read(RECORDINFOFILE, getContext());
+        try{
+            JSONArray jsonarray = new JSONArray(users);
+            for (int i = 0; i < jsonarray.length(); i++) {
+                JSONObject jsonObject = jsonarray.getJSONObject(i);
+                if (jsonObject.getString("id").equals("" + uid)) {
+                    Log.d(TAG, "userid"+ uid);
+                    int id = Integer.parseInt(jsonObject.getString("id"));
+                    String username = jsonObject.getString("username");
+                    user =  username;
+                    break;
+                }
+            }
+        }
+        catch (JSONException e){
+            System.out.print("unsuccessful");
+        }
+        swipeRefreshLayout.setRefreshing(false);
+        Log.d(TAG, "username"+user);
+        return user;
+    }
+
+    public void usersGet(){
+        swipeRefreshLayout.setRefreshing(true);
+        final Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
+        Callback<List<Users>> callback = new Callback<List<Users>>() {
+            @Override
+            public void success(List<Users> serverResponse, Response response2) {
+                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
+                WriteRead.write(RECORDINFOFILE, resp, getContext());
+                Log.d(TAG, "read from server");
+                appointmentsGet();
+                swipeRefreshLayout.setRefreshing(false);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                if(error != null ){
+                    Log.e(TAG, error.getMessage());
+                    error.printStackTrace();
+                }
+            }
+        };
+        communicatorInterface.getUsers(callback);
+    }
+
+    public String getPatientInfo(Long pid) {
+        String patients = WriteRead.read(PATIENTINFOFILE, getContext());
+        String full_name = "";
+        try {
+            JSONArray jsonarray = new JSONArray(patients);
+            for (int i = 0; i < jsonarray.length(); i++) {
+                JSONObject jsonobject = jsonarray.getJSONObject(i);
+                Log.d(TAG, "ID: " + jsonobject.getString("id"));
+                if (jsonobject.getString("id").equals(""+pid)) {
+                    //String id = jsonobject.getString("id");
+                    final String first_name = jsonobject.getString("other_names");
+                    String last_name = jsonobject.getString("last_name");
+                    full_name = first_name + " " + last_name;
+                    break;
+                }
+            }
+        } catch (JSONException e) {
+            System.out.print("unsuccessful");
+        }
+        return full_name;
+    }
+
+
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
+    public void onRefresh() {
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
     }
 }

@@ -247,7 +247,7 @@ public class PatientFragment extends Fragment implements SwipeRefreshLayout.OnRe
                 String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
                 WriteRead.write(USERINFOFILE, resp, getContext());
                 Log.d(TAG, "read from server");
-                //appointmentsGet();
+                //admissionsGet();
                 //swipeRefreshLayout.setRefreshing(false);
             }
 
