@@ -3,6 +3,7 @@ package com.example.msf.msf.Fragments.EventsFragments;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -24,6 +25,7 @@ import com.example.msf.msf.API.Deserializers.Events;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.Fragments.AppointmentFragments.AppointmentFragment;
 import com.example.msf.msf.Fragments.AppointmentFragments.AppointmentInfoFragment;
+import com.example.msf.msf.Fragments.EnrollmentsFragments.CreateEnrollmentFragment;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
 
@@ -41,6 +43,7 @@ import retrofit.mime.TypedByteArray;
 
 
 public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+    FloatingActionButton fab;
     ListView eventsLV;
     private SwipeRefreshLayout swipeRefreshLayout;
     private final String TAG = this.getClass().getSimpleName();
@@ -77,6 +80,20 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
                         .commit();
                 //intent.putExtra(EXTRA_MESSAGE,id);
                 //startActivity(intent);
+            }
+        });
+        fab = (FloatingActionButton) view.findViewById(R.id.btnFloatingAction);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CreateEventFragment createEventFragment = new CreateEventFragment();
+                FragmentManager manager = getActivity().getSupportFragmentManager();
+                manager.beginTransaction()
+                        .replace(R.id.rel_layout_for_frag, createEventFragment,
+                                createEventFragment.getTag())
+                        .addToBackStack(null)
+                        .commit();
+
             }
         });
         return view;

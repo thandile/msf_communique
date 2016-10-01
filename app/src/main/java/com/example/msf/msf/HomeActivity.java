@@ -214,36 +214,36 @@ public class HomeActivity extends AppCompatActivity
         }**/
         else if (id == R.id.nav_gallery) {
             navItemIndex = 2;
-            CreateAppointmentFragment createAppointmentFragment = new CreateAppointmentFragment();
+            AppointmentFragment appointmentFragment = new AppointmentFragment();
             FragmentManager manager = getSupportFragmentManager();
             manager.beginTransaction().replace(R.id.rel_layout_for_frag,
-                    createAppointmentFragment,
-                    createAppointmentFragment.getTag())
+                    appointmentFragment,
+                    appointmentFragment.getTag())
                     .addToBackStack(null)
                     .commit();
-            setToolbarTitle("Create Appointment");
+            setToolbarTitle("Appointments");
         }
         else if (id == R.id.nav_slideshow) {
             navItemIndex = 3;
-            CreateCounsellingFragment createCounsellingFragment = new CreateCounsellingFragment();
+            CounsellingFragment counsellingFragment = new CounsellingFragment();
             FragmentManager manager = getSupportFragmentManager();
             manager.beginTransaction().replace(R.id.rel_layout_for_frag,
-                    createCounsellingFragment,
-                    createCounsellingFragment.getTag())
+                    counsellingFragment,
+                    counsellingFragment.getTag())
                     .addToBackStack(null)
                     .commit();
-            setToolbarTitle("Record Counselling Session");
+            setToolbarTitle("Counselling Sessions");
         }
         else if (id == R.id.nav_manage) {
             navItemIndex = 4;
-            CreateEnrollmentFragment createEnrollmentFragment = new CreateEnrollmentFragment();
+            EnrollmentFragment enrollmentFragment = new EnrollmentFragment();
             FragmentManager manager = getSupportFragmentManager();
             manager.beginTransaction().replace(R.id.rel_layout_for_frag,
-                    createEnrollmentFragment,
-                    createEnrollmentFragment.getTag())
+                    enrollmentFragment,
+                    enrollmentFragment.getTag())
                     .addToBackStack(null)
                     .commit();
-            setToolbarTitle("Record Pilot Enrollment");
+            setToolbarTitle("Pilot Enrollments");
         }
 
         else if (id == R.id.nav_admission) {
@@ -280,7 +280,7 @@ public class HomeActivity extends AppCompatActivity
             setToolbarTitle("Medical Records");
         }
 
-        else if (id == R.id.nav_patient_list){
+        /**else if (id == R.id.nav_patient_list){
             navItemIndex = 5;
            // Toast.makeText(this, ""+navItemIndex, Toast.LENGTH_SHORT).show();
             PatientFragment patientFragment = new PatientFragment();
@@ -334,7 +334,7 @@ public class HomeActivity extends AppCompatActivity
                     .addToBackStack(null)
                     .commit();
             setToolbarTitle("Home");
-        }
+        }**/
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

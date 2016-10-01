@@ -1,8 +1,7 @@
 package com.example.msf.msf.Fragments.MedicalRecordsFragment;
 
-import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -21,10 +20,8 @@ import com.amigold.fundapter.extractors.StringExtractor;
 import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.Deserializers.Appointment;
 import com.example.msf.msf.API.Deserializers.MedicalRecord;
-import com.example.msf.msf.API.Deserializers.Users;
+import com.example.msf.msf.API.Deserializers.MedicalRecordType;
 import com.example.msf.msf.API.Interface;
-import com.example.msf.msf.Fragments.AppointmentFragments.AppointmentFragment;
-import com.example.msf.msf.Fragments.AppointmentFragments.AppointmentInfoFragment;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.WriteRead;
@@ -44,6 +41,7 @@ import retrofit.mime.TypedByteArray;
 
 
 public class MedicalRecordFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+    FloatingActionButton fab;
     private final String TAG = this.getClass().getSimpleName();
     public static String PATIENTINFOFILE = "Patients";
     public static String RECORDINFOFILE = "Records";
@@ -83,6 +81,20 @@ public class MedicalRecordFragment extends Fragment implements SwipeRefreshLayou
                 //startActivity(intent);
             }
         });
+
+        fab = (FloatingActionButton) view.findViewById(R.id.btnFloatingAction);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CreateMedicalRecFragment createMedicalRecFragment = new CreateMedicalRecFragment();
+                FragmentManager manager = getActivity().getSupportFragmentManager();
+                manager.beginTransaction()
+                        .replace(R.id.rel_layout_for_frag, createMedicalRecFragment,
+                                createMedicalRecFragment.getTag())
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
         return view;
 
     }
@@ -108,10 +120,10 @@ public class MedicalRecordFragment extends Fragment implements SwipeRefreshLayou
                             String reportType = "";
                             if (fileExistance(RECORDINFOFILE)) {
                                 Log.d(TAG, "file exists");
-                                reportType = loadUserFromFile(Long.parseLong(jsonobject.getString("report_type")));
+                                reportType = loadRecordTypeFromFile(Long.parseLong(jsonobject.getString("report_type")));
                             }
                             else {
-                                usersGet();
+                                recordTypeGet();
                             }
                             String title = jsonobject.getString("title");
                             String notes = jsonobject.getString("notes");
@@ -196,7 +208,7 @@ public class MedicalRecordFragment extends Fragment implements SwipeRefreshLayou
         return file.exists();
     }
 
-    public String loadUserFromFile(Long uid){
+    public String loadRecordTypeFromFile(Long uid){
         String user = "";
         String users = WriteRead.read(RECORDINFOFILE, getContext());
         try{
@@ -220,12 +232,12 @@ public class MedicalRecordFragment extends Fragment implements SwipeRefreshLayou
         return user;
     }
 
-    public void usersGet(){
+    public void recordTypeGet(){
         swipeRefreshLayout.setRefreshing(true);
         final Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
-        Callback<List<Users>> callback = new Callback<List<Users>>() {
+        Callback<List<MedicalRecordType>> callback = new Callback<List<MedicalRecordType>>() {
             @Override
-            public void success(List<Users> serverResponse, Response response2) {
+            public void success(List<MedicalRecordType> serverResponse, Response response2) {
                 String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
                 WriteRead.write(RECORDINFOFILE, resp, getContext());
                 Log.d(TAG, "read from server");
@@ -241,7 +253,7 @@ public class MedicalRecordFragment extends Fragment implements SwipeRefreshLayou
                 }
             }
         };
-        communicatorInterface.getUsers(callback);
+        communicatorInterface.getMedicalReportTypes(callback);
     }
 
     public String getPatientInfo(Long pid) {

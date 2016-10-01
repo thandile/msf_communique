@@ -1,6 +1,7 @@
 package com.example.msf.msf.Fragments.EnrollmentsFragments;
 
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -38,7 +39,7 @@ import retrofit.client.Response;
 import retrofit.mime.TypedByteArray;
 
 public class EnrollmentFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener{
-
+    FloatingActionButton fab;
     private ListView enrollmentLV;
     private final String TAG = this.getClass().getSimpleName();
     public static String PATIENTINFOFILE = "Patients";
@@ -74,6 +75,20 @@ public class EnrollmentFragment extends Fragment implements SwipeRefreshLayout.O
                                 enrollmentInfoFragment.getTag())
                         .addToBackStack(null)
                         .commit();
+            }
+        });
+        fab = (FloatingActionButton) view.findViewById(R.id.btnFloatingAction);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CreateEnrollmentFragment createEnrollmentFragment = new CreateEnrollmentFragment();
+                FragmentManager manager = getActivity().getSupportFragmentManager();
+                manager.beginTransaction()
+                        .replace(R.id.rel_layout_for_frag, createEnrollmentFragment,
+                                createEnrollmentFragment.getTag())
+                        .addToBackStack(null)
+                        .commit();
+
             }
         });
         return view;

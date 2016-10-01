@@ -10,7 +10,7 @@
         <item
             android:id="@+id/nav_gallery"
             android:icon="@drawable/ic_appointment"
-            android:title="Create Appointments" />
+            android:title="Appointments" />
         <item
             android:id="@+id/nav_slideshow"
             android:icon="@drawable/ic_counsel"
@@ -26,7 +26,7 @@
         <item
             android:id="@+id/nav_event"
             android:icon="@drawable/ic_enrol"
-            android:title="Create Event" />
+            android:title="Events" />
         <item
             android:id="@+id/nav_records"
             android:icon="@drawable/ic_enrol"
@@ -34,27 +34,6 @@
 
     </group>
 
-    <item android:title="Information">
-        <menu>
-            <item
-                android:id="@+id/nav_patient_list"
-                android:icon="@drawable/ic_info"
-                android:title="Patients" />
-            <item
-                android:id="@+id/nav_appointment_list"
-                android:icon="@drawable/ic_info"
-                android:title="Appointments" />
-            <item
-                android:id="@+id/nav_counselling_list"
-                android:icon="@drawable/ic_info"
-                android:title="Counselling" />
-            <item
-                android:id="@+id/nav_enrollment_list"
-                android:icon="@drawable/ic_info"
-                android:title="Enrollments" />
-        </menu>
-    </item>
-
-
-
 </menu>
+
+

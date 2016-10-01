@@ -2,6 +2,7 @@ package com.example.msf.msf.Fragments.CounsellingFragments;
 
 
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -21,6 +22,7 @@ import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.Deserializers.AddCounsellingResponse;
 import com.example.msf.msf.API.Deserializers.SessionDeserialiser;
 import com.example.msf.msf.API.Interface;
+import com.example.msf.msf.Fragments.EnrollmentsFragments.CreateEnrollmentFragment;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.WriteRead;
@@ -42,6 +44,7 @@ import retrofit.mime.TypedByteArray;
  * A simple {@link Fragment} subclass.
  */
 public class CounsellingFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener{
+    FloatingActionButton fab;
     private ListView counsellingLV;
     private final String TAG = this.getClass().getSimpleName();
     public static String PATIENTINFOFILE = "Patients";
@@ -76,6 +79,21 @@ public class CounsellingFragment extends Fragment implements SwipeRefreshLayout.
                                 counsellingInfoFragment.getTag())
                         .addToBackStack(null)
                         .commit();
+            }
+        });
+
+        fab = (FloatingActionButton) view.findViewById(R.id.btnFloatingAction);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CreateCounsellingFragment createCounsellingFragment = new CreateCounsellingFragment();
+                FragmentManager manager = getActivity().getSupportFragmentManager();
+                manager.beginTransaction()
+                        .replace(R.id.rel_layout_for_frag, createCounsellingFragment,
+                                createCounsellingFragment.getTag())
+                        .addToBackStack(null)
+                        .commit();
+
             }
         });
         return view;
