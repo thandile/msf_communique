@@ -4,6 +4,9 @@ import android.widget.ListView;
 
 import com.example.msf.msf.API.Deserializers.AddCounsellingResponse;
 import com.example.msf.msf.API.Deserializers.Admission;
+import com.example.msf.msf.API.Deserializers.AdverseEvent;
+import com.example.msf.msf.API.Deserializers.AdverseEventType;
+import com.example.msf.msf.API.Deserializers.EmergencyContact;
 import com.example.msf.msf.API.Deserializers.Enrollment;
 import com.example.msf.msf.API.Deserializers.AddPilotResponse;
 import com.example.msf.msf.API.Deserializers.Appointment;
@@ -182,6 +185,51 @@ public interface Interface {
                    @Field("type") String type,
                    Callback<Events> serverResponseCallback);
 
+    @FormUrlEncoded
+    @POST("/adverseEventType/")
+    void postAdverseEventType(@Field("name") String patientID,
+                        @Field("description") String admissionDate,
+                        @Field("emergency_contacts") String dischargeDate,
+                        Callback<AdverseEventType> serverResponseCallback);
+
+    @FormUrlEncoded
+    @POST("/adverseEvents/")
+    void postAdverseEvent(@Field("patient") String patientID,
+                              @Field("adverse_event_type") String admissionDate,
+                              @Field("event_date") String dischargeDate,
+                              @Field("notes") String notes,
+                              Callback<AdverseEvent> serverResponseCallback);
+
+    @FormUrlEncoded
+    @POST("/contact/")
+    void postEmergencyContact(@Field("name") String patientID,
+                          @Field("email") String admissionDate,
+                          Callback<EmergencyContact> serverResponseCallback);
+
+    @Multipart
+    @PUT("/adverseEventType/{id}")
+    void updateAdverseEventType(@Path("id") long adverseEventTypeID,
+                                @Part("name") String patientID,
+                                @Part("description") String admissionDate,
+                                @Part("emergency_contacts") String dischargeDate,
+                                Callback<AdverseEventType> serverResponseCallback);
+
+    @Multipart
+    @PUT("/adverseEvents/{id}")
+    void updateAdverseEvent(@Path("id") long adverseEventID,
+                            @Part("patient") String patientID,
+                            @Part("adverse_event_type") String admissionDate,
+                            @Part("event_date") String dischargeDate,
+                            @Part("notes") String notes,
+                            Callback<AdverseEvent> serverResponseCallback);
+
+    @Multipart
+    @PUT("/contact/{id}")
+    void updateEmergencyContact(@Path("id") long contactID,
+                                @Part("name") String patientID,
+                                @Part("email") String admissionDate,
+                                Callback<EmergencyContact> serverResponseCallback);
+
     @Multipart
     @PUT("/patients/{id}/")
     void updatePatient(@Path("id") long patientID,
@@ -280,4 +328,17 @@ public interface Interface {
     @DELETE("/events/{id}/")
     void deleteEvent(@Path("id") long eventID,
                    Callback<Events> serverResponseCallback);
+
+    @DELETE("/adverseEventType/{id}")
+    void deleteAdverseEventType(@Path("id") long adverseEventTypeID,
+                                Callback<AdverseEventType> serverResponseCallback);
+
+    @DELETE("/adverseEvents/{id}")
+    void deleteAdverseEvent(@Path("id") long adverseEventID,
+                            Callback<AdverseEvent> serverResponseCallback);
+    
+    @DELETE("/contact/{id}")
+    void deleteEmergencyContact(@Path("id") long contactID,
+                                Callback<EmergencyContact> serverResponseCallback);
 }
+

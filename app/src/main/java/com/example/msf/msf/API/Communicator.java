@@ -253,6 +253,55 @@ public class Communicator {
     }
 
 
+    public void adverseEventPost(String patientID, String adverse_event_type, String event_date, String notes){
+        Callback<AdverseEvent> callback = new Callback<AdverseEvent>() {
+            @Override
+            public void success(AdverseEvent serverResponse, Response response2) {
+                if(serverResponse.getResponseCode() == 0){
+                    BusProvider.getInstance().post(produceAdverseEventServerResponse(serverResponse));
+                }else{
+                    BusProvider.getInstance().post(produceErrorEvent(serverResponse.getResponseCode(),
+                            serverResponse.getMessage()));
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                if(error != null ){
+                    Log.e(TAG, error.getMessage());
+                    error.printStackTrace();
+                }
+                BusProvider.getInstance().post(produceErrorEvent(-200,error.getMessage()));
+            }
+        };
+        communicatorInterface.postAdverseEvent(patientID, adverse_event_type, event_date, notes, callback);
+    }
+
+    public void emergencyContactPost(String name, String email){
+        Callback<EmergencyContact> callback = new Callback<EmergencyContact>() {
+            @Override
+            public void success(EmergencyContact serverResponse, Response response2) {
+                if(serverResponse.getResponseCode() == 0){
+                    BusProvider.getInstance().post(produceEmergencyContactServerResponse(serverResponse));
+                }else{
+                    BusProvider.getInstance().post(produceErrorEvent(serverResponse.getResponseCode(),
+                            serverResponse.getMessage()));
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                if(error != null ){
+                    Log.e(TAG, error.getMessage());
+                    error.printStackTrace();
+                }
+                BusProvider.getInstance().post(produceErrorEvent(-200,error.getMessage()));
+            }
+        };
+        communicatorInterface.postEmergencyContact(name, email, callback);
+    }
+
+
     public void appointmentPost(String patientId, String owner, String notes, String date,
                                 String appointmentType, String endTime, String startTime){
         Callback<Enrollment> callback = new Callback<Enrollment>() {
@@ -404,6 +453,54 @@ public class Communicator {
             }
         };
         communicatorInterface.updateAdmissions(admissionID, patientID, admissionDate, dischargeDate, healthCentre, notes, callback);
+    }
+
+    public void adverseEventUpdate(long id, String patientID, String adverse_event_type, String event_date, String notes){
+        Callback<AdverseEvent> callback = new Callback<AdverseEvent>() {
+            @Override
+            public void success(AdverseEvent serverResponse, Response response2) {
+                if(serverResponse.getResponseCode() == 0){
+                    BusProvider.getInstance().post(produceAdverseEventServerResponse(serverResponse));
+                }else{
+                    BusProvider.getInstance().post(produceErrorEvent(serverResponse.getResponseCode(),
+                            serverResponse.getMessage()));
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                if(error != null ){
+                    Log.e(TAG, error.getMessage());
+                    error.printStackTrace();
+                }
+                BusProvider.getInstance().post(produceErrorEvent(-200,error.getMessage()));
+            }
+        };
+        communicatorInterface.updateAdverseEvent(id, patientID, adverse_event_type, event_date, notes, callback);
+    }
+
+    public void emergencyContactUpdate(long id, String name, String email){
+        Callback<EmergencyContact> callback = new Callback<EmergencyContact>() {
+            @Override
+            public void success(EmergencyContact serverResponse, Response response2) {
+                if(serverResponse.getResponseCode() == 0){
+                    BusProvider.getInstance().post(produceEmergencyContactServerResponse(serverResponse));
+                }else{
+                    BusProvider.getInstance().post(produceErrorEvent(serverResponse.getResponseCode(),
+                            serverResponse.getMessage()));
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                if(error != null ){
+                    Log.e(TAG, error.getMessage());
+                    error.printStackTrace();
+                }
+                BusProvider.getInstance().post(produceErrorEvent(-200,error.getMessage()));
+            }
+        };
+        communicatorInterface.updateEmergencyContact(id, name, email, callback);
     }
 
 
@@ -692,6 +789,54 @@ public class Communicator {
         communicatorInterface.deleteAdmissions(admissionID, callback);
     }
 
+    public void adverseEventDelete(long id){
+        Callback<AdverseEvent> callback = new Callback<AdverseEvent>() {
+            @Override
+            public void success(AdverseEvent serverResponse, Response response2) {
+                if(serverResponse.getResponseCode() == 0){
+                    BusProvider.getInstance().post(produceAdverseEventServerResponse(serverResponse));
+                }else{
+                    BusProvider.getInstance().post(produceErrorEvent(serverResponse.getResponseCode(),
+                            serverResponse.getMessage()));
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                if(error != null ){
+                    Log.e(TAG, error.getMessage());
+                    error.printStackTrace();
+                }
+                BusProvider.getInstance().post(produceErrorEvent(-200,error.getMessage()));
+            }
+        };
+        communicatorInterface.deleteAdverseEvent(id, callback);
+    }
+
+    public void emergencyContactDelete(long id){
+        Callback<EmergencyContact> callback = new Callback<EmergencyContact>() {
+            @Override
+            public void success(EmergencyContact serverResponse, Response response2) {
+                if(serverResponse.getResponseCode() == 0){
+                    BusProvider.getInstance().post(produceEmergencyContactServerResponse(serverResponse));
+                }else{
+                    BusProvider.getInstance().post(produceErrorEvent(serverResponse.getResponseCode(),
+                            serverResponse.getMessage()));
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                if(error != null ){
+                    Log.e(TAG, error.getMessage());
+                    error.printStackTrace();
+                }
+                BusProvider.getInstance().post(produceErrorEvent(-200,error.getMessage()));
+            }
+        };
+        communicatorInterface.deleteEmergencyContact(id, callback);
+    }
+
 
     @Produce
     public ServerEvent produceServerEvent(Users Users) {
@@ -737,6 +882,21 @@ public class Communicator {
     public ServerEvent produceAdmissionServerResponse(Admission Admission){
         return new ServerEvent(Admission);
     }
-}
 
+
+    @Produce
+    public ServerEvent produceAdverseEventServerResponse(AdverseEvent AdverseEvent){
+        return new ServerEvent(AdverseEvent);
+    }
+
+    @Produce
+    public ServerEvent produceAdverseEventTypeServerResponse(AdverseEventType AdverseEventType){
+        return new ServerEvent(AdverseEventType);
+    }
+
+    @Produce
+    public ServerEvent produceEmergencyContactServerResponse(EmergencyContact EmergencyContact){
+        return new ServerEvent(EmergencyContact);
+    }
+}
 

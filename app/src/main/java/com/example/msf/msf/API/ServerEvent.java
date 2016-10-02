@@ -19,7 +19,48 @@ public class ServerEvent {
     private Events Events;
     private Admission Admission;
     private MedicalRecord MedicalRecord;
+    private AdverseEvent AdverseEvent;
+    private AdverseEventType AdverseEventType;
+    private EmergencyContact EmergencyContact;
 
+    /*************/
+    public ServerEvent(AdverseEvent adverseEvent) {
+        AdverseEvent = adverseEvent;
+    }
+
+    public AdverseEvent getAdverseEvent() {
+        return AdverseEvent;
+    }
+
+    public void setAdverseEvent(AdverseEvent adverseEvent) {
+        AdverseEvent = adverseEvent;
+    }
+
+    /*************/
+    public ServerEvent(AdverseEventType adverseEventType) {
+        AdverseEventType = adverseEventType;
+    }
+
+    public AdverseEventType getAdverseEventType() {
+        return AdverseEventType;
+    }
+
+    public void setAdverseEventType(AdverseEventType adverseEventType) {
+        AdverseEventType = adverseEventType;
+    }
+    /*************/
+
+    public ServerEvent(EmergencyContact emergencyContact) {
+        EmergencyContact = emergencyContact;
+    }
+
+    public EmergencyContact getEmergencyContact() {
+        return EmergencyContact;
+    }
+
+    public void setEmergencyContact(EmergencyContact emergencyContact) {
+        EmergencyContact = emergencyContact;
+    }
 
     /*************/
     public ServerEvent(MedicalRecord MedicalRecord) {

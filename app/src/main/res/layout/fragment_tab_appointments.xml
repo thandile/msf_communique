@@ -9,7 +9,6 @@
         android:layout_height="match_parent"
         android:id="@+id/enrollmentsLV" />
 
-
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/btnFloatingAction"
         android:layout_width="wrap_content"
