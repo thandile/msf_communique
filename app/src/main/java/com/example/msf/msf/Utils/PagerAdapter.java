@@ -8,9 +8,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
-import com.example.msf.msf.Fragments.PatientFragments.PatientTabs.EnrollmentsTab;
-import com.example.msf.msf.Fragments.PatientFragments.PatientTabs.SessionsTab;
-import com.example.msf.msf.Fragments.PatientFragments.PatientTabs.AppointmentsTab;
+import com.example.msf.msf.Fragments.Patient.PatientTabs.EnrollmentsTab;
+import com.example.msf.msf.Fragments.Patient.PatientTabs.SessionsTab;
+import com.example.msf.msf.Fragments.Patient.PatientTabs.AppointmentsTab;
 
 public class PagerAdapter extends FragmentStatePagerAdapter {
     int mNumOfTabs;

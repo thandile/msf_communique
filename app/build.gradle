@@ -36,8 +36,16 @@ dependencies {
     compile 'com.android.support:support-v4:23.4.0'
     compile 'com.github.amigold.fundapter:library:1.0'
     compile 'com.mobsandgeeks:android-saripaar:2.0.2'
+    compile 'com.google.firebase:firebase-messaging:9.6.1'
     testCompile 'junit:junit:4.12'
-    compile 'com.google.firebase:firebase-messaging:9.0.2'
-    apply plugin: 'com.google.gms.google-services'
 }
+
+apply plugin: 'com.google.gms.google-services'
+
+
+
+
+
+
+
 

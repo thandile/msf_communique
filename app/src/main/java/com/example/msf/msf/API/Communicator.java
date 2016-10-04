@@ -381,6 +381,32 @@ public class Communicator {
         communicatorInterface.postMedicalReport(title, reportType, patient, notes, callback);
     }
 
+    public void regimenPost(String  patient, String notes, String[] drugs, String dateStarted,
+                              String dateEnded){
+        Callback<Regimen> callback = new Callback<Regimen>() {
+
+            @Override
+            public void success(Regimen serverResponse, Response response2) {
+                if(serverResponse.getResponseCode() == 0){
+                    BusProvider.getInstance().post(produceRegimenServerResponse(serverResponse));
+                }else{
+                    BusProvider.getInstance().post(produceErrorEvent(serverResponse.getResponseCode(),
+                            serverResponse.getMessage()));
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                if(error != null ){
+                    Log.e(TAG, error.getMessage());
+                    error.printStackTrace();
+                }
+                BusProvider.getInstance().post(produceErrorEvent(-200,error.getMessage()));
+            }
+        };
+        communicatorInterface.postRegimen(patient, notes, drugs, dateStarted, dateEnded, callback);
+    }
+
     public void reportUpdate(long reportID, String title, String reportType, String patient, String notes){
         Callback<MedicalRecord> callback = new Callback<MedicalRecord>() {
 
@@ -838,6 +864,54 @@ public class Communicator {
     }
 
 
+    public void regimenDelete(final long regimenID){
+        Callback<Regimen> callback = new Callback<Regimen>() {
+            @Override
+            public void success(Regimen serverResponse, Response response2) {
+                BusProvider.getInstance().post(produceRegimenServerResponse(serverResponse));
+                Log.d(TAG,"Success, regimen deleted "+ regimenID);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                if(error != null ){
+                    Log.e(TAG, error.getMessage());
+                    error.printStackTrace();
+                }
+                BusProvider.getInstance().post(produceErrorEvent(-200,error.getMessage()));
+            }
+        };
+        communicatorInterface.deleteRegimen(regimenID, callback);
+    }
+
+    public void regimenUpdate(long regimenID, String  patient, String notes, String[] drugs, String dateStarted,
+                              String dateEnded){
+        Callback<Regimen> callback = new Callback<Regimen>() {
+
+            @Override
+            public void success(Regimen serverResponse, Response response2) {
+                if(serverResponse.getResponseCode() == 0){
+                    BusProvider.getInstance().post(produceRegimenServerResponse(serverResponse));
+                }else{
+                    BusProvider.getInstance().post(produceErrorEvent(serverResponse.getResponseCode(),
+                            serverResponse.getMessage()));
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                if(error != null ){
+                    Log.e(TAG, error.getMessage());
+                    error.printStackTrace();
+                }
+                BusProvider.getInstance().post(produceErrorEvent(-200,error.getMessage()));
+            }
+        };
+        communicatorInterface.updateRegimen(regimenID, patient, notes, drugs, dateStarted, dateEnded, callback);
+    }
+
+
+
     @Produce
     public ServerEvent produceServerEvent(Users Users) {
         return new ServerEvent(Users);
@@ -890,8 +964,8 @@ public class Communicator {
     }
 
     @Produce
-    public ServerEvent produceAdverseEventTypeServerResponse(AdverseEventType AdverseEventType){
-        return new ServerEvent(AdverseEventType);
+    public ServerEvent produceRegimenServerResponse(Regimen Regimen){
+        return new ServerEvent(Regimen);
     }
 
     @Produce

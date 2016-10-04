@@ -10,40 +10,40 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.example.msf.msf.API.Communicator;
-import com.example.msf.msf.Fragments.AdmissionsFragments.AdmissionFragment;
-import com.example.msf.msf.Fragments.AdmissionsFragments.CreateAdmissionFragment;
-import com.example.msf.msf.Fragments.AppointmentFragments.AppointmentFragment;
-import com.example.msf.msf.Fragments.AppointmentFragments.AppointmentInfoFragment;
-import com.example.msf.msf.Fragments.AppointmentFragments.CreateAppointmentFragment;
-import com.example.msf.msf.Fragments.AppointmentFragments.UpdateAppointmentFragment;
-import com.example.msf.msf.Fragments.CounsellingFragments.CounsellingFragment;
-import com.example.msf.msf.Fragments.CounsellingFragments.CounsellingInfoFragment;
-import com.example.msf.msf.Fragments.CounsellingFragments.CreateCounsellingFragment;
-import com.example.msf.msf.Fragments.CounsellingFragments.UpdateCounsellingFragment;
-import com.example.msf.msf.Fragments.EnrollmentsFragments.CreateEnrollmentFragment;
-import com.example.msf.msf.Fragments.EnrollmentsFragments.EnrollmentFragment;
-import com.example.msf.msf.Fragments.EnrollmentsFragments.EnrollmentInfoFragment;
-import com.example.msf.msf.Fragments.EnrollmentsFragments.UpdateEnrollmentFragment;
-import com.example.msf.msf.Fragments.EventsFragments.CreateEventFragment;
-import com.example.msf.msf.Fragments.EventsFragments.EventsFragment;
+import com.example.msf.msf.Fragments.Admissions.AdmissionFragment;
+import com.example.msf.msf.Fragments.Admissions.CreateAdmissionFragment;
+import com.example.msf.msf.Fragments.AdverseEvents.AdverseEventFragment;
+import com.example.msf.msf.Fragments.AdverseEvents.AdverseEventInfoFragment;
+import com.example.msf.msf.Fragments.AdverseEvents.CreateAdverseEventFragment;
+import com.example.msf.msf.Fragments.Appointment.AppointmentFragment;
+import com.example.msf.msf.Fragments.Appointment.AppointmentInfoFragment;
+import com.example.msf.msf.Fragments.Appointment.UpdateAppointmentFragment;
+import com.example.msf.msf.Fragments.Counselling.CounsellingFragment;
+import com.example.msf.msf.Fragments.Counselling.CounsellingInfoFragment;
+import com.example.msf.msf.Fragments.Counselling.UpdateCounsellingFragment;
+import com.example.msf.msf.Fragments.Enrollments.EnrollmentFragment;
+import com.example.msf.msf.Fragments.Enrollments.EnrollmentInfoFragment;
+import com.example.msf.msf.Fragments.Enrollments.UpdateEnrollmentFragment;
+import com.example.msf.msf.Fragments.Events.CreateEventFragment;
+import com.example.msf.msf.Fragments.Events.EventsFragment;
 import com.example.msf.msf.Fragments.HomeFragment;
-import com.example.msf.msf.Fragments.MedicalRecordsFragment.CreateMedicalRecFragment;
-import com.example.msf.msf.Fragments.MedicalRecordsFragment.MedicalRecordFragment;
-import com.example.msf.msf.Fragments.PatientFragments.PatientFragment;
-import com.example.msf.msf.Fragments.PatientFragments.PatientTabs.PatientInfoTab;
-import com.example.msf.msf.Fragments.PatientFragments.PatientTabs.AdmissionsTab;
-import com.example.msf.msf.Fragments.PatientFragments.PatientTabs.MedicalRecordTab;
-import com.example.msf.msf.Fragments.PatientFragments.PatientTabs.MedicationTab;
-import com.example.msf.msf.Fragments.PatientFragments.PatientTabs.TabFragment;
-import com.example.msf.msf.Fragments.PatientFragments.UpdatePatientFragment;
+import com.example.msf.msf.Fragments.MedicalRecords.CreateMedicalRecFragment;
+import com.example.msf.msf.Fragments.MedicalRecords.MedicalRecordFragment;
+import com.example.msf.msf.Fragments.Patient.PatientFragment;
+import com.example.msf.msf.Fragments.Patient.PatientTabs.PatientInfoTab;
+import com.example.msf.msf.Fragments.Patient.PatientTabs.AdmissionsTab;
+import com.example.msf.msf.Fragments.Patient.PatientTabs.MedicalRecordTab;
+import com.example.msf.msf.Fragments.Patient.PatientTabs.MedicationTab;
+import com.example.msf.msf.Fragments.Patient.PatientTabs.TabFragment;
+import com.example.msf.msf.Fragments.Patient.UpdatePatientFragment;
+import com.example.msf.msf.Fragments.Regimens.CreateRegimenFragment;
+import com.example.msf.msf.Fragments.Regimens.RegimenFragment;
+import com.example.msf.msf.Fragments.Regimens.RegimenInfoFragment;
 import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.messaging.FirebaseMessaging;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
@@ -61,7 +61,11 @@ public class HomeActivity extends AppCompatActivity
         MedicalRecordTab.OnFragmentInteractionListener,
         CreateAdmissionFragment.OnFragmentInteractionListener,
         CreateMedicalRecFragment.OnFragmentInteractionListener,
-        CreateEventFragment.OnFragmentInteractionListener{
+        CreateEventFragment.OnFragmentInteractionListener,
+        CreateAdverseEventFragment.OnFragmentInteractionListener,
+        CreateRegimenFragment.OnFragmentInteractionListener,
+        RegimenInfoFragment.OnFragmentInteractionListener,
+        AdverseEventInfoFragment.OnFragmentInteractionListener{
 
     // flag to load home fragment when user presses back key
     private boolean shouldLoadHomeFragOnBackPress = false;
@@ -200,18 +204,18 @@ public class HomeActivity extends AppCompatActivity
                     .commit();
             setToolbarTitle("Home");
         }
-        /**else if (id == R.id.nav_camera) {
+        else if (id == R.id.nav_patients) {
             // Handle the camera action
             navItemIndex = 1;
-            CreatePatientFragment createPatientFragment = new CreatePatientFragment();
+            PatientFragment patientFragment = new PatientFragment();
             FragmentManager manager = getSupportFragmentManager();
             manager.beginTransaction().replace(R.id.rel_layout_for_frag,
-                    createPatientFragment,
-                    createPatientFragment.getTag())
+                    patientFragment,
+                    patientFragment.getTag())
                     .addToBackStack(null)
                     .commit();
-            setToolbarTitle("Patient Registration");
-        }**/
+            setToolbarTitle("Patients");
+        }
         else if (id == R.id.nav_gallery) {
             navItemIndex = 2;
             AppointmentFragment appointmentFragment = new AppointmentFragment();
@@ -279,51 +283,27 @@ public class HomeActivity extends AppCompatActivity
                     .commit();
             setToolbarTitle("Medical Records");
         }
-
-        /**else if (id == R.id.nav_patient_list){
+        else if (id == R.id.nav_adverseEvent){
             navItemIndex = 5;
-           // Toast.makeText(this, ""+navItemIndex, Toast.LENGTH_SHORT).show();
-            PatientFragment patientFragment = new PatientFragment();
+            AdverseEventFragment adverseEventFragment = new AdverseEventFragment();
             FragmentManager manager = getSupportFragmentManager();
             manager.beginTransaction().replace(R.id.rel_layout_for_frag,
-                    patientFragment,
-                    patientFragment.getTag())
+                    adverseEventFragment,
+                    adverseEventFragment.getTag())
                     .addToBackStack(null)
                     .commit();
-            setToolbarTitle("Patients");
+            setToolbarTitle("Adverse Events");
         }
-        else if (id == R.id.nav_appointment_list){
+        else if (id == R.id.nav_regimen){
             navItemIndex = 6;
-            AppointmentFragment appointmentFragment = new AppointmentFragment();
+            RegimenFragment regimenFragment = new RegimenFragment();
             FragmentManager manager = getSupportFragmentManager();
             manager.beginTransaction().replace(R.id.rel_layout_for_frag,
-                    appointmentFragment,
-                    appointmentFragment.getTag())
+                    regimenFragment,
+                    regimenFragment.getTag())
                     .addToBackStack(null)
                     .commit();
-            setToolbarTitle("Appointments");
-        }
-        else if (id == R.id.nav_counselling_list){
-            navItemIndex = 7;
-            CounsellingFragment counsellingFragment = new CounsellingFragment();
-            FragmentManager manager = getSupportFragmentManager();
-            manager.beginTransaction().replace(R.id.rel_layout_for_frag,
-                    counsellingFragment,
-                    counsellingFragment.getTag())
-                    .addToBackStack(null)
-                    .commit();
-            setToolbarTitle("Counselling Sessions");
-        }
-        else if (id == R.id.nav_enrollment_list){
-            navItemIndex = 8;
-            EnrollmentFragment enrollmentFragment = new EnrollmentFragment();
-            FragmentManager manager = getSupportFragmentManager();
-            manager.beginTransaction().replace(R.id.rel_layout_for_frag,
-                    enrollmentFragment,
-                    enrollmentFragment.getTag())
-                    .addToBackStack(null)
-                    .commit();
-            setToolbarTitle("Pilot Enrollments");
+            setToolbarTitle("Regimens");
         }
         else {
             HomeFragment home = new HomeFragment();
@@ -334,7 +314,7 @@ public class HomeActivity extends AppCompatActivity
                     .addToBackStack(null)
                     .commit();
             setToolbarTitle("Home");
-        }**/
+        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

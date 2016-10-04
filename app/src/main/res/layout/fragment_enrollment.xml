@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/swipe_refresh_layout"
-    tools:context=".Fragments.EnrollmentsFragments.EnrollmentFragment">
+    tools:context=".Fragments.Enrollments.EnrollmentFragment">
 
     <FrameLayout
         android:layout_width="match_parent"

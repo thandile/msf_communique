@@ -20,7 +20,7 @@ public class ServerEvent {
     private Admission Admission;
     private MedicalRecord MedicalRecord;
     private AdverseEvent AdverseEvent;
-    private AdverseEventType AdverseEventType;
+    private Regimen Regimen;
     private EmergencyContact EmergencyContact;
 
     /*************/
@@ -37,16 +37,16 @@ public class ServerEvent {
     }
 
     /*************/
-    public ServerEvent(AdverseEventType adverseEventType) {
-        AdverseEventType = adverseEventType;
+    public ServerEvent(Regimen regimen) {
+        Regimen = regimen;
     }
 
-    public AdverseEventType getAdverseEventType() {
-        return AdverseEventType;
+    public Regimen getRegimen() {
+        return Regimen;
     }
 
-    public void setAdverseEventType(AdverseEventType adverseEventType) {
-        AdverseEventType = adverseEventType;
+    public void setRegimen(Regimen regimen) {
+        Regimen = regimen;
     }
     /*************/
 

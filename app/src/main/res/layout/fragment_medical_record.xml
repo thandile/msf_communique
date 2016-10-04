@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/swipe_refresh_layout"
-    tools:context="com.example.msf.msf.Fragments.MedicalRecordsFragment.MedicalRecordFragment">
+    tools:context="com.example.msf.msf.Fragments.MedicalRecords.MedicalRecordFragment">
 
 <FrameLayout
     android:layout_width="match_parent"

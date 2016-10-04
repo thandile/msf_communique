@@ -1,11 +1,10 @@
 package com.example.msf.msf.API;
 
-import android.widget.ListView;
-
 import com.example.msf.msf.API.Deserializers.AddCounsellingResponse;
 import com.example.msf.msf.API.Deserializers.Admission;
 import com.example.msf.msf.API.Deserializers.AdverseEvent;
 import com.example.msf.msf.API.Deserializers.AdverseEventType;
+import com.example.msf.msf.API.Deserializers.Drug;
 import com.example.msf.msf.API.Deserializers.EmergencyContact;
 import com.example.msf.msf.API.Deserializers.Enrollment;
 import com.example.msf.msf.API.Deserializers.AddPilotResponse;
@@ -13,9 +12,9 @@ import com.example.msf.msf.API.Deserializers.Appointment;
 import com.example.msf.msf.API.Deserializers.Events;
 import com.example.msf.msf.API.Deserializers.MedicalRecord;
 import com.example.msf.msf.API.Deserializers.MedicalRecordType;
+import com.example.msf.msf.API.Deserializers.Regimen;
 import com.example.msf.msf.API.Deserializers.Users;
 import com.example.msf.msf.API.Deserializers.SessionDeserialiser;
-import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
@@ -108,9 +107,30 @@ public interface Interface {
     @GET("/events/")
     void getEvents(Callback<List<Events>> serverResponseCallback);
 
-    @GET("/events/{id}")
+    @GET("/events/{id}/")
     void getEvent(@Path("id") long eventID,
                   Callback<Events> serverResponseCallback);
+
+    @GET("/regimen/")
+    void getRegimen(Callback<List<Regimen>> serverResponseCallback);
+
+    @GET("/regimen/{id}/")
+    void getOneRegimen(@Path("id") long regimenID,
+                        Callback<Regimen> serverResponseCallback);
+
+    @GET("/drug/")
+    void getDrugs(Callback<Drug> serverResponseCallback);
+
+    @GET("/drug/{id}/")
+    void getOneDrug(@Path("id") long regimenID,
+                       Callback<Drug> serverResponseCallback);
+
+    @GET("/adverseEvents/")
+    void getAdverseEvents(Callback<List<AdverseEvent>> serverResponseCallback);
+
+    @GET("/adverseEvents/{id}/")
+    void getAdverseEvent(@Path("id") long adverseEventID,
+            Callback<AdverseEvent> serverResponseCallback);
 
     @FormUrlEncoded
     @POST("/programs/")
@@ -206,16 +226,35 @@ public interface Interface {
                           @Field("email") String admissionDate,
                           Callback<EmergencyContact> serverResponseCallback);
 
+    @FormUrlEncoded
+    @POST("/regimen/")
+    void postRegimen(@Field("patient") String patientId,
+                   @Field("notes") String notes,
+                   @Field("drugs") String[] drugs,
+                   @Field("date_started") String startDate,
+                   @Field("date_ended") String endDate,
+                   Callback<Regimen> serverResponseCallback);
+
     @Multipart
-    @PUT("/adverseEventType/{id}")
+    @PUT("/regimen/{id}/")
+    void updateRegimen(@Path("id") long regimenId,
+                       @Field("patient") String patientId,
+                       @Field("notes") String notes,
+                       @Field("drugs") String[] drugs,
+                       @Field("date_started") String startDate,
+                       @Field("date_ended") String endDate,
+                       Callback<Regimen> serverResponseCallback);
+
+    @Multipart
+    @PUT("/adverseEventType/{id}/")
     void updateAdverseEventType(@Path("id") long adverseEventTypeID,
                                 @Part("name") String patientID,
                                 @Part("description") String admissionDate,
                                 @Part("emergency_contacts") String dischargeDate,
-                                Callback<AdverseEventType> serverResponseCallback);
+                                Callback<AdverseEvent> serverResponseCallback);
 
     @Multipart
-    @PUT("/adverseEvents/{id}")
+    @PUT("/adverseEvents/{id}/")
     void updateAdverseEvent(@Path("id") long adverseEventID,
                             @Part("patient") String patientID,
                             @Part("adverse_event_type") String admissionDate,
@@ -224,7 +263,7 @@ public interface Interface {
                             Callback<AdverseEvent> serverResponseCallback);
 
     @Multipart
-    @PUT("/contact/{id}")
+    @PUT("/contact/{id}/")
     void updateEmergencyContact(@Path("id") long contactID,
                                 @Part("name") String patientID,
                                 @Part("email") String admissionDate,
@@ -301,6 +340,10 @@ public interface Interface {
                    @Part("end_time") String endTime,
                    Callback<Events> serverResponseCallback);
 
+    @DELETE("/regimen/{id}/")
+    void deleteRegimen(@Path("id") long regimenId,
+                       Callback<Regimen> serverResponseCallback);
+
     @DELETE("/patients/{id}/")
     void deletePatient(@Path("id") long patientID,
                        Callback<Users> callback);
@@ -329,15 +372,15 @@ public interface Interface {
     void deleteEvent(@Path("id") long eventID,
                    Callback<Events> serverResponseCallback);
 
-    @DELETE("/adverseEventType/{id}")
+    @DELETE("/adverseEventType/{id}/")
     void deleteAdverseEventType(@Path("id") long adverseEventTypeID,
-                                Callback<AdverseEventType> serverResponseCallback);
+                                Callback<AdverseEvent> serverResponseCallback);
 
-    @DELETE("/adverseEvents/{id}")
+    @DELETE("/adverseEvents/{id}/")
     void deleteAdverseEvent(@Path("id") long adverseEventID,
                             Callback<AdverseEvent> serverResponseCallback);
     
-    @DELETE("/contact/{id}")
+    @DELETE("/contact/{id}/")
     void deleteEmergencyContact(@Path("id") long contactID,
                                 Callback<EmergencyContact> serverResponseCallback);
 }

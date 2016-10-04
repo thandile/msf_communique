@@ -6,7 +6,10 @@
             android:id="@+id/nav_home"
             android:icon="@drawable/ic_home"
             android:title="Home" />
-
+        <item
+            android:id="@+id/nav_patients"
+            android:icon="@drawable/ic_appointment"
+            android:title="Patients" />
         <item
             android:id="@+id/nav_gallery"
             android:icon="@drawable/ic_appointment"
@@ -31,7 +34,14 @@
             android:id="@+id/nav_records"
             android:icon="@drawable/ic_enrol"
             android:title="Medical Records" />
-
+        <item
+            android:id="@+id/nav_adverseEvent"
+            android:icon="@drawable/ic_enrol"
+            android:title="Adverse Events" />
+        <item
+            android:id="@+id/nav_regimen"
+            android:icon="@drawable/ic_enrol"
+            android:title="Regimens" />
     </group>
 
 </menu>
