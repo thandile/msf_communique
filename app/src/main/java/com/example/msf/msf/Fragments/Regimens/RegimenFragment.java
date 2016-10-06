@@ -47,7 +47,7 @@ public class RegimenFragment extends Fragment {
     FloatingActionButton fab;
     private final String TAG = this.getClass().getSimpleName();
     public static String PATIENTINFOFILE = "Patients";
-    public static String REGIMENINFOFILE = "AdverseEvents";
+    public static String REGIMENINFOFILE = "Drugs";
     ListView regimenLV;
 
 
@@ -139,17 +139,9 @@ public class RegimenFragment extends Fragment {
                             String patient = getPatientInfo(Long.parseLong(jsonobject.getString("patient")));
                             Log.d(TAG, "oatuie  "+ patient);
                             String[] drugs = {};
-                            if (fileExistance(REGIMENINFOFILE)) {
-                                Log.d(TAG, "True");
+
                                // drugs = loadDrugs(jsonobject.getString("drugs"));
                                // Log.d(TAG, drugs);
-                            }
-                            else {
-                             //   sessionTypeGet();
-                                Log.d(TAG, "False");
-                               // drugs = sessionTypeLoad(Long.parseLong(jsonobject.getString("drugs")));
-                                Log.d(TAG, "read from server first");
-                            }
 
                             String notes = jsonobject.getString("notes");
                             String dateStarted = jsonobject.getString("date_started");
@@ -218,12 +210,6 @@ public class RegimenFragment extends Fragment {
         };
         communicatorInterface.getRegimen(callback);
     }
-
-    public boolean fileExistance(String FILENAME){
-        File file = getContext().getFileStreamPath(FILENAME);
-        return file.exists();
-    }
-
 
     public String  loadDrugs(String did){
         String drugs = WriteRead.read(REGIMENINFOFILE, getContext());

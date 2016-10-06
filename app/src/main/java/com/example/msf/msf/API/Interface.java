@@ -119,11 +119,15 @@ public interface Interface {
                         Callback<Regimen> serverResponseCallback);
 
     @GET("/drug/")
-    void getDrugs(Callback<Drug> serverResponseCallback);
+    void getDrugs(Callback<List<Drug>> serverResponseCallback);
 
     @GET("/drug/{id}/")
     void getOneDrug(@Path("id") long regimenID,
                        Callback<Drug> serverResponseCallback);
+
+    @GET("/adverseEventType/")
+    void getAdverseEventType(Callback<List<AdverseEventType>> serverResponseCallback);
+
 
     @GET("/adverseEvents/")
     void getAdverseEvents(Callback<List<AdverseEvent>> serverResponseCallback);

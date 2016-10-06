@@ -42,13 +42,12 @@ import retrofit.mime.TypedByteArray;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class CounsellingFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener{
+public class CounsellingFragment extends Fragment {
     FloatingActionButton fab;
     private ListView counsellingLV;
     private final String TAG = this.getClass().getSimpleName();
     public static String PATIENTINFOFILE = "Patients";
     public static String SESSIONTYPEFILE = "SessionType";
-    private SwipeRefreshLayout swipeRefreshLayout;
 
     public CounsellingFragment() {
         // Required empty public constructor
@@ -60,8 +59,6 @@ public class CounsellingFragment extends Fragment implements SwipeRefreshLayout.
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_counselling, container, false);
-        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
-        swipeRefreshLayout.setOnRefreshListener(this);
         counsellingLV = (ListView) view.findViewById(R.id.counsellingLV);
         counsellingGet();
         counsellingLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -115,19 +112,9 @@ public class CounsellingFragment extends Fragment implements SwipeRefreshLayout.
                             int id = Integer.parseInt(jsonobject.getString("id"));
                             String patient = getPatientInfo(Long.parseLong(jsonobject.getString("patient")));
                             String session = "";
-                            if (fileExistance(SESSIONTYPEFILE)) {
-                                Log.d(TAG, "True");
-                                session = sessionTypeLoad(Long.parseLong(jsonobject.getString("counselling_session_type")));
-                                Log.d(TAG, session);
-                            }
-                            else {
-                                swipeRefreshLayout.setRefreshing(true);
-                                sessionTypeGet();
-                                Log.d(TAG, "False");
-                                session = sessionTypeLoad(Long.parseLong(jsonobject.getString("counselling_session_type")));
-                                Log.d(TAG, "read from server first");
-                            }
-
+                            Log.d(TAG, "True");
+                            session = sessionTypeLoad(Long.parseLong(jsonobject.getString("counselling_session_type")));
+                            Log.d(TAG, session);
                             String notes = jsonobject.getString("notes");
 
 
@@ -170,7 +157,6 @@ public class CounsellingFragment extends Fragment implements SwipeRefreshLayout.
                                 "No recorded counselling sessions", Toast.LENGTH_SHORT).show();
                         //counsellingList.add("No scheduled appointments.");
                     }
-                    swipeRefreshLayout.setRefreshing(false);
                     //appointmentLV.setAdapter(adapter);
                 }
                 catch (JSONException e){
@@ -211,16 +197,6 @@ public class CounsellingFragment extends Fragment implements SwipeRefreshLayout.
         return full_name;
     }
 
-    @Override
-    public void onRefresh() {
-        getContext().deleteFile(SESSIONTYPEFILE);
-        sessionTypeGet();
-    }
-
-    public boolean fileExistance(String FILENAME){
-        File file = getContext().getFileStreamPath(FILENAME);
-        return file.exists();
-    }
 
     private String sessionTypeLoad(Long sid) {
         String session = "";
@@ -238,31 +214,7 @@ public class CounsellingFragment extends Fragment implements SwipeRefreshLayout.
         } catch (JSONException e) {
             System.out.print("unsuccessful");
         }
-        swipeRefreshLayout.setRefreshing(false);
         return session;
     }
 
-    public void sessionTypeGet(){
-        Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
-        Callback<List<SessionDeserialiser>> callback = new Callback<List<SessionDeserialiser>>() {
-            @Override
-            public void success(List<SessionDeserialiser> serverResponse, Response response2) {
-                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
-                WriteRead.write(SESSIONTYPEFILE, resp, getContext());
-                counsellingGet();
-                swipeRefreshLayout.setRefreshing(false);
-                Log.d(TAG, "read from server");
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                if (error != null) {
-                    Log.e(TAG, error.getMessage());
-                    error.printStackTrace();
-                }
-                swipeRefreshLayout.setRefreshing(false);
-            }
-        };
-        communicatorInterface.getSessions(callback);
-    }
 }

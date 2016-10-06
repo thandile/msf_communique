@@ -188,7 +188,7 @@ public class UpdateCounsellingFragment extends Fragment implements Validator.Val
 
     public void patientsGet(){
         final List<String> patientList = new ArrayList<String>();
-        String patients = WriteRead.read(PatientFragment.FILENAME, getContext());
+        String patients = WriteRead.read(PatientFragment.PATIENTFILE, getContext());
         try{
             JSONArray jsonarray = new JSONArray(patients);
             // JSONArray jsonarray = new JSONArray(resp);

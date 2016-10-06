@@ -16,16 +16,9 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.Deserializers.Patients;
-import com.example.msf.msf.API.Deserializers.SessionDeserialiser;
-import com.example.msf.msf.API.Deserializers.Users;
-import com.example.msf.msf.API.Interface;
-import com.example.msf.msf.API.PatientsDeserialiser;
-import com.example.msf.msf.API.PilotsDeserializer;
 import com.example.msf.msf.Fragments.Patient.PatientTabs.TabFragment;
 import com.example.msf.msf.HomeActivity;
-import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.WriteRead;
 
@@ -33,25 +26,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
-
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
-import retrofit.mime.TypedByteArray;
 
 
-public class PatientFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+public class PatientFragment extends Fragment {
 
     private final String TAG = this.getClass().getSimpleName();
     ListView patientLv;
-    public static String FILENAME = "Patients";
-    public static String PILOTINFOFILE = "Pilots";
-    public static String SESSIONTYPEFILE = "SessionType";
-    public static String USERINFOFILE = "Users";
-    private SwipeRefreshLayout swipeRefreshLayout;
+    public static String PATIENTFILE = "Patients";
     ArrayAdapter<String> adapter;
 
     public PatientFragment() {
@@ -64,11 +46,10 @@ public class PatientFragment extends Fragment implements SwipeRefreshLayout.OnRe
                              Bundle savedInstanceState) {
         HomeActivity.navItemIndex = 1;
         View view = inflater.inflate(R.layout.fragment_patient, container, false);
-        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
-        swipeRefreshLayout.setOnRefreshListener(this);
+
         setHasOptionsMenu(true);
         patientLv = (ListView) view.findViewById(R.id.patientLV);
-        patientsGet();
+        loadFromFile();
         patientLv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -88,30 +69,8 @@ public class PatientFragment extends Fragment implements SwipeRefreshLayout.OnRe
     }
 
 
-    /**
-     * This method is called when swipe refresh is pulled down
-     */
-    @Override
-    public void onRefresh() {
-        getContext().deleteFile(FILENAME);
-        patientsGet();
-        getContext().deleteFile(SESSIONTYPEFILE);
-        sessionTypeGet();
-        getContext().deleteFile(PILOTINFOFILE);
-        pilotsGet();
-        getContext().deleteFile(USERINFOFILE);
-        usersGet();
-    }
-
-
-    public boolean fileExistance(String FILENAME){
-        File file = getContext().getFileStreamPath(FILENAME);
-        return file.exists();
-    }
-
-
     public void loadFromFile(){
-        String patients = WriteRead.read(FILENAME, getContext());
+        String patients = WriteRead.read(PATIENTFILE, getContext());
         ArrayList<String> patientList = new ArrayList<>();
         Patients patient = new Patients();
         try {
@@ -136,38 +95,6 @@ public class PatientFragment extends Fragment implements SwipeRefreshLayout.OnRe
         Log.d(TAG, "read from phone");
     }
 
-    public void patientsGet(){
-        Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
-        if (fileExistance(FILENAME)) {
-            loadFromFile();//dictionary, patientList);
-        }
-        else {
-            // showing refresh animation before making http call
-            swipeRefreshLayout.setRefreshing(true);
-            Callback<List<PatientsDeserialiser>> callback = new Callback<List<PatientsDeserialiser>>() {
-                @Override
-                public void success(List<PatientsDeserialiser> serverResponse, Response response2) {
-                    String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
-                    Patients patient = new Patients();
-                    WriteRead.write(FILENAME, resp, getContext());
-                    loadFromFile();
-                    // stopping swipe refresh
-                    swipeRefreshLayout.setRefreshing(false);
-                    Log.d(TAG, "read from server");
-                }
-
-                @Override
-                public void failure(RetrofitError error) {
-                    if (error != null) {
-                        Log.e(TAG, error.getMessage());
-                        error.printStackTrace();
-                    }
-                    swipeRefreshLayout.setRefreshing(false);
-                }
-            };
-            communicatorInterface.getPatients(callback);
-        }
-    }
 
     @Override
     public void onCreateOptionsMenu (Menu menu, MenuInflater inflater){
@@ -183,84 +110,12 @@ public class PatientFragment extends Fragment implements SwipeRefreshLayout.OnRe
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                System.out.println("tap");
-                 adapter.getFilter().filter(newText);
+                //System.out.println("tap");
+                adapter.getFilter().filter(newText);
                 return false;
             }
         });
     }
 
-    public void pilotsGet(){
-        final List<String>pilotNames = new ArrayList<String>();
-        Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
-        Callback<List<PilotsDeserializer>> callback = new Callback<List<PilotsDeserializer>>() {
-            @Override
-            public void success(List<PilotsDeserializer> serverResponse, Response response2) {
-                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
-                WriteRead.write(PILOTINFOFILE, resp, getContext());
-                //enrollmentsGet();
-                //swipeRefreshLayout.setRefreshing(false);
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                if (error != null) {
-                    Log.e(TAG, error.getMessage());
-                    error.printStackTrace();
-                }
-               // swipeRefreshLayout.setRefreshing(false);
-            }
-        };
-        communicatorInterface.getPilots(callback);
-        Log.d(TAG, "read from server");
-    }
-
-    public void sessionTypeGet(){
-        Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
-        Callback<List<SessionDeserialiser>> callback = new Callback<List<SessionDeserialiser>>() {
-            @Override
-            public void success(List<SessionDeserialiser> serverResponse, Response response2) {
-                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
-                WriteRead.write(SESSIONTYPEFILE, resp, getContext());
-                //counsellingGet();
-                //swipeRefreshLayout.setRefreshing(false);
-                Log.d(TAG, "read from server");
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                if (error != null) {
-                    Log.e(TAG, error.getMessage());
-                    error.printStackTrace();
-                }
-                //swipeRefreshLayout.setRefreshing(false);
-            }
-        };
-        communicatorInterface.getSessions(callback);
-    }
-
-    public void usersGet(){
-       // swipeRefreshLayout.setRefreshing(true);
-        final Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
-        Callback<List<Users>> callback = new Callback<List<Users>>() {
-            @Override
-            public void success(List<Users> serverResponse, Response response2) {
-                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
-                WriteRead.write(USERINFOFILE, resp, getContext());
-                Log.d(TAG, "read from server");
-                //admissionsGet();
-                //swipeRefreshLayout.setRefreshing(false);
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                if(error != null ){
-                    Log.e(TAG, error.getMessage());
-                    error.printStackTrace();
-                }
-            }
-        };
-        communicatorInterface.getUsers(callback);
-    }
 
 }

@@ -41,13 +41,12 @@ import retrofit.client.Response;
 import retrofit.mime.TypedByteArray;
 
 
-public class AppointmentFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener{
+public class AppointmentFragment extends Fragment {
     FloatingActionButton fab;
     private final String TAG = this.getClass().getSimpleName();
     public static String PATIENTINFOFILE = "Patients";
     public static String USERINFOFILE = "Users";
     ListView appointmentLV;
-    private SwipeRefreshLayout swipeRefreshLayout;
 
     public AppointmentFragment() {
         // Required empty public constructor
@@ -60,8 +59,7 @@ public class AppointmentFragment extends Fragment implements SwipeRefreshLayout.
         HomeActivity.navItemIndex = 2;
         View view  = inflater.inflate(R.layout.fragment_appointment, container, false);
         appointmentsGet();
-        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
-        swipeRefreshLayout.setOnRefreshListener(this);
+
         appointmentLV = (ListView) view.findViewById(R.id.appointmentLV);
         appointmentLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -93,7 +91,6 @@ public class AppointmentFragment extends Fragment implements SwipeRefreshLayout.
                                 createAppointmentFragment.getTag())
                         .addToBackStack(null)
                         .commit();
-
             }
         });
         return view;
@@ -118,14 +115,8 @@ public class AppointmentFragment extends Fragment implements SwipeRefreshLayout.
                             String startTime = jsonobject.getString("start_time");
                             String endTime = jsonobject.getString("end_time");
                             String patient = getPatientInfo(Long.parseLong(jsonobject.getString("patient")));
-                            String owner = "";
-                            if (fileExistance(USERINFOFILE)) {
-                                Log.d(TAG, "file exists");
-                                owner = loadUserFromFile(Long.parseLong(jsonobject.getString("owner")));
-                            }
-                            else {
-                                usersGet();
-                            }
+                            String owner = loadUserFromFile(Long.parseLong(jsonobject.getString("owner")));
+
                             String title = jsonobject.getString("title");
                             String notes = jsonobject.getString("notes");
 
@@ -133,7 +124,6 @@ public class AppointmentFragment extends Fragment implements SwipeRefreshLayout.
                                     notes, endTime);
                             //userGet(owner);
                             appointmentList.add(appointment);
-
                         }
 
                         Log.d(TAG, appointmentList.toString());
@@ -176,7 +166,6 @@ public class AppointmentFragment extends Fragment implements SwipeRefreshLayout.
                                 "No Scheduled appointments", Toast.LENGTH_SHORT).show();
                         //appointmentList.add("No scheduled appointments.");
                     }
-                    swipeRefreshLayout.setRefreshing(false);
                    //appointmentLV.setAdapter(adapter);
                 }
                 catch (JSONException e){
@@ -195,10 +184,6 @@ public class AppointmentFragment extends Fragment implements SwipeRefreshLayout.
         communicatorInterface.getAppointments(callback);
     }
 
-    public boolean fileExistance(String FILENAME){
-        File file = getContext().getFileStreamPath(FILENAME);
-        return file.exists();
-    }
 
     public String loadUserFromFile(Long uid){
         String user = "";
@@ -219,34 +204,11 @@ public class AppointmentFragment extends Fragment implements SwipeRefreshLayout.
         catch (JSONException e){
             System.out.print("unsuccessful");
         }
-        swipeRefreshLayout.setRefreshing(false);
         Log.d(TAG, "username"+user);
         return user;
     }
 
-    public void usersGet(){
-        swipeRefreshLayout.setRefreshing(true);
-        final Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
-        Callback<List<Users>> callback = new Callback<List<Users>>() {
-            @Override
-            public void success(List<Users> serverResponse, Response response2) {
-                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
-                WriteRead.write(USERINFOFILE, resp, getContext());
-                Log.d(TAG, "read from server");
-                appointmentsGet();
-                swipeRefreshLayout.setRefreshing(false);
-            }
 
-            @Override
-            public void failure(RetrofitError error) {
-                if(error != null ){
-                    Log.e(TAG, error.getMessage());
-                    error.printStackTrace();
-                }
-            }
-        };
-        communicatorInterface.getUsers(callback);
-    }
 
     public String getPatientInfo(Long pid) {
         String patients = WriteRead.read(PATIENTINFOFILE, getContext());
@@ -270,9 +232,5 @@ public class AppointmentFragment extends Fragment implements SwipeRefreshLayout.
         return full_name;
     }
 
-    @Override
-    public void onRefresh() {
-        getContext().deleteFile(USERINFOFILE);
-        usersGet();
-    }
+
 }

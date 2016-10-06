@@ -39,7 +39,7 @@
         <Spinner
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/spinner" />
+            android:id="@+id/AdverseEventspinner" />
 
         <TextView
         android:layout_width="wrap_content"
@@ -81,7 +81,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Submit"
-            android:id="@+id/appointment_submit"
+            android:id="@+id/adverse_submit"
             android:layout_marginTop="20dip"
             android:background="#ff6347"
             android:textColor="#fff"

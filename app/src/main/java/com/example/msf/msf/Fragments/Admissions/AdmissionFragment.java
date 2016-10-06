@@ -40,12 +40,11 @@ import retrofit.client.Response;
 import retrofit.mime.TypedByteArray;
 
 
-public class AdmissionFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener{
+public class AdmissionFragment extends Fragment {
     private final String TAG = this.getClass().getSimpleName();
     public static String PATIENTINFOFILE = "Patients";
     FloatingActionButton fab;
     ListView admissionsLV;
-    private SwipeRefreshLayout swipeRefreshLayout;
 
 
     public AdmissionFragment() {
@@ -60,8 +59,6 @@ public class AdmissionFragment extends Fragment implements SwipeRefreshLayout.On
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_admission, container, false);
-        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
-        swipeRefreshLayout.setOnRefreshListener(this);
         admissionsLV = (ListView) view.findViewById(R.id.admissionLV);
         admissionsGet();
         admissionsLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -153,7 +150,7 @@ public class AdmissionFragment extends Fragment implements SwipeRefreshLayout.On
                         dictionary.addStringField(R.id.idTV, new StringExtractor<Admission>() {
                             @Override
                             public String getStringValue(Admission admission, int position) {
-                                return "ID: "+admission.getId();
+                                return "ID: "+admission.getId_no();
                             }
                         });
                         FunDapter adapter = new FunDapter(AdmissionFragment.this.getActivity(),
@@ -168,7 +165,6 @@ public class AdmissionFragment extends Fragment implements SwipeRefreshLayout.On
                                 "No hospital admissions", Toast.LENGTH_SHORT).show();
                         //admissionList.add("No scheduled appointments.");
                     }
-                    swipeRefreshLayout.setRefreshing(false);
                     //appointmentLV.setAdapter(adapter);
                 }
                 catch (JSONException e){
@@ -192,10 +188,6 @@ public class AdmissionFragment extends Fragment implements SwipeRefreshLayout.On
         return file.exists();
     }
 
-    @Override
-    public void onRefresh() {
-
-    }
 
     public String getPatientInfo(Long pid) {
         String patients = WriteRead.read(PATIENTINFOFILE, getContext());

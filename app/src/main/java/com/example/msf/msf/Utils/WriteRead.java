@@ -21,7 +21,7 @@ public class WriteRead {
 
     private final String TAG = this.getClass().getSimpleName();
     public static void write(String fileName, String text, Context ctx) {
-        //String PATIENTINFOFILE = "my_file";
+        //String PATIENTFILE = "my_file";
         FileOutputStream fos;
         try {
             fos = ctx.openFileOutput(fileName, ctx.MODE_PRIVATE);

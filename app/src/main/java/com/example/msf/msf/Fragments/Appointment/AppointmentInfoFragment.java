@@ -158,7 +158,8 @@ public class AppointmentInfoFragment extends Fragment {
 
     public void appointmentGet(long appointmentID){
         //final List<String> patientList = new ArrayList<String>();
-        Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
+        Interface communicatorInterface = Auth.getInterface(LoginActivity.username,
+                LoginActivity.password);
         Callback<Appointment> callback = new Callback<Appointment>() {
             @Override
             public void success(Appointment serverResponse, Response response2) {
@@ -167,7 +168,8 @@ public class AppointmentInfoFragment extends Fragment {
                     JSONObject jsonObject = new JSONObject(resp);
                     userGet(Long.parseLong(jsonObject.getString("owner")));
                     patientGet(Long.parseLong(jsonObject.getString("patient")));
-                    appointmentTypeTV.setText(jsonObject.getString("id")+": "+jsonObject.getString("title"));
+                    appointmentTypeTV.setText(jsonObject.getString("id")+": "+
+                            jsonObject.getString("title"));
                     notesTV.setText(jsonObject.getString("notes"));
                     dateTV.setText(jsonObject.getString("appointment_date"));
                     startTimeTV.setText(jsonObject.getString("start_time"));
@@ -195,7 +197,8 @@ public class AppointmentInfoFragment extends Fragment {
 
     public void patientGet(long patientID){
         final List<String> patientList = new ArrayList<String>();
-        Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
+        Interface communicatorInterface = Auth.getInterface(LoginActivity.username,
+                LoginActivity.password);
         Callback<Users> callback = new Callback<Users>() {
             @Override
             public void success(Users serverResponse, Response response2) {
@@ -231,7 +234,8 @@ public class AppointmentInfoFragment extends Fragment {
 
     public void userGet(long userID){
         final List<String> userList = new ArrayList<String>();
-        final Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
+        final Interface communicatorInterface = Auth.getInterface(LoginActivity.username,
+                LoginActivity.password);
         Callback<Users> callback = new Callback<Users>() {
             @Override
             public void success(Users serverResponse, Response response2) {
@@ -312,7 +316,8 @@ public class AppointmentInfoFragment extends Fragment {
     @Subscribe
     public void onServerEvent(ServerEvent serverEvent){
         prgDialog.hide();
-        Toast.makeText(AppointmentInfoFragment.this.getActivity(), "You have successfully deleted an appointment", Toast.LENGTH_LONG).show();
+        Toast.makeText(AppointmentInfoFragment.this.getActivity(),
+                "You have successfully deleted an appointment", Toast.LENGTH_SHORT).show();
         appointmentTypeTV.setText("");
         notesTV.setText("");
         dateTV.setText("");
@@ -326,7 +331,8 @@ public class AppointmentInfoFragment extends Fragment {
 
     @Subscribe
     public void onErrorEvent(ErrorEvent errorEvent){
-        //prgDialog.hide();
-        Toast.makeText(AppointmentInfoFragment.this.getActivity(), "" + errorEvent.getErrorMsg(), Toast.LENGTH_LONG).show();
+        prgDialog.hide();
+        Toast.makeText(AppointmentInfoFragment.this.getActivity(), "" + errorEvent.getErrorMsg(),
+                Toast.LENGTH_SHORT).show();
     }
 }

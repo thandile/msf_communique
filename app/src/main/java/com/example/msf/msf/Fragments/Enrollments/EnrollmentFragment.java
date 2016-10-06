@@ -38,13 +38,12 @@ import retrofit.RetrofitError;
 import retrofit.client.Response;
 import retrofit.mime.TypedByteArray;
 
-public class EnrollmentFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener{
+public class EnrollmentFragment extends Fragment {
     FloatingActionButton fab;
     private ListView enrollmentLV;
     private final String TAG = this.getClass().getSimpleName();
     public static String PATIENTINFOFILE = "Patients";
     public static String PILOTINFOFILE = "Pilots";
-    private SwipeRefreshLayout swipeRefreshLayout;
 
 
     public EnrollmentFragment() {
@@ -58,8 +57,6 @@ public class EnrollmentFragment extends Fragment implements SwipeRefreshLayout.O
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_enrollment, container, false);
-        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
-        swipeRefreshLayout.setOnRefreshListener(this);
         enrollmentLV = (ListView) view.findViewById(R.id.enrollmentLV);
         enrollmentsGet();
         enrollmentLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -88,16 +85,11 @@ public class EnrollmentFragment extends Fragment implements SwipeRefreshLayout.O
                                 createEnrollmentFragment.getTag())
                         .addToBackStack(null)
                         .commit();
-
             }
         });
         return view;
     }
 
-    public boolean fileExistance(String FILENAME){
-        File file = getContext().getFileStreamPath(FILENAME);
-        return file.exists();
-    }
 
     public void enrollmentsGet(){
         final ArrayList<Enrollment> enrollmentList = new ArrayList<Enrollment>();
@@ -114,20 +106,9 @@ public class EnrollmentFragment extends Fragment implements SwipeRefreshLayout.O
                         for (int i = 0; i < jsonarray.length(); i++) {
                             JSONObject jsonobject = jsonarray.getJSONObject(i);
                             int id = Integer.parseInt(jsonobject.getString("id"));
-                            String program = "";
-                            if (fileExistance(PILOTINFOFILE)) {
-
-                                program =loadPilots(Long.parseLong(jsonobject.getString("program")));
-                                Log.d(TAG, "read from storage");
-                                Log.d(TAG, "program "+program);
-
-                            }
-                            else {
-                                swipeRefreshLayout.setRefreshing(true);
-                                pilotsGet();
-                                Log.d(TAG, "False");
-                                program =loadPilots(Long.parseLong(jsonobject.getString("program")));
-                            }
+                            String program =loadPilots(Long.parseLong(jsonobject.getString("program")));
+                            Log.d(TAG, "read from storage");
+                            Log.d(TAG, "program "+program);
                             String patient = getPatientInfo(Long.parseLong(jsonobject.getString("patient")));
                             Log.d(TAG, "patient "+patient);
                             String date = jsonobject.getString("date_enrolled");
@@ -233,40 +214,5 @@ public class EnrollmentFragment extends Fragment implements SwipeRefreshLayout.O
         }
         return pilot;
     }
-
-
-    public void pilotsGet(){
-        final List<String>pilotNames = new ArrayList<String>();
-            Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
-            Callback<List<PilotsDeserializer>> callback = new Callback<List<PilotsDeserializer>>() {
-                @Override
-                public void success(List<PilotsDeserializer> serverResponse, Response response2) {
-                    String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
-                    WriteRead.write(PILOTINFOFILE, resp, getContext());
-                    enrollmentsGet();
-                    swipeRefreshLayout.setRefreshing(false);
-                }
-
-                @Override
-                public void failure(RetrofitError error) {
-                    if (error != null) {
-                        Log.e(TAG, error.getMessage());
-                        error.printStackTrace();
-                    }
-                    swipeRefreshLayout.setRefreshing(false);
-                }
-            };
-            communicatorInterface.getPilots(callback);
-            Log.d(TAG, "read from server");
-    }
-
-
-    @Override
-    public void onRefresh() {
-        getContext().deleteFile(PILOTINFOFILE);
-        enrollmentsGet();
-    }
-
-
 
 }

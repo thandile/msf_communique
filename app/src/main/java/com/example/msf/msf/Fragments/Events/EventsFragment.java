@@ -37,10 +37,9 @@ import retrofit.client.Response;
 import retrofit.mime.TypedByteArray;
 
 
-public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+public class EventsFragment extends Fragment {
     FloatingActionButton fab;
     ListView eventsLV;
-    private SwipeRefreshLayout swipeRefreshLayout;
     private final String TAG = this.getClass().getSimpleName();
 
 
@@ -55,8 +54,6 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_events, container, false);
 
-        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
-        swipeRefreshLayout.setOnRefreshListener(this);
         eventsLV = (ListView) view.findViewById(R.id.eventsLV);
         eventsGet();
         eventsLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -95,10 +92,7 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
     }
 
 
-    @Override
-    public void onRefresh() {
 
-    }
 
     public void eventsGet(){
         final ArrayList<Events> eventsList = new ArrayList<Events>();
@@ -167,7 +161,6 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
                                 "No Scheduled events", Toast.LENGTH_SHORT).show();
                         //eventsList.add("No scheduled appointments.");
                     }
-                    swipeRefreshLayout.setRefreshing(false);
                     //appointmentLV.setAdapter(adapter);
                 }
                 catch (JSONException e){

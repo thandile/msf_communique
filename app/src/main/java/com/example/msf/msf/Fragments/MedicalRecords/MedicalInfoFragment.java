@@ -1,13 +1,24 @@
 package com.example.msf.msf.Fragments.MedicalRecords;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.Toast;
 
+import com.example.msf.msf.API.BusProvider;
+import com.example.msf.msf.API.Communicator;
+import com.example.msf.msf.API.Deserializers.MedicalRecord;
+import com.example.msf.msf.API.ErrorEvent;
+import com.example.msf.msf.API.ServerEvent;
 import com.example.msf.msf.R;
+import com.squareup.otto.Subscribe;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -22,8 +33,13 @@ public class MedicalInfoFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
 
-    // TODO: Rename and change types of parameters
     private String id;
+
+    private final String TAG = this.getClass().getSimpleName();
+    Button edit, delete;
+    private Communicator communicator;
+    // Progress Dialog Object
+    ProgressDialog prgDialog;
 
     private OnFragmentInteractionListener mListener;
 
@@ -59,8 +75,35 @@ public class MedicalInfoFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_medical_info, container, false);
+
+        communicator = new Communicator();
+        View view = inflater.inflate(R.layout.fragment_medical_info, container, false);
+        Log.d(TAG, id);
+        // Instantiate Progress Dialog object
+        prgDialog = new ProgressDialog(MedicalInfoFragment.this.getActivity());
+        // Set Progress Dialog Text
+        prgDialog.setMessage("Please wait...");
+        // Set Cancelable as False
+        prgDialog.setCancelable(false);
+        onButtonPressed(id);
+        edit = (Button) view.findViewById(R.id.editButton);
+        delete = (Button) view.findViewById(R.id.delBtn);
+        deleteListener();
+        return view;
     }
+
+    public void deleteListener() {
+        delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                prgDialog.show();
+                Log.d(TAG, "regimen id: "+ id);
+                communicator.reportDelete(Long.parseLong(id));
+
+            }
+        });
+    }
+
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(String data) {
@@ -99,5 +142,33 @@ public class MedicalInfoFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(String data);
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        BusProvider.getInstance().register(this);
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        BusProvider.getInstance().unregister(this);
+    }
+
+    @Subscribe
+    public void onServerEvent(ServerEvent serverEvent){
+        prgDialog.hide();
+        Toast.makeText(MedicalInfoFragment.this.getActivity(),
+                "You have successfully deleted a medical record", Toast.LENGTH_SHORT).show();
+        FragmentManager manager = getActivity().getSupportFragmentManager();
+        manager.popBackStackImmediate();
+    }
+
+    @Subscribe
+    public void onErrorEvent(ErrorEvent errorEvent){
+        prgDialog.hide();
+        Toast.makeText(MedicalInfoFragment.this.getActivity(), "" + errorEvent.getErrorMsg(),
+                Toast.LENGTH_SHORT).show();
     }
 }

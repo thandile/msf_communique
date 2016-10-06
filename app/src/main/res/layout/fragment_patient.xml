@@ -1,7 +1,8 @@
-<android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:id="@+id/swipe_refresh_layout"
     tools:context=".Fragments.Patient.PatientFragment">
 
@@ -11,4 +12,4 @@
         android:layout_height="wrap_content"
         android:id="@+id/patientLV"
         android:layout_weight="1" />
-</android.support.v4.widget.SwipeRefreshLayout>
+</LinearLayout>

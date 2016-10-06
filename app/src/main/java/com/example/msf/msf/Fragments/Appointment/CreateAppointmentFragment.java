@@ -134,7 +134,7 @@ public class CreateAppointmentFragment extends Fragment implements Validator.Val
 
     public void patientsGet(){
         final List<String> patientList = new ArrayList<String>();
-        String patients = WriteRead.read(PatientFragment.FILENAME, getContext());
+        String patients = WriteRead.read(PatientFragment.PATIENTFILE, getContext());
         try{
             JSONArray jsonarray = new JSONArray(patients);
                    // JSONArray jsonarray = new JSONArray(resp);
@@ -240,7 +240,7 @@ public class CreateAppointmentFragment extends Fragment implements Validator.Val
     @Subscribe
     public void onErrorEvent(ErrorEvent errorEvent){
         prgDialog.hide();
-        Toast.makeText(CreateAppointmentFragment.this.getActivity(), "" +
+        Toast.makeText(CreateAppointmentFragment.this.getActivity(), "error1   " +
                 errorEvent.getErrorMsg(), Toast.LENGTH_SHORT).show();
     }
 

@@ -144,7 +144,7 @@ public class CreateEnrollmentFragment extends Fragment implements Validator.Vali
 
     public void patientsGet(){
             final List<String> patientList = new ArrayList<String>();
-            String patients = WriteRead.read(PatientFragment.FILENAME, getContext());
+            String patients = WriteRead.read(PatientFragment.PATIENTFILE, getContext());
                 populatePatientListView(patientList, patients);
                 Log.d(TAG, patients);
                 ArrayAdapter<String> adapter = new ArrayAdapter<String>(

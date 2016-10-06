@@ -10,12 +10,25 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.Communicator;
+import com.example.msf.msf.API.Deserializers.AdverseEventType;
+import com.example.msf.msf.API.Deserializers.Drug;
+import com.example.msf.msf.API.Deserializers.MedicalRecordType;
+import com.example.msf.msf.API.Deserializers.Patients;
+import com.example.msf.msf.API.Deserializers.Regimen;
+import com.example.msf.msf.API.Deserializers.SessionDeserialiser;
+import com.example.msf.msf.API.Deserializers.Users;
+import com.example.msf.msf.API.Interface;
+import com.example.msf.msf.API.PatientsDeserialiser;
+import com.example.msf.msf.API.PilotsDeserializer;
 import com.example.msf.msf.Fragments.Admissions.AdmissionFragment;
+import com.example.msf.msf.Fragments.Admissions.AdmissionInfoFragment;
 import com.example.msf.msf.Fragments.Admissions.CreateAdmissionFragment;
 import com.example.msf.msf.Fragments.AdverseEvents.AdverseEventFragment;
 import com.example.msf.msf.Fragments.AdverseEvents.AdverseEventInfoFragment;
@@ -47,7 +60,18 @@ import com.example.msf.msf.Fragments.Patient.UpdatePatientFragment;
 import com.example.msf.msf.Fragments.Regimens.CreateRegimenFragment;
 import com.example.msf.msf.Fragments.Regimens.RegimenFragment;
 import com.example.msf.msf.Fragments.Regimens.RegimenInfoFragment;
+import com.example.msf.msf.Utils.WriteRead;
 import com.google.firebase.iid.FirebaseInstanceId;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
+import retrofit.mime.TypedByteArray;
+
+import static java.security.AccessController.getContext;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
@@ -67,6 +91,7 @@ public class HomeActivity extends AppCompatActivity
         MedicationTab.OnFragmentInteractionListener,
         MedicalRecordTab.OnFragmentInteractionListener,
         CreateAdmissionFragment.OnFragmentInteractionListener,
+        AdmissionInfoFragment.OnFragmentInteractionListener,
         CreateMedicalRecFragment.OnFragmentInteractionListener,
         CreateEventFragment.OnFragmentInteractionListener,
         CreateAdverseEventFragment.OnFragmentInteractionListener,
@@ -82,6 +107,17 @@ public class HomeActivity extends AppCompatActivity
     Communicator communicator;
     // toolbar titles respected to selected nav menu item
     private String[] activityTitles;
+
+    public static String PATIENTFILE = "Patients";
+    public static String PILOTFILE = "Pilots";
+    public static String SESSIONFILE = "SessionType";
+    public static String USERFILE = "Users";
+    public static String REGIMENFILE = "Drugs";
+    public static String ADVERSEEVENTSFILE = "AdverseEvents";
+    public static String MEDICALRECORDFILE = "MedicalRecords";
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -154,9 +190,10 @@ public class HomeActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         // show menu only when home fragment is selected
-       if (navItemIndex == 0) {
-            getMenuInflater().inflate(R.menu.home, menu);
+        if (navItemIndex!=0) {
+            getMenuInflater().inflate(R.menu.refresh, menu);
         }
+        getMenuInflater().inflate(R.menu.home, menu);
 
         return true;
     }
@@ -187,16 +224,189 @@ public class HomeActivity extends AppCompatActivity
             return true;
 
         }
-
-
+        if (id == R.id.menuRefresh){
+            refresh();
+        }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void refresh() {
+        HomeActivity.this.deleteFile(PATIENTFILE);
+        patientsGet();
+        HomeActivity.this.deleteFile(SESSIONFILE);
+        sessionTypeGet();
+        HomeActivity.this.deleteFile(PILOTFILE);
+        pilotsGet();
+        HomeActivity.this.deleteFile(USERFILE);
+        usersGet();
+        HomeActivity.this.deleteFile(MEDICALRECORDFILE);
+        recordTypeGet();
+        HomeActivity.this.deleteFile(REGIMENFILE);
+        regimensGet();
+        HomeActivity.this.deleteFile(ADVERSEEVENTSFILE);
+        adverseEventsGet();
+    }
+
+    private void adverseEventsGet() {
+        Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
+        Callback<List<AdverseEventType>> callback = new Callback<List<AdverseEventType>>() {
+            @Override
+            public void success(List<AdverseEventType> serverResponse, Response response2) {
+                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
+                WriteRead.write(ADVERSEEVENTSFILE, resp, HomeActivity.this);
+                Log.d(TAG, "read from server");
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                if (error != null) {
+                    Log.e(TAG, error.getMessage());
+                    error.printStackTrace();
+                }
+            }
+        };
+        communicatorInterface.getAdverseEventType(callback);
+    }
+
+
+    public void patientsGet(){
+        Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
+
+        // showing refresh animation before making http call
+        Callback<List<PatientsDeserialiser>> callback = new Callback<List<PatientsDeserialiser>>() {
+            @Override
+            public void success(List<PatientsDeserialiser> serverResponse, Response response2) {
+                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
+                WriteRead.write(PATIENTFILE, resp, HomeActivity.this);
+                // stopping swipe refresh
+                Log.d(TAG, "read from server");
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                if (error != null) {
+                    Log.e(TAG, error.getMessage());
+                    error.printStackTrace();
+                }
+            }
+        };
+        communicatorInterface.getPatients(callback);
+    }
+
+    public void sessionTypeGet(){
+        Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
+        Callback<List<SessionDeserialiser>> callback = new Callback<List<SessionDeserialiser>>() {
+            @Override
+            public void success(List<SessionDeserialiser> serverResponse, Response response2) {
+                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
+                WriteRead.write(SESSIONFILE, resp, HomeActivity.this);
+                Log.d(TAG, "read from server");
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                if (error != null) {
+                    Log.e(TAG, error.getMessage());
+                    error.printStackTrace();
+                }
+            }
+        };
+        communicatorInterface.getSessions(callback);
+    }
+
+    public void usersGet(){
+        final Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
+        Callback<List<Users>> callback = new Callback<List<Users>>() {
+            @Override
+            public void success(List<Users> serverResponse, Response response2) {
+                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
+                WriteRead.write(USERFILE, resp, HomeActivity.this);
+                Log.d(TAG, "read from server");
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                if(error != null ){
+                    Log.e(TAG, error.getMessage());
+                    error.printStackTrace();
+                }
+            }
+        };
+        communicatorInterface.getUsers(callback);
+    }
+
+    public void pilotsGet(){
+        final List<String>pilotNames = new ArrayList<String>();
+        Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
+        Callback<List<PilotsDeserializer>> callback = new Callback<List<PilotsDeserializer>>() {
+            @Override
+            public void success(List<PilotsDeserializer> serverResponse, Response response2) {
+                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
+                WriteRead.write(PILOTFILE, resp, HomeActivity.this);
+                //enrollmentsGet();
+                //swipeRefreshLayout.setRefreshing(false);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                if (error != null) {
+                    Log.e(TAG, error.getMessage());
+                    error.printStackTrace();
+                }
+                // swipeRefreshLayout.setRefreshing(false);
+            }
+        };
+        communicatorInterface.getPilots(callback);
+        Log.d(TAG, "read from server");
+    }
+
+
+    public void recordTypeGet(){
+        final Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
+        Callback<List<MedicalRecordType>> callback = new Callback<List<MedicalRecordType>>() {
+            @Override
+            public void success(List<MedicalRecordType> serverResponse, Response response2) {
+                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
+                WriteRead.write(MEDICALRECORDFILE, resp, HomeActivity.this);
+                Log.d(TAG, "read from server");
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                if(error != null ){
+                    Log.e(TAG, error.getMessage());
+                    error.printStackTrace();
+                }
+            }
+        };
+        communicatorInterface.getMedicalReportTypes(callback);
+    }
+
+    public void regimensGet(){
+        final Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
+        Callback<List<Drug>> callback = new Callback<List<Drug>>() {
+            @Override
+            public void success(List<Drug> serverResponse, Response response2) {
+                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
+                WriteRead.write(REGIMENFILE, resp, HomeActivity.this);
+                Log.d(TAG, "read from server");
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                if(error != null ){
+                    Log.e(TAG, error.getMessage());
+                    error.printStackTrace();
+                }
+            }
+        };
+        communicatorInterface.getDrugs(callback);
     }
 
     public void onDestroy() {
 
         super.onDestroy();
-
     }
 
     @SuppressWarnings("StatementWithEmptyBody")

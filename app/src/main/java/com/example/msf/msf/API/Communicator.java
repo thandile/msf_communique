@@ -864,12 +864,12 @@ public class Communicator {
     }
 
 
-    public void regimenDelete(final long regimenID){
+    public void regimenDelete(long regimenID){
         Callback<Regimen> callback = new Callback<Regimen>() {
             @Override
             public void success(Regimen serverResponse, Response response2) {
                 BusProvider.getInstance().post(produceRegimenServerResponse(serverResponse));
-                Log.d(TAG,"Success, regimen deleted "+ regimenID);
+               //Log.d(TAG,"Success, regimen deleted "+ regimenID);
             }
 
             @Override

@@ -1,13 +1,23 @@
 package com.example.msf.msf.Fragments.Events;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.Toast;
 
+import com.example.msf.msf.API.BusProvider;
+import com.example.msf.msf.API.Communicator;
+import com.example.msf.msf.API.ErrorEvent;
+import com.example.msf.msf.API.ServerEvent;
 import com.example.msf.msf.R;
+import com.squareup.otto.Subscribe;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -22,6 +32,12 @@ public class EventInfoFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private EventInfoFragment.OnFragmentInteractionListener mListener;
+
+    private final String TAG = this.getClass().getSimpleName();
+    Button edit, delete;
+    private Communicator communicator;
+    // Progress Dialog Object
+    ProgressDialog prgDialog;
 
     // TODO: Rename and change types of parameters
     private String id;
@@ -59,10 +75,34 @@ public class EventInfoFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_event_info, container, false);
+        communicator = new Communicator();
+
+        Log.d(TAG, id);
+        // Instantiate Progress Dialog object
+        prgDialog = new ProgressDialog(EventInfoFragment.this.getActivity());
+        // Set Progress Dialog Text
+        prgDialog.setMessage("Please wait...");
+        // Set Cancelable as False
+        prgDialog.setCancelable(false);
+        onButtonPressed(id);
+        edit = (Button) view.findViewById(R.id.editButton);
+        delete = (Button) view.findViewById(R.id.delBtn);
+        deleteListener();
         return view;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
+    public void deleteListener() {
+        delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                prgDialog.show();
+                Log.d(TAG, "event id: "+ id);
+                communicator.eventDelete(Long.parseLong(id));
+
+            }
+        });
+    }
+
     public void onButtonPressed(String  data) {
         if (mListener != null) {
             mListener.onFragmentInteraction(data);
@@ -99,5 +139,33 @@ public class EventInfoFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(String data);
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        BusProvider.getInstance().register(this);
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        BusProvider.getInstance().unregister(this);
+    }
+
+    @Subscribe
+    public void onServerEvent(ServerEvent serverEvent){
+        prgDialog.hide();
+        Toast.makeText(EventInfoFragment.this.getActivity(), "You have successfully deleted an event",
+                Toast.LENGTH_SHORT).show();
+        FragmentManager manager = getActivity().getSupportFragmentManager();
+        manager.popBackStackImmediate();
+    }
+
+    @Subscribe
+    public void onErrorEvent(ErrorEvent errorEvent){
+        prgDialog.hide();
+        Toast.makeText(EventInfoFragment.this.getActivity(), "" + errorEvent.getErrorMsg(),
+                Toast.LENGTH_SHORT).show();
     }
 }

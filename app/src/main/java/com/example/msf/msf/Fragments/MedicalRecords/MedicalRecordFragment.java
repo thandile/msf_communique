@@ -40,15 +40,13 @@ import retrofit.client.Response;
 import retrofit.mime.TypedByteArray;
 
 
-public class MedicalRecordFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+public class MedicalRecordFragment extends Fragment {
     FloatingActionButton fab;
     private final String TAG = this.getClass().getSimpleName();
     public static String PATIENTINFOFILE = "Patients";
-    public static String RECORDINFOFILE = "Records";
+    public static String MEDICALRECORDFILE = "MedicalRecords";
     ListView recordsLV;
 
-
-    private SwipeRefreshLayout swipeRefreshLayout;
     public MedicalRecordFragment() {
         // Required empty public constructor
     }
@@ -60,8 +58,6 @@ public class MedicalRecordFragment extends Fragment implements SwipeRefreshLayou
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_medical_record, container, false);
         appointmentsGet();
-        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
-        swipeRefreshLayout.setOnRefreshListener(this);
         recordsLV = (ListView) view.findViewById(R.id.recordsLV);
         recordsLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -118,13 +114,9 @@ public class MedicalRecordFragment extends Fragment implements SwipeRefreshLayou
                             //String reportType = jsonobject.getString("start_time");
                             String patient = getPatientInfo(Long.parseLong(jsonobject.getString("patient")));
                             String reportType = "";
-                            if (fileExistance(RECORDINFOFILE)) {
-                                Log.d(TAG, "file exists");
-                                reportType = loadRecordTypeFromFile(Long.parseLong(jsonobject.getString("report_type")));
-                            }
-                            else {
-                                recordTypeGet();
-                            }
+                            Log.d(TAG, "file exists");
+                            reportType = loadRecordTypeFromFile(Long.parseLong(jsonobject.getString("report_type")));
+
                             String title = jsonobject.getString("title");
                             String notes = jsonobject.getString("notes");
 
@@ -174,7 +166,6 @@ public class MedicalRecordFragment extends Fragment implements SwipeRefreshLayou
                                 "No medical records", Toast.LENGTH_LONG).show();
                         //appointmentList.add("No scheduled appointments.");
                     }
-                    swipeRefreshLayout.setRefreshing(false);
                     //appointmentLV.setAdapter(adapter);
                 }
                 catch (JSONException e){
@@ -193,14 +184,10 @@ public class MedicalRecordFragment extends Fragment implements SwipeRefreshLayou
         communicatorInterface.getMedicalReports(callback);
     }
 
-    public boolean fileExistance(String FILENAME){
-        File file = getContext().getFileStreamPath(FILENAME);
-        return file.exists();
-    }
 
     public String loadRecordTypeFromFile(Long uid){
         String user = "";
-        String users = WriteRead.read(RECORDINFOFILE, getContext());
+        String users = WriteRead.read(MEDICALRECORDFILE, getContext());
         try{
             JSONArray jsonarray = new JSONArray(users);
             for (int i = 0; i < jsonarray.length(); i++) {
@@ -217,33 +204,8 @@ public class MedicalRecordFragment extends Fragment implements SwipeRefreshLayou
         catch (JSONException e){
             System.out.print("unsuccessful");
         }
-        swipeRefreshLayout.setRefreshing(false);
         Log.d(TAG, "username"+user);
         return user;
-    }
-
-    public void recordTypeGet(){
-        swipeRefreshLayout.setRefreshing(true);
-        final Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
-        Callback<List<MedicalRecordType>> callback = new Callback<List<MedicalRecordType>>() {
-            @Override
-            public void success(List<MedicalRecordType> serverResponse, Response response2) {
-                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
-                WriteRead.write(RECORDINFOFILE, resp, getContext());
-                Log.d(TAG, "read from server");
-                appointmentsGet();
-                swipeRefreshLayout.setRefreshing(false);
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                if(error != null ){
-                    Log.e(TAG, error.getMessage());
-                    error.printStackTrace();
-                }
-            }
-        };
-        communicatorInterface.getMedicalReportTypes(callback);
     }
 
     public String getPatientInfo(Long pid) {
@@ -269,9 +231,4 @@ public class MedicalRecordFragment extends Fragment implements SwipeRefreshLayou
     }
 
 
-
-    @Override
-    public void onRefresh() {
-
-    }
 }

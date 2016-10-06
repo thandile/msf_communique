@@ -76,6 +76,7 @@ public class RegimenInfoFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        communicator = new Communicator();
         View view = inflater.inflate(R.layout.fragment_regimen_info, container, false);
         Log.d(TAG, id);
         // Instantiate Progress Dialog object
@@ -135,11 +136,11 @@ public class RegimenInfoFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 prgDialog.show();
+                Log.d(TAG, "regimen id: "+ id);
                 communicator.regimenDelete(Long.parseLong(id));
 
             }
         });
-
     }
 
     @Override
@@ -157,7 +158,8 @@ public class RegimenInfoFragment extends Fragment {
     @Subscribe
     public void onServerEvent(ServerEvent serverEvent){
         prgDialog.hide();
-        Toast.makeText(RegimenInfoFragment.this.getActivity(), "You have successfully deleted a regimen", Toast.LENGTH_LONG).show();
+        Toast.makeText(RegimenInfoFragment.this.getActivity(),
+                "You have successfully deleted a regimen", Toast.LENGTH_SHORT).show();
         FragmentManager manager = getActivity().getSupportFragmentManager();
         manager.popBackStackImmediate();
     }
@@ -165,6 +167,7 @@ public class RegimenInfoFragment extends Fragment {
     @Subscribe
     public void onErrorEvent(ErrorEvent errorEvent){
         //prgDialog.hide();
-        Toast.makeText(RegimenInfoFragment.this.getActivity(), "" + errorEvent.getErrorMsg(), Toast.LENGTH_LONG).show();
+        Toast.makeText(RegimenInfoFragment.this.getActivity(), "" + errorEvent.getErrorMsg(),
+                Toast.LENGTH_SHORT).show();
     }
 }
