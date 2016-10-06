@@ -66,12 +66,17 @@
     <string name="title_activity_enrollment_info">EnrollmentInfoActivity</string>
     <string name="title_activity_update_enrollment">UpdateEnrollmentActivity</string>
 
-    <string name="hello_world">Hello world!</string>
-
-    <string name="btn_json">Json Request</string>
-    <string name="btn_string">String Request</string>
-    <string name="btn_image">Image Request</string>
-
-    <string name="btn_json_obj_request">Json Object Request</string>
-    <string name="btn_json_array_request">Json Array Request</string>
+    <!-- Toolbar titles when navigation menu item is selected -->
+    <string-array name="nav_item_activity_titles">
+        <item>Home</item>
+        <item>Patients</item>
+        <item>Appointments</item>
+        <item>Counselling</item>
+        <item>Pilot Enrollments</item>
+        <item>Admissions</item>
+        <item>Events</item>
+        <item>Medical Records</item>
+        <item>Adverse Events</item>
+        <item>Regimens</item>
+    </string-array>
 </resources>

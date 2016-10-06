@@ -1,13 +1,92 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="com.example.msf.msf.Fragments.Admissions.AdmissionInfoFragment">
 
-    <!-- TODO: Update blank fragment layout -->
     <TextView
+        android:text="Patient Name"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content"
+        android:id="@+id/textView22"
+        android:textStyle="bold"
+        android:textSize="20dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"/>
 
-</FrameLayout>
+
+    <TextView
+        android:text="TextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView44" />
+
+    <TextView
+        android:text="Health Centre"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView27"
+        android:textStyle="bold"
+        android:textSize="20dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"/>
+
+
+    <TextView
+        android:text="TextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView45" />
+
+    <TextView
+        android:text="Admission Date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView28"
+        android:textStyle="bold"
+        android:textSize="20dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"/>
+
+    <TextView
+        android:text="TextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView46" />
+
+    <TextView
+        android:text="Discahrge Date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView29"
+        android:textStyle="bold"
+        android:textSize="20dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"/>
+
+
+    <TextView
+        android:text="TextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView47" />
+
+    <TextView
+        android:text="Notes"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView30"
+        android:textStyle="bold"
+        android:textSize="20dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"/>
+
+    <TextView
+        android:text="TextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView48" />
+
+
+</LinearLayout>

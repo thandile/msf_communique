@@ -1,13 +1,96 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.msf.msf.Fragments.Regimens.UpdateRegimenFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="10dip" >
 
-</FrameLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Patient Name"
+            android:id="@+id/textView7"
+            android:textStyle="bold"
+            android:textSize="20dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp" />
+
+        <AutoCompleteTextView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/autocomplete_patients"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Regimen Start Date"
+            android:id="@+id/textView1"
+            android:textStyle="bold"
+            android:textSize="20dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="date"
+            android:hint="DD/MM/YYYY"
+            android:ems="10"
+            android:id="@+id/reg_startDateET" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Regimen End Date"
+            android:id="@+id/textView2"
+            android:textStyle="bold"
+            android:textSize="20dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="date"
+            android:hint="DD/MM/YYYY"
+            android:ems="10"
+            android:id="@+id/reg_endDateET" />
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Drugs"
+            android:id="@+id/textView3"
+            android:textStyle="bold"
+            android:textSize="20dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Notes"
+            android:id="@+id/textView4"
+            android:textStyle="bold"
+            android:textSize="20dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp" />
+
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textMultiLine"
+            android:ems="10"
+            android:id="@+id/noteET" />
+
+    </LinearLayout>
+
+
+</ScrollView>

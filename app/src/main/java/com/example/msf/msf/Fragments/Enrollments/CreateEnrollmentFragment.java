@@ -281,4 +281,7 @@ public class CreateEnrollmentFragment extends Fragment implements Validator.Vali
             }
         }
     }
+
+    public interface OnFragmentInteractionListener {
+    }
 }

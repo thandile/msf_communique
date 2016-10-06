@@ -139,7 +139,7 @@ public class AdmissionFragment extends Fragment implements SwipeRefreshLayout.On
                         dictionary.addStringField(R.id.personTV, new StringExtractor<Admission>() {
                             @Override
                             public String getStringValue(Admission admission, int position) {
-                                return "Owner: "+admission.getHealthCentre();
+                                return admission.getHealthCentre();
                             }
                         });
 

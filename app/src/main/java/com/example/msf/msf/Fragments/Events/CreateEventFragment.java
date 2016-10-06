@@ -1,32 +1,52 @@
 package com.example.msf.msf.Fragments.Events;
 
-import android.content.Context;
+import android.app.ProgressDialog;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
+import com.example.msf.msf.API.BusProvider;
+import com.example.msf.msf.API.Communicator;
+import com.example.msf.msf.API.ErrorEvent;
+import com.example.msf.msf.API.ServerEvent;
+import com.example.msf.msf.Dialogs.DateDialog;
+import com.example.msf.msf.Dialogs.TimeDialog;
 import com.example.msf.msf.R;
+import com.mobsandgeeks.saripaar.ValidationError;
+import com.mobsandgeeks.saripaar.Validator;
+import com.mobsandgeeks.saripaar.annotation.Future;
+import com.mobsandgeeks.saripaar.annotation.NotEmpty;
+import com.squareup.otto.Subscribe;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link CreateEventFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link CreateEventFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class CreateEventFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+import java.util.List;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+
+public class CreateEventFragment extends Fragment implements Validator.ValidationListener{
+
+
+    Button submit;
+    Validator validator;
+    private Communicator communicator;
+    ProgressDialog prgDialog;
+    @NotEmpty
+    EditText eventTitle;
+    @Future
+    @NotEmpty
+    EditText dateET;
+    @NotEmpty
+    EditText startTimeET;
+    @NotEmpty
+    EditText endTimeET;
+    EditText description;
+    private final String TAG = this.getClass().getSimpleName();
 
     private OnFragmentInteractionListener mListener;
 
@@ -34,62 +54,98 @@ public class CreateEventFragment extends Fragment {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment CreateEventFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static CreateEventFragment newInstance(String param1, String param2) {
-        CreateEventFragment fragment = new CreateEventFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_creat_event, container, false);
+        View view = inflater.inflate(R.layout.fragment_create_event, container, false);
+        communicator = new Communicator();
+        /* Create Validator object to
+         * call the setValidationListener method of Validator class*/
+        validator = new Validator(this);
+        // Call the validation listener method.
+        validator.setValidationListener(this);
+        // Instantiate Progress Dialog object
+        prgDialog = new ProgressDialog(CreateEventFragment.this.getActivity());
+        // Set Progress Dialog Text
+        prgDialog.setMessage("Please wait...");
+        // Set Cancelable as False
+        prgDialog.setCancelable(false);
+        eventTitle = (EditText) view.findViewById(R.id.eventTitleET);
+        dateET = (EditText) view.findViewById(R.id.event_date_ET);
+        startTimeET = (EditText) view.findViewById(R.id.startTimeET);
+        endTimeET = (EditText) view.findViewById(R.id.endTimeET);
+        description = (EditText) view.findViewById(R.id.descriptionET);
+        submit = (Button) view.findViewById(R.id.event_submit);
+        dateET.setOnFocusChangeListener(new View.OnFocusChangeListener(){
+            public void onFocusChange(View view, boolean hasfocus){
+                if(hasfocus){
+                    DateDialog dialog=new DateDialog(view);
+                    FragmentTransaction ft =getFragmentManager().beginTransaction();
+                    dialog.show(ft, "DatePicker");
+                }
+            }
+        });
+        startTimeET.setOnFocusChangeListener(new View.OnFocusChangeListener(){
+            public void onFocusChange(View view, boolean hasfocus){
+                if(hasfocus){
+                    TimeDialog dialog= TimeDialog.newInstance(view);
+                    FragmentTransaction ft =getFragmentManager().beginTransaction();
+                    dialog.show(ft, "TimeDialog");
+                }
+            }
+        });
+        endTimeET.setOnFocusChangeListener(new View.OnFocusChangeListener(){
+            public void onFocusChange(View view, boolean hasfocus){
+                if(hasfocus){
+                    TimeDialog dialog= TimeDialog.newInstance(view);
+                    FragmentTransaction ft =getFragmentManager().beginTransaction();
+                    dialog.show(ft, "TimeDialog");
+                }
+            }
+        });
+        addListenerOnButton();
+        return view;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
+    private void addListenerOnButton() {
+        submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                validator.validate();
+            }
+        });
+    }
+
+
+
+    @Override
+    public void onValidationSucceeded() {
+        prgDialog.show();
+
+        String notes = description.getText().toString();
+        String date = dateET.getText().toString();
+        String appointmentType = eventTitle.getText().toString();
+        String endTime = endTimeET.getText().toString();
+        String startTime = startTimeET.getText().toString();
+        // Log.d(TAG,  counsellingSession +" "+patientId);
+        communicator.eventPost(appointmentType, notes, date, startTime,
+                endTime);
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
+    public void onValidationFailed(List<ValidationError> errors) {
+        for (ValidationError error : errors) {
+            View view = error.getView();
+            String message = error.getCollatedErrorMessage(CreateEventFragment.this.getActivity());
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
+            // Display error messages ;)
+            if (view instanceof EditText) {
+                ((EditText) view).setError(message);
+            } else {
+                Toast.makeText(CreateEventFragment.this.getActivity(), message, Toast.LENGTH_LONG).show();
+            }
+        }
     }
 
     /**
@@ -103,7 +159,47 @@ public class CreateEventFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        BusProvider.getInstance().register(this);
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        BusProvider.getInstance().unregister(this);
+    }
+
+    @Subscribe
+    public void onServerEvent(ServerEvent serverEvent){
+        prgDialog.hide();
+        Toast.makeText(CreateEventFragment.this.getActivity(),
+                "You have successfully added a created a new appointment",
+                Toast.LENGTH_LONG).show();
+
+        description.setText("");
+        dateET.setText("");
+        eventTitle.setText("");
+        endTimeET.setText("");
+        startTimeET.setText("");
+        //AppointmentFragment appointmentFragment = new AppointmentFragment();
+        FragmentManager manager = getActivity().getSupportFragmentManager();
+        manager.popBackStack();
+        /**manager.beginTransaction()
+         .replace(R.id.rel_layout_for_frag, appointmentFragment,
+         appointmentFragment.getTag())
+         .addToBackStack(null)
+         .commit();**/
+    }
+
+    @Subscribe
+    public void onErrorEvent(ErrorEvent errorEvent){
+        prgDialog.hide();
+        Toast.makeText(CreateEventFragment.this.getActivity(), "" +
+                errorEvent.getErrorMsg(), Toast.LENGTH_SHORT).show();
     }
 }

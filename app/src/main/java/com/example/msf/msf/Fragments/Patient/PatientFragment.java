@@ -24,6 +24,7 @@ import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.API.PatientsDeserialiser;
 import com.example.msf.msf.API.PilotsDeserializer;
 import com.example.msf.msf.Fragments.Patient.PatientTabs.TabFragment;
+import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.WriteRead;
@@ -61,6 +62,7 @@ public class PatientFragment extends Fragment implements SwipeRefreshLayout.OnRe
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        HomeActivity.navItemIndex = 1;
         View view = inflater.inflate(R.layout.fragment_patient, container, false);
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
         swipeRefreshLayout.setOnRefreshListener(this);

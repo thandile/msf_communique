@@ -206,4 +206,7 @@ public class CreateCounsellingFragment extends Fragment implements Validator.Val
             }
         }
     }
+
+    public interface OnFragmentInteractionListener {
+    }
 }

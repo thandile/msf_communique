@@ -22,6 +22,7 @@ import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.Deserializers.Appointment;
 import com.example.msf.msf.API.Deserializers.Users;
 import com.example.msf.msf.API.Interface;
+import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.WriteRead;
@@ -56,7 +57,7 @@ public class AppointmentFragment extends Fragment implements SwipeRefreshLayout.
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
+        HomeActivity.navItemIndex = 2;
         View view  = inflater.inflate(R.layout.fragment_appointment, container, false);
         appointmentsGet();
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);

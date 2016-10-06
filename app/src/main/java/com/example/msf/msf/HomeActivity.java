@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.example.msf.msf.API.Communicator;
 import com.example.msf.msf.Fragments.Admissions.AdmissionFragment;
@@ -21,10 +22,13 @@ import com.example.msf.msf.Fragments.AdverseEvents.AdverseEventInfoFragment;
 import com.example.msf.msf.Fragments.AdverseEvents.CreateAdverseEventFragment;
 import com.example.msf.msf.Fragments.Appointment.AppointmentFragment;
 import com.example.msf.msf.Fragments.Appointment.AppointmentInfoFragment;
+import com.example.msf.msf.Fragments.Appointment.CreateAppointmentFragment;
 import com.example.msf.msf.Fragments.Appointment.UpdateAppointmentFragment;
 import com.example.msf.msf.Fragments.Counselling.CounsellingFragment;
 import com.example.msf.msf.Fragments.Counselling.CounsellingInfoFragment;
+import com.example.msf.msf.Fragments.Counselling.CreateCounsellingFragment;
 import com.example.msf.msf.Fragments.Counselling.UpdateCounsellingFragment;
+import com.example.msf.msf.Fragments.Enrollments.CreateEnrollmentFragment;
 import com.example.msf.msf.Fragments.Enrollments.EnrollmentFragment;
 import com.example.msf.msf.Fragments.Enrollments.EnrollmentInfoFragment;
 import com.example.msf.msf.Fragments.Enrollments.UpdateEnrollmentFragment;
@@ -49,12 +53,15 @@ public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         AppointmentInfoFragment.OnFragmentInteractionListener,
         UpdateAppointmentFragment.OnFragmentInteractionListener,
+        CreateAppointmentFragment.OnFragmentInteractionListener,
         PatientInfoTab.OnFragmentInteractionListener,
         UpdatePatientFragment.OnFragmentInteractionListener,
         EnrollmentInfoFragment.OnFragmentInteractionListener,
         UpdateEnrollmentFragment.OnFragmentInteractionListener,
+        CreateEnrollmentFragment.OnFragmentInteractionListener,
         CounsellingInfoFragment.OnFragmentInteractionListener,
         UpdateCounsellingFragment.OnFragmentInteractionListener,
+        CreateCounsellingFragment.OnFragmentInteractionListener,
         TabFragment.OnFragmentInteractionListener,
         AdmissionsTab.OnFragmentInteractionListener,
         MedicationTab.OnFragmentInteractionListener,
@@ -73,6 +80,9 @@ public class HomeActivity extends AppCompatActivity
     public static int navItemIndex = 0;
     private final String TAG = this.getClass().getSimpleName();
     Communicator communicator;
+    // toolbar titles respected to selected nav menu item
+    private String[] activityTitles;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,7 +93,8 @@ public class HomeActivity extends AppCompatActivity
         //FirebaseMessaging.getInstance().subscribeToTopic("test");
         String token = FirebaseInstanceId.getInstance().getToken();
         communicator.registrationPost(token);
-
+        // load toolbar titles from string resources
+        activityTitles = getResources().getStringArray(R.array.nav_item_activity_titles);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -103,7 +114,7 @@ public class HomeActivity extends AppCompatActivity
                     home.getTag())
                     .addToBackStack(null)
                     .commit();
-            setToolbarTitle("Home");
+            setToolbarTitle();
         }
     }
 
@@ -118,23 +129,24 @@ public class HomeActivity extends AppCompatActivity
 
         // This code loads home fragment when back key is pressed
         // when user is in other fragment than home
-        if (shouldLoadHomeFragOnBackPress) {
+       //if (shouldLoadHomeFragOnBackPress) {
             // checking if user is on other navigation menu
             // rather than home
-            if (navItemIndex != 0) {
+            if (navItemIndex == 0) {
                 navItemIndex = 0;
+                Toast.makeText(HomeActivity.this, ""+navItemIndex, Toast.LENGTH_SHORT).show();
                 HomeFragment home = new HomeFragment();
                 FragmentManager manager = getSupportFragmentManager();
                 manager.beginTransaction().replace(R.id.rel_layout_for_frag,
                         home,
                         home.getTag())
-                        .addToBackStack(null)
                         .commit();
-                setToolbarTitle("Home");
+                setToolbarTitle();
                 return;
             }
-        }
-
+       /** else{
+                setToolbarTitle();
+            }**/
         super.onBackPressed();
     }
 
@@ -202,7 +214,7 @@ public class HomeActivity extends AppCompatActivity
                     home.getTag())
                     .addToBackStack(null)
                     .commit();
-            setToolbarTitle("Home");
+            setToolbarTitle();
         }
         else if (id == R.id.nav_patients) {
             // Handle the camera action
@@ -214,7 +226,7 @@ public class HomeActivity extends AppCompatActivity
                     patientFragment.getTag())
                     .addToBackStack(null)
                     .commit();
-            setToolbarTitle("Patients");
+            setToolbarTitle();
         }
         else if (id == R.id.nav_gallery) {
             navItemIndex = 2;
@@ -225,7 +237,7 @@ public class HomeActivity extends AppCompatActivity
                     appointmentFragment.getTag())
                     .addToBackStack(null)
                     .commit();
-            setToolbarTitle("Appointments");
+            setToolbarTitle();
         }
         else if (id == R.id.nav_slideshow) {
             navItemIndex = 3;
@@ -236,7 +248,7 @@ public class HomeActivity extends AppCompatActivity
                     counsellingFragment.getTag())
                     .addToBackStack(null)
                     .commit();
-            setToolbarTitle("Counselling Sessions");
+            setToolbarTitle();
         }
         else if (id == R.id.nav_manage) {
             navItemIndex = 4;
@@ -247,11 +259,11 @@ public class HomeActivity extends AppCompatActivity
                     enrollmentFragment.getTag())
                     .addToBackStack(null)
                     .commit();
-            setToolbarTitle("Pilot Enrollments");
+            setToolbarTitle();
         }
 
         else if (id == R.id.nav_admission) {
-           // navItemIndex = 4;
+            navItemIndex = 5;
             AdmissionFragment admissionFragment = new AdmissionFragment();
             FragmentManager manager = getSupportFragmentManager();
             manager.beginTransaction().replace(R.id.rel_layout_for_frag,
@@ -259,10 +271,11 @@ public class HomeActivity extends AppCompatActivity
                     admissionFragment.getTag())
                     .addToBackStack(null)
                     .commit();
-            setToolbarTitle("Hospital Admissions");
+            setToolbarTitle();
         }
 
         else if (id == R.id.nav_event) {
+            navItemIndex = 6;
             EventsFragment eventsFragment = new EventsFragment();
             FragmentManager manager = getSupportFragmentManager();
             manager.beginTransaction().replace(R.id.rel_layout_for_frag,
@@ -270,10 +283,10 @@ public class HomeActivity extends AppCompatActivity
                     eventsFragment.getTag())
                     .addToBackStack(null)
                     .commit();
-            setToolbarTitle("Events");
+            setToolbarTitle();
         }
         else if (id == R.id.nav_records) {
-            navItemIndex = 4;
+            navItemIndex = 7;
             MedicalRecordFragment medicalRecordFragment = new MedicalRecordFragment();
             FragmentManager manager = getSupportFragmentManager();
             manager.beginTransaction().replace(R.id.rel_layout_for_frag,
@@ -281,10 +294,10 @@ public class HomeActivity extends AppCompatActivity
                     medicalRecordFragment.getTag())
                     .addToBackStack(null)
                     .commit();
-            setToolbarTitle("Medical Records");
+            setToolbarTitle();
         }
         else if (id == R.id.nav_adverseEvent){
-            navItemIndex = 5;
+            navItemIndex = 8;
             AdverseEventFragment adverseEventFragment = new AdverseEventFragment();
             FragmentManager manager = getSupportFragmentManager();
             manager.beginTransaction().replace(R.id.rel_layout_for_frag,
@@ -292,10 +305,10 @@ public class HomeActivity extends AppCompatActivity
                     adverseEventFragment.getTag())
                     .addToBackStack(null)
                     .commit();
-            setToolbarTitle("Adverse Events");
+            setToolbarTitle();
         }
         else if (id == R.id.nav_regimen){
-            navItemIndex = 6;
+            navItemIndex = 9;
             RegimenFragment regimenFragment = new RegimenFragment();
             FragmentManager manager = getSupportFragmentManager();
             manager.beginTransaction().replace(R.id.rel_layout_for_frag,
@@ -303,9 +316,10 @@ public class HomeActivity extends AppCompatActivity
                     regimenFragment.getTag())
                     .addToBackStack(null)
                     .commit();
-            setToolbarTitle("Regimens");
+            setToolbarTitle();
         }
         else {
+            navItemIndex = 0;
             HomeFragment home = new HomeFragment();
             FragmentManager manager = getSupportFragmentManager();
             manager.beginTransaction().replace(R.id.rel_layout_for_frag,
@@ -313,7 +327,7 @@ public class HomeActivity extends AppCompatActivity
                     home.getTag())
                     .addToBackStack(null)
                     .commit();
-            setToolbarTitle("Home");
+            setToolbarTitle();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -323,8 +337,8 @@ public class HomeActivity extends AppCompatActivity
         return true;
     }
 
-    public void setToolbarTitle(String title) {
-        getSupportActionBar().setTitle(title);
+    public void setToolbarTitle() {
+        getSupportActionBar().setTitle(activityTitles[navItemIndex]);
     }
 
     @Override

@@ -274,4 +274,7 @@ public class CreateAppointmentFragment extends Fragment implements Validator.Val
             }
         }
     }
+
+    public interface OnFragmentInteractionListener {
+    }
 }
