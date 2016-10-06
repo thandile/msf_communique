@@ -15,6 +15,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.example.msf.msf.API.Communicator;
 import com.example.msf.msf.Dialogs.DateDialog;
@@ -161,12 +162,27 @@ public class CreateAdverseEventFragment extends Fragment implements Validator.Va
 
     @Override
     public void onValidationSucceeded() {
-
+        prgDialog.show();
+        String[] patientId = patientNames.getText().toString().split(":");
+        String[] adverse = String.valueOf(adverseEvent.getSelectedItem()).split(":");
+        String note = notes.getText().toString();
+        Log.d(TAG,  adverseEvent +" "+patientId);
+        communicator.counsellingPost(patientId[0], adverse[0], note);
     }
 
     @Override
     public void onValidationFailed(List<ValidationError> errors) {
+        for (ValidationError error : errors) {
+            View view = error.getView();
+            String message = error.getCollatedErrorMessage(CreateAdverseEventFragment.this.getActivity());
 
+            // Display error messages ;)
+            if (view instanceof EditText) {
+                ((EditText) view).setError(message);
+            } else {
+                Toast.makeText(CreateAdverseEventFragment.this.getActivity(), message, Toast.LENGTH_LONG).show();
+            }
+        }
     }
 
 
