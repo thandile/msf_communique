@@ -72,6 +72,12 @@
             android:paddingTop="10dp"
             android:paddingBottom="10dp" />
 
+        <com.example.msf.msf.Utils.MultiSelectionSpinner
+            android:id="@+id/drugs"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="2dp" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -94,7 +100,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Submit"
-            android:id="@+id/appointment_submit"
+            android:id="@+id/regimen_submit"
             android:layout_marginTop="20dip"
             android:background="#ff6347"
             android:textColor="#fff"

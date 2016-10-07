@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,7 +33,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 import retrofit.Callback;
@@ -47,7 +53,9 @@ public class AppointmentFragment extends Fragment {
     public static String PATIENTINFOFILE = "Patients";
     public static String USERINFOFILE = "Users";
     ListView appointmentLV;
-
+    DateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
+    Date dateobj = new Date();
+    RadioButton all, own;
     public AppointmentFragment() {
         // Required empty public constructor
     }
@@ -59,7 +67,8 @@ public class AppointmentFragment extends Fragment {
         HomeActivity.navItemIndex = 2;
         View view  = inflater.inflate(R.layout.fragment_appointment, container, false);
         appointmentsGet();
-
+        all = (RadioButton) view.findViewById(R.id.allRadioButton);
+        own = (RadioButton) view.findViewById(R.id.ownRadioButton);
         appointmentLV = (ListView) view.findViewById(R.id.appointmentLV);
         appointmentLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -110,22 +119,29 @@ public class AppointmentFragment extends Fragment {
                     if (jsonarray.length()>0) {
                         for (int i = 0; i < jsonarray.length(); i++) {
                             JSONObject jsonobject = jsonarray.getJSONObject(i);
-                            int id = Integer.parseInt(jsonobject.getString("id"));
                             String date = jsonobject.getString("appointment_date");
-                            String startTime = jsonobject.getString("start_time");
-                            String endTime = jsonobject.getString("end_time");
-                            String patient = getPatientInfo(Long.parseLong(jsonobject.getString("patient")));
-                            String owner = loadUserFromFile(Long.parseLong(jsonobject.getString("owner")));
+                            if (df.format(dateobj).compareTo(date)<=0) {
+                                int id = Integer.parseInt(jsonobject.getString("id"));
 
-                            String title = jsonobject.getString("title");
-                            String notes = jsonobject.getString("notes");
+                                String startTime = jsonobject.getString("start_time");
+                                String endTime = jsonobject.getString("end_time");
+                                String patient = getPatientInfo(Long.parseLong(jsonobject.getString("patient")));
+                                String owner = loadUserFromFile(Long.parseLong(jsonobject.getString("owner")));
 
-                            appointment = new Appointment(id, date, owner, patient, startTime, title,
-                                    notes, endTime);
-                            //userGet(owner);
-                            appointmentList.add(appointment);
+                                String title = jsonobject.getString("title");
+                                String notes = jsonobject.getString("notes");
+
+                                appointment = new Appointment(id, date, owner, patient, startTime, title,
+                                        notes, endTime);
+                                //userGet(owner);
+                                appointmentList.add(appointment);
+
+                            }
                         }
+                        TextView text = (TextView) getView().findViewById(R.id.defaultText);
+                        text.setText("Upcoming appointments");
 
+                        Collections.sort(appointmentList, new DateComparator());
                         Log.d(TAG, appointmentList.toString());
                         BindDictionary<Appointment> dictionary = new BindDictionary<>();
                         dictionary.addStringField(R.id.titleTV, new StringExtractor<Appointment>() {
@@ -184,6 +200,21 @@ public class AppointmentFragment extends Fragment {
         communicatorInterface.getAppointments(callback);
     }
 
+    public void onRadioButtonClicked(View view) {
+        // Is the button now checked?
+        boolean checked = ((RadioButton) view).isChecked();
+
+        // Check which radio button was clicked
+        switch(view.getId()) {
+            case R.id.allRadioButton:
+                if (checked)
+                    appointmentsGet();
+                    break;
+            case R.id.ownRadioButton:
+                if (checked)
+                    break;
+        }
+    }
 
     public String loadUserFromFile(Long uid){
         String user = "";
@@ -232,5 +263,13 @@ public class AppointmentFragment extends Fragment {
         return full_name;
     }
 
+
+    public class DateComparator implements Comparator<Appointment>
+    {
+        public int compare(Appointment o1, Appointment o2)
+        {
+            return o1.getDate().compareTo(o2.getDate());
+        }
+    }
 
 }

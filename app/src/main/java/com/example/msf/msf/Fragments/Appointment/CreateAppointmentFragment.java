@@ -39,8 +39,10 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.mobsandgeeks.saripaar.Validator.*;
 
-public class CreateAppointmentFragment extends Fragment implements Validator.ValidationListener{
+
+public class CreateAppointmentFragment extends Fragment implements ValidationListener{
 
     Button submit;
     Validator validator;
@@ -247,7 +249,6 @@ public class CreateAppointmentFragment extends Fragment implements Validator.Val
     @Override
     public void onValidationSucceeded() {
         prgDialog.show();
-
         String[] patientId = patientNames.getText().toString().split(":");
         String[] owner = String.valueOf(users.getSelectedItem()).split(":");
         String notes = notesET.getText().toString();

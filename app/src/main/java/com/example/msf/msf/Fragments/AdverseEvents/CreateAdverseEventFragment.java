@@ -5,6 +5,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,7 +18,10 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.example.msf.msf.API.BusProvider;
 import com.example.msf.msf.API.Communicator;
+import com.example.msf.msf.API.ErrorEvent;
+import com.example.msf.msf.API.ServerEvent;
 import com.example.msf.msf.Dialogs.DateDialog;
 import com.example.msf.msf.Fragments.Admissions.CreateAdmissionFragment;
 import com.example.msf.msf.Fragments.Counselling.CreateCounsellingFragment;
@@ -27,6 +31,7 @@ import com.mobsandgeeks.saripaar.ValidationError;
 import com.mobsandgeeks.saripaar.Validator;
 import com.mobsandgeeks.saripaar.annotation.NotEmpty;
 import com.mobsandgeeks.saripaar.annotation.Select;
+import com.squareup.otto.Subscribe;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -166,8 +171,9 @@ public class CreateAdverseEventFragment extends Fragment implements Validator.Va
         String[] patientId = patientNames.getText().toString().split(":");
         String[] adverse = String.valueOf(adverseEvent.getSelectedItem()).split(":");
         String note = notes.getText().toString();
+        String date = eventDate.getText().toString();
         Log.d(TAG,  adverseEvent +" "+patientId);
-        communicator.counsellingPost(patientId[0], adverse[0], note);
+        communicator.adverseEventPost(patientId[0], adverse[0], date, note);
     }
 
     @Override
@@ -190,4 +196,41 @@ public class CreateAdverseEventFragment extends Fragment implements Validator.Va
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        BusProvider.getInstance().register(this);
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        BusProvider.getInstance().unregister(this);
+    }
+
+    @Subscribe
+    public void onServerEvent(ServerEvent serverEvent){
+        prgDialog.hide();
+        Toast.makeText(CreateAdverseEventFragment.this.getActivity(),
+                "You have successfully added a registered a new adverse event",
+                Toast.LENGTH_LONG).show();
+
+        //AppointmentFragment appointmentFragment = new AppointmentFragment();
+        FragmentManager manager = getActivity().getSupportFragmentManager();
+        manager.popBackStack();
+        /**manager.beginTransaction()
+         .replace(R.id.rel_layout_for_frag, appointmentFragment,
+         appointmentFragment.getTag())
+         .addToBackStack(null)
+         .commit();**/
+    }
+
+    @Subscribe
+    public void onErrorEvent(ErrorEvent errorEvent){
+        prgDialog.hide();
+        Toast.makeText(CreateAdverseEventFragment.this.getActivity(), "error1   " +
+                errorEvent.getErrorMsg(), Toast.LENGTH_SHORT).show();
+    }
+
 }

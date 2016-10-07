@@ -5,17 +5,50 @@
     android:id="@+id/swipe_refresh_layout"
     tools:context=".Fragments.Appointment.AppointmentFragment">
 
-    <TextView
-        android:text=""
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/defaultText" />
+        android:orientation="horizontal">
 
+        <TextView
+            android:text=""
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/defaultText"
+            android:paddingBottom="20dp"
+            android:paddingRight="10dp"/>
+
+        <RadioGroup
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+        <RadioButton
+            android:text="Own"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/ownRadioButton"
+            android:onClick="onRadioButtonClicked"/>
+
+        <RadioButton
+            android:text="All"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/allRadioButton"
+            android:onClick="onRadioButtonClicked"/>
+        </RadioGroup>
+    </LinearLayout>
     <ListView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/appointmentLV"
         android:layout_weight="1" />
+</LinearLayout>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/btnFloatingAction"
@@ -23,4 +56,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|right"
         android:src="@android:drawable/ic_input_add" />
+
+
+
+
 </FrameLayout>

@@ -49,6 +49,7 @@ import com.example.msf.msf.Fragments.Events.CreateEventFragment;
 import com.example.msf.msf.Fragments.Events.EventsFragment;
 import com.example.msf.msf.Fragments.HomeFragment;
 import com.example.msf.msf.Fragments.MedicalRecords.CreateMedicalRecFragment;
+import com.example.msf.msf.Fragments.MedicalRecords.MedicalInfoFragment;
 import com.example.msf.msf.Fragments.MedicalRecords.MedicalRecordFragment;
 import com.example.msf.msf.Fragments.Patient.PatientFragment;
 import com.example.msf.msf.Fragments.Patient.PatientTabs.PatientInfoTab;
@@ -60,6 +61,7 @@ import com.example.msf.msf.Fragments.Patient.UpdatePatientFragment;
 import com.example.msf.msf.Fragments.Regimens.CreateRegimenFragment;
 import com.example.msf.msf.Fragments.Regimens.RegimenFragment;
 import com.example.msf.msf.Fragments.Regimens.RegimenInfoFragment;
+import com.example.msf.msf.Utils.AppStatus;
 import com.example.msf.msf.Utils.WriteRead;
 import com.google.firebase.iid.FirebaseInstanceId;
 
@@ -97,7 +99,8 @@ public class HomeActivity extends AppCompatActivity
         CreateAdverseEventFragment.OnFragmentInteractionListener,
         CreateRegimenFragment.OnFragmentInteractionListener,
         RegimenInfoFragment.OnFragmentInteractionListener,
-        AdverseEventInfoFragment.OnFragmentInteractionListener{
+        AdverseEventInfoFragment.OnFragmentInteractionListener,
+        MedicalInfoFragment.OnFragmentInteractionListener{
 
     // flag to load home fragment when user presses back key
     private boolean shouldLoadHomeFragOnBackPress = false;
@@ -232,20 +235,28 @@ public class HomeActivity extends AppCompatActivity
     }
 
     public void refresh() {
-        HomeActivity.this.deleteFile(PATIENTFILE);
-        patientsGet();
-        HomeActivity.this.deleteFile(SESSIONFILE);
-        sessionTypeGet();
-        HomeActivity.this.deleteFile(PILOTFILE);
-        pilotsGet();
-        HomeActivity.this.deleteFile(USERFILE);
-        usersGet();
-        HomeActivity.this.deleteFile(MEDICALRECORDFILE);
-        recordTypeGet();
-        HomeActivity.this.deleteFile(REGIMENFILE);
-        regimensGet();
-        HomeActivity.this.deleteFile(ADVERSEEVENTSFILE);
-        adverseEventsGet();
+        if (AppStatus.getInstance(HomeActivity.this.getApplicationContext()).isOnline()) {
+            HomeActivity.this.deleteFile(PATIENTFILE);
+            patientsGet();
+            HomeActivity.this.deleteFile(SESSIONFILE);
+            sessionTypeGet();
+            HomeActivity.this.deleteFile(PILOTFILE);
+            pilotsGet();
+            HomeActivity.this.deleteFile(USERFILE);
+            usersGet();
+            HomeActivity.this.deleteFile(MEDICALRECORDFILE);
+            recordTypeGet();
+            HomeActivity.this.deleteFile(REGIMENFILE);
+            regimensGet();
+            HomeActivity.this.deleteFile(ADVERSEEVENTSFILE);
+            adverseEventsGet();
+        }
+        else {
+            Toast.makeText(HomeActivity.this.getApplicationContext(),"You are not online." +
+                            " Data will be refreshed when you have an internet connection",
+                    Toast.LENGTH_LONG).show();
+            Log.v("Home", "############################You are not online!!!!");
+        }
     }
 
     private void adverseEventsGet() {
