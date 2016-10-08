@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -66,7 +67,7 @@ public class AppointmentFragment extends Fragment {
                              Bundle savedInstanceState) {
         HomeActivity.navItemIndex = 2;
         View view  = inflater.inflate(R.layout.fragment_appointment, container, false);
-        appointmentsGet();
+        appointmentsGet("all");
         all = (RadioButton) view.findViewById(R.id.allRadioButton);
         own = (RadioButton) view.findViewById(R.id.ownRadioButton);
         appointmentLV = (ListView) view.findViewById(R.id.appointmentLV);
@@ -89,6 +90,22 @@ public class AppointmentFragment extends Fragment {
             }
         });
 
+        RadioGroup radioGroup = (RadioGroup) view.findViewById(R.id.radioGroup);
+        radioGroup .setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch(checkedId) {
+                    case R.id.allRadioButton:
+                        appointmentsGet("all");
+                        break;
+                    case R.id.ownRadioButton:
+                        appointmentsGet("own");
+                        break;
+                }
+            }
+        });
+
+
         fab = (FloatingActionButton) view.findViewById(R.id.btnFloatingAction);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -105,7 +122,7 @@ public class AppointmentFragment extends Fragment {
         return view;
     }
 
-    public void appointmentsGet(){
+    public void appointmentsGet(final String app){
         final ArrayList<Appointment> appointmentList = new ArrayList<Appointment>();
         Interface communicatorInterface;
         communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
@@ -114,27 +131,43 @@ public class AppointmentFragment extends Fragment {
             public void success(List<Appointment> serverResponse, Response response2) {
                 String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
                 try{
-                    Appointment appointment = new Appointment();
                     JSONArray jsonarray = new JSONArray(resp);
                     if (jsonarray.length()>0) {
                         for (int i = 0; i < jsonarray.length(); i++) {
                             JSONObject jsonobject = jsonarray.getJSONObject(i);
                             String date = jsonobject.getString("appointment_date");
                             if (df.format(dateobj).compareTo(date)<=0) {
-                                int id = Integer.parseInt(jsonobject.getString("id"));
+                                if (app.equals("own")) {
+                                    String owner = loadUserFromFile(Long.parseLong(jsonobject.getString("owner")));
+                                    if (owner.equals(LoginActivity.username)) {
+                                        int id = Integer.parseInt(jsonobject.getString("id"));
 
-                                String startTime = jsonobject.getString("start_time");
-                                String endTime = jsonobject.getString("end_time");
-                                String patient = getPatientInfo(Long.parseLong(jsonobject.getString("patient")));
-                                String owner = loadUserFromFile(Long.parseLong(jsonobject.getString("owner")));
+                                        String startTime = jsonobject.getString("start_time");
+                                        String endTime = jsonobject.getString("end_time");
+                                        String patient = getPatientInfo(Long.parseLong(jsonobject.getString("patient")));
+                                        String title = jsonobject.getString("title");
+                                        String notes = jsonobject.getString("notes");
 
-                                String title = jsonobject.getString("title");
-                                String notes = jsonobject.getString("notes");
+                                        Appointment appointment = new Appointment(id, date, owner, patient, startTime, title,
+                                                notes, endTime);
+                                        //userGet(owner);
+                                        appointmentList.add(appointment);
+                                    }
+                                }
+                                else{
+                                    int id = Integer.parseInt(jsonobject.getString("id"));
+                                    String owner = loadUserFromFile(Long.parseLong(jsonobject.getString("owner")));
+                                    String startTime = jsonobject.getString("start_time");
+                                    String endTime = jsonobject.getString("end_time");
+                                    String patient = getPatientInfo(Long.parseLong(jsonobject.getString("patient")));
+                                    String title = jsonobject.getString("title");
+                                    String notes = jsonobject.getString("notes");
 
-                                appointment = new Appointment(id, date, owner, patient, startTime, title,
-                                        notes, endTime);
-                                //userGet(owner);
-                                appointmentList.add(appointment);
+                                    Appointment appointment = new Appointment(id, date, owner, patient, startTime, title,
+                                            notes, endTime);
+                                    //userGet(owner);
+                                    appointmentList.add(appointment);
+                                }
 
                             }
                         }
@@ -200,21 +233,7 @@ public class AppointmentFragment extends Fragment {
         communicatorInterface.getAppointments(callback);
     }
 
-    public void onRadioButtonClicked(View view) {
-        // Is the button now checked?
-        boolean checked = ((RadioButton) view).isChecked();
 
-        // Check which radio button was clicked
-        switch(view.getId()) {
-            case R.id.allRadioButton:
-                if (checked)
-                    appointmentsGet();
-                    break;
-            case R.id.ownRadioButton:
-                if (checked)
-                    break;
-        }
-    }
 
     public String loadUserFromFile(Long uid){
         String user = "";

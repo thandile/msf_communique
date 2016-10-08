@@ -20,6 +20,7 @@ import com.example.msf.msf.API.Deserializers.Users;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.API.PatientsDeserialiser;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,9 +44,9 @@ public class LoginActivity extends AppCompatActivity {
     private final String TAG = this.getClass().getSimpleName();
     public static final String SERVER_URL =  "https://agile-tundra-54230.herokuapp.com/api/";
     public static final String MyPREFERENCES = "MyLogin" ;
-    /**public String Username = "usernameKey";
-    public String Password = "passwordKey";
-    SharedPreferences sharedpreferences;**/
+    public static String Username = "usernameKey";
+    public static String Password = "passwordKey";
+    SharedPreferences sharedpreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +66,15 @@ public class LoginActivity extends AppCompatActivity {
         // Set Cancelable as False
         prgDialog.setCancelable(false);
         login = (Button) findViewById(R.id.btnLogin);
-        //sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+        sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+
+            final String pass = sharedpreferences.getString(Password, null);
+            final String uname = sharedpreferences.getString(Username, null);
+            Toast.makeText(LoginActivity.this, uname + " " + pass, Toast.LENGTH_SHORT).show();
+            usernameET.setText(uname);
+            pwdET.setText(pass);
+
+
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -74,23 +83,43 @@ public class LoginActivity extends AppCompatActivity {
                 username = usernameET.getText().toString();
                 // Get Password Edit View Value
                 password = pwdET.getText().toString();
-                /**SharedPreferences.Editor editor = sharedpreferences.edit();
-                editor.putString(Username, usernameET.getText().toString());
-                editor.putString(Password, pwdET.getText().toString());
-                editor.commit();
-                String pass = sharedpreferences.getString(Password, null);
-                String uname = sharedpreferences.getString(Username, null);
-                Toast.makeText(LoginActivity.this, uname+ " " + pass,Toast.LENGTH_LONG).show();**/
-                usersGet();
+
+                if (uname != null) {
+                    String pass = sharedpreferences.getString(Password, null);
+                    String uname = sharedpreferences.getString(Username, null);
+                    Toast.makeText(LoginActivity.this, uname + " " + pass, Toast.LENGTH_SHORT).show();
+                    if (pass.equals(password) && uname.equals(username)){
+                        Toast.makeText(LoginActivity.this, "correct",
+                                Toast.LENGTH_SHORT).show();
+                        navigateToHomeActivity();
+                    }
+                    else {
+                        Toast.makeText(LoginActivity.this, "Incorrect username/password.",
+                                Toast.LENGTH_SHORT).show();
+                    }
+               }
+                else {
+                    usersGet();
+                }
 
             }
         });
     }
+
+    public boolean fileExistance(String FILENAME){
+        File file = LoginActivity.this.getApplicationContext().getFileStreamPath(FILENAME);
+        return file.exists();
+    }
+
     public void usersGet() {
         Interface communicatorInterface = Auth.getInterface(username, password);
         Callback<List<Users>> callback = new Callback<List<Users>>() {
             @Override
             public void success(List<Users> serverResponse, Response response2) {
+                SharedPreferences.Editor editor = sharedpreferences.edit();
+                editor.putString(Username, usernameET.getText().toString());
+                editor.putString(Password, pwdET.getText().toString());
+                editor.commit();
                 navigateToHomeActivity();
                 prgDialog.hide();
             }

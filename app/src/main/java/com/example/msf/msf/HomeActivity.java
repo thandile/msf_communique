@@ -1,6 +1,8 @@
 package com.example.msf.msf;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -118,6 +120,7 @@ public class HomeActivity extends AppCompatActivity
     public static String REGIMENFILE = "Drugs";
     public static String ADVERSEEVENTSFILE = "AdverseEvents";
     public static String MEDICALRECORDFILE = "MedicalRecords";
+    public static final String MyPREFERENCES = "MyLogin";
 
 
 
@@ -211,16 +214,17 @@ public class HomeActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-           /** SharedPreferences sharedpreferences = getSharedPreferences(LoginActivity.MyPREFERENCES,
+            SharedPreferences sharedpreferences = getSharedPreferences(LoginActivity.MyPREFERENCES,
                     Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedpreferences.edit();
             editor.clear();
             editor.commit();
             String pass = sharedpreferences.getString(LoginActivity.Password, null);
             String uname = sharedpreferences.getString(LoginActivity.Username, null);
-            Toast.makeText(HomeActivity.this, uname+ " " + pass,Toast.LENGTH_LONG).show();**/
+            Toast.makeText(HomeActivity.this, uname+ " " + pass,Toast.LENGTH_LONG).show();
             LoginActivity.username = null;
             LoginActivity.password = null;
+            //HomeActivity.this.deleteFile(MyPREFERENCES);**/
             Intent intent = new Intent(getApplicationContext(),LoginActivity.class);
             startActivity(intent);
             //onDestroy();

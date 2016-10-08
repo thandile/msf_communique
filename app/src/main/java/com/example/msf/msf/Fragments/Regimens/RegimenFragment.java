@@ -20,6 +20,7 @@ import com.amigold.fundapter.extractors.StringExtractor;
 import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.Deserializers.AddCounsellingResponse;
 import com.example.msf.msf.API.Deserializers.Regimen;
+import com.example.msf.msf.API.Deserializers.SessionResponse;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.Fragments.Counselling.CounsellingFragment;
 import com.example.msf.msf.LoginActivity;
@@ -132,16 +133,23 @@ public class RegimenFragment extends Fragment {
                 String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
                 try{
                     JSONArray jsonarray = new JSONArray(resp);
+
                     if (jsonarray.length()>0) {
                         for (int i = 0; i < jsonarray.length(); i++) {
-                            JSONObject jsonobject = jsonarray.getJSONObject(i);
+
+                                    JSONObject jsonobject = jsonarray.getJSONObject(i);
                             int id = Integer.parseInt(jsonobject.getString("id"));
                             String patient = getPatientInfo(Long.parseLong(jsonobject.getString("patient")));
                             Log.d(TAG, "oatuie  "+ patient);
-                            String[] drugs = {};
+                            JSONArray drugJsonArray = jsonobject.getJSONArray("drugs");
 
-                               // drugs = loadDrugs(jsonobject.getString("drugs"));
-                               // Log.d(TAG, drugs);
+                            List<String> drugList = new ArrayList<String>();
+                            for (int j = 0; j <drugJsonArray.length(); j++) {
+
+                                drugList.add(drugJsonArray.getString(j));
+                            }
+                            Log.d(TAG, "druglist size "+drugList.size());
+                            String[] drugs = loadDrugs(drugList);
 
                             String notes = jsonobject.getString("notes");
                             String dateStarted = jsonobject.getString("date_started");
@@ -162,7 +170,7 @@ public class RegimenFragment extends Fragment {
                         dictionary.addStringField(R.id.personTV, new StringExtractor<Regimen>() {
                             @Override
                             public String getStringValue(Regimen regimen, int position) {
-                                return ""+regimen.getDrugs();
+                                return regimen.drugs(regimen.getDrugs());
                             }
                         });
 
@@ -211,16 +219,21 @@ public class RegimenFragment extends Fragment {
         communicatorInterface.getRegimen(callback);
     }
 
-    public String  loadDrugs(String did){
+    public String[]  loadDrugs(List<String> did){
         String drugs = WriteRead.read(REGIMENINFOFILE, getContext());
-        String drug ="";
+        String[] drug = new String[did.size()];
         try {
             JSONArray jsonarray = new JSONArray(drugs);
+            Log.d(TAG, "drugs for patient " + jsonarray.length());
             for (int i = 0; i < jsonarray.length(); i++) {
                 JSONObject jsonobject = jsonarray.getJSONObject(i);
-                if (jsonobject.getString("id").equals(""+did)) {
-                    String id_name =  jsonobject.getString("name");
-                    drug = id_name;
+
+                for (int j = 0; j < did.size(); j++) {
+                    if (jsonobject.getString("id").equals("" + did.get(j))) {
+                        String id_name = jsonobject.getString("name");
+                        drug[j] = id_name;
+
+                    }
                 }
             }
         }catch (JSONException e) {

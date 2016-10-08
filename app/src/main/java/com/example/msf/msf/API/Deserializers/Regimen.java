@@ -106,6 +106,14 @@ public class Regimen {
         this.id_no = id_no;
     }
 
+    public String drugs(String [] drugList){
+        String drug = drugList[0];
+        for (int i = 1; i<drugList.length; i++){
+            drug = drug +", "+ drugList[i];
+        }
+        return drug;
+    }
+
     private int id_no;
     @SerializedName("patient")
     private String patient;

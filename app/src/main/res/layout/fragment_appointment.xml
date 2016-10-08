@@ -27,20 +27,21 @@
         <RadioGroup
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:id="@+id/radioGroup">
         <RadioButton
             android:text="Own"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/ownRadioButton"
-            android:onClick="onRadioButtonClicked"/>
+            android:paddingRight="10dp"/>
 
         <RadioButton
             android:text="All"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/allRadioButton"
-            android:onClick="onRadioButtonClicked"/>
+            android:checked="true" />
         </RadioGroup>
     </LinearLayout>
     <ListView
