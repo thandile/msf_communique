@@ -127,8 +127,13 @@ public class CreateRegimenFragment extends Fragment implements Validator.Validat
         List<String> drugs = drugsSpinner.getSelectedStrings();//.split(":");
         Log.d(TAG, "selected drugs "+drugs.toString());
         String[] drugIDs = new String[drugs.size()];
+        List<String> drug = new ArrayList<String>();
         for (int i=0; i<drugs.size(); i++) {
             drugIDs[i] = drugs.get(i).split(":")[0];
+        }
+
+        for (int i=0; i<drugs.size(); i++) {
+            drug.add(drugs.get(i).split(":")[0]);
         }
         String notes = notesET.getText().toString();
         String startdate = startDateET.getText().toString();
@@ -143,6 +148,8 @@ public class CreateRegimenFragment extends Fragment implements Validator.Validat
             Toast.makeText(CreateRegimenFragment.this.getActivity(),"You are not online." +
                     " Data will be uploaded when you have an internet connection",
                     Toast.LENGTH_LONG).show();
+            WriteRead.write("regimenPost",patientId[0]+"!"+notes+"!"+drug+"!"+startdate+"!"+ endDate,
+                    CreateRegimenFragment.this.getActivity() );
             Log.v("Home", "############################You are not online!!!!");
         }
     }

@@ -51,5 +51,9 @@ public class WriteRead {
         }
     }
 
+    public static boolean fileExistance(String FILENAME, Context ctx){
+        File file = ctx.getFileStreamPath(FILENAME);
+        return file.exists();
+    }
 
 }
