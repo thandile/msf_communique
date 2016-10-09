@@ -28,6 +28,7 @@ import com.example.msf.msf.Dialogs.DateDialog;
 import com.example.msf.msf.Fragments.Patient.PatientFragment;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
+import com.example.msf.msf.Utils.AppStatus;
 import com.example.msf.msf.Utils.WriteRead;
 import com.mobsandgeeks.saripaar.ValidationError;
 import com.mobsandgeeks.saripaar.Validator;
@@ -258,12 +259,22 @@ public class CreateEnrollmentFragment extends Fragment implements Validator.Vali
                 //"YASS!",
              //   Toast.LENGTH_SHORT).show();
         prgDialog.show();
-        String[] patient_id = patientNames.getText().toString().split(":");
+        String[] patientId = patientNames.getText().toString().split(":");
         String[] program = String.valueOf(pilotPrograms.getSelectedItem()).split(":");
-        String enrollment_comment = comment.getText().toString();
+        String enrollmentComment = comment.getText().toString();
         String date = enrollment_date.getText().toString();
-       // Toast.makeText(CreateEnrollmentFragment.this.getActivity(), date, Toast.LENGTH_SHORT).show();
-        communicator.enrollmentPost(patient_id[0], enrollment_comment, program[0], date);
+        if (AppStatus.getInstance(CreateEnrollmentFragment.this.getActivity()).isOnline()) {
+            communicator.enrollmentPost(patientId[0], enrollmentComment, program[0], date);
+        }
+        else {
+            prgDialog.hide();
+            Toast.makeText(CreateEnrollmentFragment.this.getActivity(),"You are not online." +
+                            " Data will be uploaded when you have an internet connection",
+                    Toast.LENGTH_LONG).show();
+            WriteRead.write("enrollmentPost",patientId[0]+"!"+enrollmentComment+"!"+program[0]+"!"+date,
+                    CreateEnrollmentFragment.this.getActivity() );
+            Log.v("Home", "############################You are not online!!!!");
+        }
         prgDialog.hide();
     }
 

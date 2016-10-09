@@ -21,7 +21,13 @@
         android:paddingTop="10dp"
         android:paddingBottom="10dp" />
 
-    <TextView
+        <TextView
+            android:text=""
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/patientNameTV" />
+
+        <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Regimen Start Date"
@@ -32,7 +38,13 @@
         android:paddingBottom="10dp" />
 
 
-    <TextView
+        <TextView
+            android:text=""
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/regStartDateTV" />
+
+        <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Regimen End Date"
@@ -43,9 +55,13 @@
         android:paddingBottom="10dp" />
 
 
+        <TextView
+            android:text=""
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/regEndDateTV" />
 
-
-    <TextView
+        <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Drugs"
@@ -55,7 +71,13 @@
         android:paddingTop="10dp"
         android:paddingBottom="10dp" />
 
-    <TextView
+        <TextView
+            android:text=""
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/regDrugsTV" />
+
+        <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Notes"
@@ -65,7 +87,13 @@
         android:paddingTop="10dp"
         android:paddingBottom="10dp" />
 
-    <LinearLayout
+        <TextView
+            android:text=""
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/regNotesTV" />
+
+        <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal" >

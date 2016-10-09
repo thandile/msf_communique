@@ -24,6 +24,7 @@ import com.example.msf.msf.Dialogs.DateDialog;
 import com.example.msf.msf.Dialogs.TimeDialog;
 import com.example.msf.msf.Fragments.Patient.PatientFragment;
 import com.example.msf.msf.R;
+import com.example.msf.msf.Utils.AppStatus;
 import com.example.msf.msf.Utils.WriteRead;
 import com.mobsandgeeks.saripaar.ValidationError;
 import com.mobsandgeeks.saripaar.Validator;
@@ -257,8 +258,20 @@ public class CreateAppointmentFragment extends Fragment implements ValidationLis
         String endTime = endTimeET.getText().toString();
         String startTime = startTimeET.getText().toString();
         // Log.d(TAG,  counsellingSession +" "+patientId);
-        communicator.appointmentPost(patientId[0], owner[0], notes, date, appointmentType,
+        if (AppStatus.getInstance(CreateAppointmentFragment.this.getActivity()).isOnline()) {
+            communicator.appointmentPost(patientId[0], owner[0], notes, date, appointmentType,
                 endTime, startTime);//, counsellingSession, notes);
+        }
+        else {
+            prgDialog.hide();
+            Toast.makeText(CreateAppointmentFragment.this.getActivity(),"You are not online." +
+                            " Data will be uploaded when you have an internet connection",
+                    Toast.LENGTH_LONG).show();
+            WriteRead.write("appointmentPost",patientId[0]+"!"+owner[0]+"!"+ notes+"!"+ date+"!"+ appointmentType+"!"+
+                    endTime+"!"+startTime,
+                    CreateAppointmentFragment.this.getActivity() );
+            Log.v("Home", "############################You are not online!!!!");
+        }
     }
 
     @Override

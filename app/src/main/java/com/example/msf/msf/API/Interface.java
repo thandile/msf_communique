@@ -102,7 +102,7 @@ public interface Interface {
 
     @GET("/medicalReport/{id}/")
     void getMedicalReport(@Path("id") long reportID,
-                          Callback<List<MedicalRecord>> serverResponseCallback);
+                          Callback<MedicalRecord> serverResponseCallback);
 
     @GET("/events/")
     void getEvents(Callback<List<Events>> serverResponseCallback);

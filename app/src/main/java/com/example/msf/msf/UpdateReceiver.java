@@ -8,12 +8,7 @@ import android.net.NetworkInfo;
 import android.util.Log;
 
 import com.example.msf.msf.API.Communicator;
-import com.example.msf.msf.Fragments.Regimens.UploadRegimen;
-import com.example.msf.msf.Utils.WriteRead;
-
-import java.io.File;
-
-import static java.security.AccessController.getContext;
+import com.example.msf.msf.Utils.OfflineUploads;
 
 /**
  * Created by Thandile on 2016/10/07.
@@ -31,7 +26,14 @@ public class UpdateReceiver extends BroadcastReceiver {
         NetworkInfo activeNetInfo = connectivityManager.getActiveNetworkInfo();
         boolean isConnected = activeNetInfo != null && activeNetInfo.isConnectedOrConnecting();
         if (isConnected) {
-            UploadRegimen.regimen(context);
+            OfflineUploads.regimen(context);
+            OfflineUploads.admission(context);
+            OfflineUploads.appointment(context);
+            OfflineUploads.enrollment(context);
+            OfflineUploads.event(context);
+            OfflineUploads.counselling(context);
+            OfflineUploads.medicalReport(context);
+            OfflineUploads.adverseEvent(context);
             Log.i("NET", "connected" + isConnected);
         }
         else  Log.i("NET", "not connected " +isConnected);

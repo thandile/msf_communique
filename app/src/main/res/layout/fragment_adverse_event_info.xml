@@ -21,10 +21,10 @@
         android:paddingBottom="10dp" />
 
     <TextView
-        android:text="TextView"
+        android:text=""
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/textView36" />
+        android:id="@+id/patientNameTV" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -37,10 +37,10 @@
         android:paddingBottom="10dp" />
 
     <TextView
-        android:text="TextView"
+        android:text=""
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/textView41" />
+        android:id="@+id/eventTypeTV" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -53,10 +53,10 @@
         android:paddingBottom="10dp" />
 
     <TextView
-        android:text="TextView"
+        android:text=""
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/textView42" />
+        android:id="@+id/eventDateTV" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -69,10 +69,10 @@
         android:paddingBottom="10dp" />
 
     <TextView
-        android:text="TextView"
+        android:text=""
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/textView43" />
+        android:id="@+id/eventNotesTV" />
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"

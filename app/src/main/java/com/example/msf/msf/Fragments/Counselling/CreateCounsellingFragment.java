@@ -21,6 +21,7 @@ import com.example.msf.msf.API.Communicator;
 import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.ServerEvent;
 import com.example.msf.msf.R;
+import com.example.msf.msf.Utils.AppStatus;
 import com.example.msf.msf.Utils.WriteRead;
 import com.mobsandgeeks.saripaar.ValidationError;
 import com.mobsandgeeks.saripaar.Validator;
@@ -189,7 +190,18 @@ public class CreateCounsellingFragment extends Fragment implements Validator.Val
         String[] counsellingSession = String.valueOf(sessionType.getSelectedItem()).split(":");
         String notes = notesET.getText().toString();
         Log.d(TAG,  counsellingSession +" "+patientId);
-        communicator.counsellingPost(patientId[0], counsellingSession[0], notes);
+        if (AppStatus.getInstance(CreateCounsellingFragment.this.getActivity()).isOnline()) {
+            communicator.counsellingPost(patientId[0], counsellingSession[0], notes);
+        }
+        else {
+            prgDialog.hide();
+            Toast.makeText(CreateCounsellingFragment.this.getActivity(),"You are not online." +
+                            " Data will be uploaded when you have an internet connection",
+                    Toast.LENGTH_LONG).show();
+            WriteRead.write("counsellingPost",patientId[0]+"!"+counsellingSession[0]+"!"+notes+"!",
+                    CreateCounsellingFragment.this.getActivity() );
+            Log.v("Home", "############################You are not online!!!!");
+        }
     }
 
     @Override

@@ -21,6 +21,7 @@ import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.Communicator;
 import com.example.msf.msf.API.Deserializers.AdverseEventType;
 import com.example.msf.msf.API.Deserializers.Drug;
+import com.example.msf.msf.API.Deserializers.Events;
 import com.example.msf.msf.API.Deserializers.MedicalRecordType;
 import com.example.msf.msf.API.Deserializers.Patients;
 import com.example.msf.msf.API.Deserializers.Regimen;
@@ -48,6 +49,7 @@ import com.example.msf.msf.Fragments.Enrollments.EnrollmentFragment;
 import com.example.msf.msf.Fragments.Enrollments.EnrollmentInfoFragment;
 import com.example.msf.msf.Fragments.Enrollments.UpdateEnrollmentFragment;
 import com.example.msf.msf.Fragments.Events.CreateEventFragment;
+import com.example.msf.msf.Fragments.Events.EventInfoFragment;
 import com.example.msf.msf.Fragments.Events.EventsFragment;
 import com.example.msf.msf.Fragments.HomeFragment;
 import com.example.msf.msf.Fragments.MedicalRecords.CreateMedicalRecFragment;
@@ -66,6 +68,7 @@ import com.example.msf.msf.Fragments.Regimens.RegimenInfoFragment;
 import com.example.msf.msf.Utils.AppStatus;
 import com.example.msf.msf.Utils.WriteRead;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -99,6 +102,7 @@ public class HomeActivity extends AppCompatActivity
         AdmissionInfoFragment.OnFragmentInteractionListener,
         CreateMedicalRecFragment.OnFragmentInteractionListener,
         CreateEventFragment.OnFragmentInteractionListener,
+        EventInfoFragment.OnFragmentInteractionListener,
         CreateAdverseEventFragment.OnFragmentInteractionListener,
         CreateRegimenFragment.OnFragmentInteractionListener,
         RegimenInfoFragment.OnFragmentInteractionListener,
@@ -133,9 +137,10 @@ public class HomeActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         communicator = new Communicator();
-        //FirebaseMessaging.getInstance().subscribeToTopic("test");
-        String token = FirebaseInstanceId.getInstance().getToken();
-        communicator.registrationPost(token);
+        FirebaseMessaging.getInstance().subscribeToTopic("test");
+        //String token =
+        FirebaseInstanceId.getInstance().getToken();
+        //communicator.registrationPost(token);
         // load toolbar titles from string resources
         activityTitles = getResources().getStringArray(R.array.nav_item_activity_titles);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

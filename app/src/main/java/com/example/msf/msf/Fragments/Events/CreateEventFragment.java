@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,8 @@ import com.example.msf.msf.API.ServerEvent;
 import com.example.msf.msf.Dialogs.DateDialog;
 import com.example.msf.msf.Dialogs.TimeDialog;
 import com.example.msf.msf.R;
+import com.example.msf.msf.Utils.AppStatus;
+import com.example.msf.msf.Utils.WriteRead;
 import com.mobsandgeeks.saripaar.ValidationError;
 import com.mobsandgeeks.saripaar.Validator;
 import com.mobsandgeeks.saripaar.annotation.Future;
@@ -129,8 +132,19 @@ public class CreateEventFragment extends Fragment implements Validator.Validatio
         String endTime = endTimeET.getText().toString();
         String startTime = startTimeET.getText().toString();
         // Log.d(TAG,  counsellingSession +" "+patientId);
-        communicator.eventPost(appointmentType, notes, date, startTime,
-                endTime);
+        if (AppStatus.getInstance(CreateEventFragment.this.getActivity()).isOnline()) {
+            communicator.eventPost(appointmentType, notes, date, startTime,
+                    endTime);
+        }
+        else {
+            prgDialog.hide();
+            Toast.makeText(CreateEventFragment.this.getActivity(),"You are not online." +
+                            " Data will be uploaded when you have an internet connection",
+                    Toast.LENGTH_LONG).show();
+            WriteRead.write("eventPost",appointmentType+"!"+notes+"!"+ date+"!"+ startTime+"!"+endTime,
+                    CreateEventFragment.this.getActivity() );
+            Log.v("Home", "############################You are not online!!!!");
+        }
     }
 
     @Override

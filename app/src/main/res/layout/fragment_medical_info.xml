@@ -13,7 +13,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Patient Name"
+        android:text="Title"
         android:id="@+id/textView7"
         android:textStyle="bold"
         android:textSize="20dp"
@@ -21,10 +21,10 @@
         android:paddingBottom="10dp" />
 
     <TextView
-        android:text="TextView"
+        android:text=""
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/textView37" />
+        android:id="@+id/recordTitleTV" />
 
     <TextView
         android:text="Medical Report Type"
@@ -37,13 +37,13 @@
         android:paddingBottom="10dp" />
 
     <TextView
-        android:text="TextView"
+        android:text=""
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/textView38" />
+        android:id="@+id/recordTypeTV" />
 
     <TextView
-        android:text="Patient"
+        android:text="Patient Name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/textView25"
@@ -53,10 +53,10 @@
         android:paddingBottom="10dp" />
 
     <TextView
-        android:text="TextView"
+        android:text=""
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/textView39" />
+        android:id="@+id/patientNameTV" />
 
     <TextView
         android:text="Notes"
@@ -69,10 +69,10 @@
         android:paddingBottom="10dp" />
 
     <TextView
-        android:text="TextView"
+        android:text=""
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/textView40" />
+        android:id="@+id/recordNotesTV" />
 
     <LinearLayout
         android:layout_width="match_parent"

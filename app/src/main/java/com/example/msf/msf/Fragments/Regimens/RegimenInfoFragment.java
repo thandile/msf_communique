@@ -12,14 +12,30 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.BusProvider;
 import com.example.msf.msf.API.Communicator;
+import com.example.msf.msf.API.Deserializers.Admission;
+import com.example.msf.msf.API.Deserializers.Regimen;
 import com.example.msf.msf.API.ErrorEvent;
+import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.API.ServerEvent;
+import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
+import com.example.msf.msf.Utils.WriteRead;
 import com.squareup.otto.Subscribe;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
+import retrofit.mime.TypedByteArray;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -33,10 +49,10 @@ public class RegimenInfoFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
-
-
+    public static String REGIMENFILE = "Drugs";
+    public static String PATIENTINFOFILE = "Patients";
     private String id;
-
+    TextView patientName, regimenStart, regimenEnd, drugs, notes;
     private final String TAG = this.getClass().getSimpleName();
     Button edit, delete;
     private Communicator communicator;
@@ -78,6 +94,11 @@ public class RegimenInfoFragment extends Fragment {
         // Inflate the layout for this fragment
         communicator = new Communicator();
         View view = inflater.inflate(R.layout.fragment_regimen_info, container, false);
+        patientName = (TextView) view.findViewById(R.id.patientNameTV);
+        regimenStart = (TextView) view.findViewById(R.id.regStartDateTV);
+        regimenEnd = (TextView) view.findViewById(R.id.regEndDateTV);
+        drugs = (TextView) view.findViewById(R.id.regDrugsTV);
+        notes = (TextView) view.findViewById(R.id.regNotesTV);
         Log.d(TAG, id);
         // Instantiate Progress Dialog object
         prgDialog = new ProgressDialog(RegimenInfoFragment.this.getActivity());
@@ -86,10 +107,100 @@ public class RegimenInfoFragment extends Fragment {
         // Set Cancelable as False
         prgDialog.setCancelable(false);
         onButtonPressed(id);
+        regimenGet(Long.parseLong(id));
         edit = (Button) view.findViewById(R.id.editButton);
         delete = (Button) view.findViewById(R.id.delBtn);
         deleteListener();
         return view;
+    }
+
+    public void regimenGet(long regimenID){
+        //final List<String> patientList = new ArrayList<String>();
+        Interface communicatorInterface = Auth.getInterface(LoginActivity.username,
+                LoginActivity.password);
+        Callback<Regimen> callback = new Callback<Regimen>() {
+            @Override
+            public void success(Regimen serverResponse, Response response2) {
+                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
+                try{
+                    JSONObject jsonObject = new JSONObject(resp);
+                    String  pName = patientGet(jsonObject.getString("patient"));
+                    patientName.setText(pName);
+                    Log.d(TAG, "patientName "+jsonObject.getString("patient"));
+                    notes.setText(jsonObject.getString("notes"));
+                    regimenStart.setText(jsonObject.getString("date_started"));
+                    regimenEnd.setText(jsonObject.getString("date_ended"));
+                    drugs.setText(jsonObject.getString("drugs"));
+                    //ownerTV.setText(jsonObject.getString("owner"));
+                    //patientTV.setText(jsonObject.getString("patient"));
+                }
+                catch (JSONException e){
+                    System.out.print("unsuccessful");
+                }
+            }
+
+
+            @Override
+            public void failure(RetrofitError error) {
+                if(error != null ){
+                    Log.e(TAG, error.getMessage());
+                    error.printStackTrace();
+                }
+            }
+        };
+        communicatorInterface.getOneRegimen(regimenID,callback);
+    }
+
+    public String patientGet(String patientID){
+        String patients = WriteRead.read(PATIENTINFOFILE, getContext());
+        String fullName ="";
+        Log.d(TAG, "pName "+patients);
+        try{
+            JSONArray jsonarray = new JSONArray(patients);
+
+            // JSONArray jsonarray = new JSONArray(resp);
+            for (int i = 0; i < jsonarray.length(); i++) {
+                JSONObject jsonobject = jsonarray.getJSONObject(i);
+                String id = jsonobject.getString("id");
+
+                if (patientID.equals(id)) {
+                    fullName = jsonobject.getString("other_names") + " " +
+                            jsonobject.getString("last_name");
+                }
+            }
+
+
+        }
+        catch (JSONException e){
+            System.out.print("unsuccessful");
+        }
+        return fullName;
+    }
+
+    public String drugsGet(String drugID){
+        String drugs = WriteRead.read(REGIMENFILE, getContext());
+        String drugNames ="";
+        Log.d(TAG, "pName "+drugs);
+        try{
+            JSONArray jsonarray = new JSONArray(drugs);
+
+            // JSONArray jsonarray = new JSONArray(resp);
+            for (int i = 0; i < jsonarray.length(); i++) {
+                JSONObject jsonobject = jsonarray.getJSONObject(i);
+                String id = jsonobject.getString("id");
+
+                if (drugID.equals(id)) {
+                    drugNames = drugNames+ " "+ jsonobject.getString("name") ;
+
+                }
+            }
+
+
+        }
+        catch (JSONException e){
+            System.out.print("unsuccessful");
+        }
+        return drugNames;
     }
 
     // TODO: Rename method, update argument and hook method into UI event

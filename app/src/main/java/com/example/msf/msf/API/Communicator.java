@@ -819,12 +819,8 @@ public class Communicator {
         Callback<AdverseEvent> callback = new Callback<AdverseEvent>() {
             @Override
             public void success(AdverseEvent serverResponse, Response response2) {
-                if(serverResponse.getResponseCode() == 0){
                     BusProvider.getInstance().post(produceAdverseEventServerResponse(serverResponse));
-                }else{
-                    BusProvider.getInstance().post(produceErrorEvent(serverResponse.getResponseCode(),
-                            serverResponse.getMessage()));
-                }
+
             }
 
             @Override

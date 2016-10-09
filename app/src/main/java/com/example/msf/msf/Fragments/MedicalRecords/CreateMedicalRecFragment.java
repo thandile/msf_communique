@@ -20,7 +20,9 @@ import com.example.msf.msf.API.BusProvider;
 import com.example.msf.msf.API.Communicator;
 import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.ServerEvent;
+import com.example.msf.msf.Fragments.Enrollments.CreateEnrollmentFragment;
 import com.example.msf.msf.R;
+import com.example.msf.msf.Utils.AppStatus;
 import com.example.msf.msf.Utils.WriteRead;
 import com.mobsandgeeks.saripaar.ValidationError;
 import com.mobsandgeeks.saripaar.Validator;
@@ -194,8 +196,18 @@ public class CreateMedicalRecFragment extends Fragment implements ValidationList
         String[] record = String.valueOf(recordType.getSelectedItem()).split(":");
         String notes = notesET.getText().toString();
         String titleText = title.getText().toString();
-        // Log.d(TAG,  counsellingSession +" "+patientId);
-        communicator.reportPost(titleText, record[0], patientId[0], notes);//, counsellingSession, notes);
+        if (AppStatus.getInstance(CreateMedicalRecFragment.this.getActivity()).isOnline()) {
+            communicator.reportPost(titleText, record[0], patientId[0], notes);//, counsellingSession, notes);
+        }
+        else {
+            prgDialog.hide();
+            Toast.makeText(CreateMedicalRecFragment.this.getActivity(),"You are not online." +
+                            " Data will be uploaded when you have an internet connection",
+                    Toast.LENGTH_LONG).show();
+            WriteRead.write("reportPost",titleText+"!"+ record[0]+"!"+ patientId[0]+"!"+ notes,
+                    CreateMedicalRecFragment.this.getActivity() );
+            Log.v("Home", "############################You are not online!!!!");
+        }
     }
 
     @Override

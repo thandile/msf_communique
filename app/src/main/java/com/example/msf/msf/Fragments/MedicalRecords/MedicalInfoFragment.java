@@ -10,15 +10,30 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.BusProvider;
 import com.example.msf.msf.API.Communicator;
+import com.example.msf.msf.API.Deserializers.Admission;
 import com.example.msf.msf.API.Deserializers.MedicalRecord;
 import com.example.msf.msf.API.ErrorEvent;
+import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.API.ServerEvent;
+import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
+import com.example.msf.msf.Utils.WriteRead;
 import com.squareup.otto.Subscribe;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
+import retrofit.mime.TypedByteArray;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -37,7 +52,10 @@ public class MedicalInfoFragment extends Fragment {
 
     private final String TAG = this.getClass().getSimpleName();
     Button edit, delete;
+    TextView recordTitle, recordType, patientName, notes;
     private Communicator communicator;
+    public static String PATIENTINFOFILE = "Patients";
+    public static String MEDICALRECORDFILE = "MedicalRecords";
     // Progress Dialog Object
     ProgressDialog prgDialog;
 
@@ -74,10 +92,14 @@ public class MedicalInfoFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-
-        communicator = new Communicator();
         View view = inflater.inflate(R.layout.fragment_medical_info, container, false);
+        // Inflate the layout for this fragment
+        patientName = (TextView) view.findViewById(R.id.patientNameTV);
+        recordTitle = (TextView) view.findViewById(R.id.recordTitleTV);
+        recordType = (TextView) view.findViewById(R.id.recordTypeTV);
+        notes = (TextView) view.findViewById(R.id.recordNotesTV);
+        communicator = new Communicator();
+        admissionGet(Long.parseLong(id));
         Log.d(TAG, id);
         // Instantiate Progress Dialog object
         prgDialog = new ProgressDialog(MedicalInfoFragment.this.getActivity());
@@ -90,6 +112,92 @@ public class MedicalInfoFragment extends Fragment {
         delete = (Button) view.findViewById(R.id.delBtn);
         deleteListener();
         return view;
+    }
+
+    public void admissionGet(long admissionID){
+        //final List<String> patientList = new ArrayList<String>();
+        Interface communicatorInterface = Auth.getInterface(LoginActivity.username,
+                LoginActivity.password);
+        Callback<MedicalRecord> callback = new Callback<MedicalRecord>() {
+            @Override
+            public void success(MedicalRecord serverResponse, Response response2) {
+                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
+                try{
+                    JSONObject jsonObject = new JSONObject(resp);
+                    String  pName = patientGet(jsonObject.getString("patient"));
+                    patientName.setText(pName);
+                    Log.d(TAG, "patientName "+jsonObject.getString("patient"));
+                    notes.setText(jsonObject.getString("notes"));
+                    recordTitle.setText(jsonObject.getString("title"));
+                    String record = recordTypeGet(jsonObject.getString("report_type"));
+                    recordType.setText(record);
+                }
+                catch (JSONException e){
+                    System.out.print("unsuccessful");
+                }
+            }
+
+
+            @Override
+            public void failure(RetrofitError error) {
+                if(error != null ){
+                    Log.e(TAG, error.getMessage());
+                    error.printStackTrace();
+                }
+            }
+        };
+        communicatorInterface.getMedicalReport(admissionID,callback);
+    }
+
+    public String patientGet(String patientID){
+        String patients = WriteRead.read(PATIENTINFOFILE, getContext());
+        String fullName ="";
+        Log.d(TAG, "pName "+patients);
+        try{
+            JSONArray jsonarray = new JSONArray(patients);
+
+            // JSONArray jsonarray = new JSONArray(resp);
+            for (int i = 0; i < jsonarray.length(); i++) {
+                JSONObject jsonobject = jsonarray.getJSONObject(i);
+                String id = jsonobject.getString("id");
+
+                if (patientID.equals(id)) {
+                    fullName = jsonobject.getString("other_names") + " " +
+                            jsonobject.getString("last_name");
+                }
+            }
+
+
+        }
+        catch (JSONException e){
+            System.out.print("unsuccessful");
+        }
+        return fullName;
+    }
+
+    public String recordTypeGet(String recordID){
+        String records = WriteRead.read(MEDICALRECORDFILE, getContext());
+        String recordType ="";
+        //Log.d(TAG, "pName "+patients);
+        try{
+            JSONArray jsonarray = new JSONArray(records);
+
+            // JSONArray jsonarray = new JSONArray(resp);
+            for (int i = 0; i < jsonarray.length(); i++) {
+                JSONObject jsonobject = jsonarray.getJSONObject(i);
+                String id = jsonobject.getString("id");
+
+                if (recordID.equals(id)) {
+                    recordType = jsonobject.getString("name");
+                }
+            }
+
+
+        }
+        catch (JSONException e){
+            System.out.print("unsuccessful");
+        }
+        return recordType;
     }
 
     public void deleteListener() {

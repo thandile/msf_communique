@@ -115,8 +115,8 @@ public class EventsFragment extends Fragment {
                             String title = jsonobject.getString("name");
                             String description = jsonobject.getString("description");
 
-                            events = new Events(id, date, startTime, title,
-                                    description, endTime);
+                            events = new Events(id, title,
+                                    description, date, startTime, endTime);
                             //userGet(owner);
                             eventsList.add(events);
                         }

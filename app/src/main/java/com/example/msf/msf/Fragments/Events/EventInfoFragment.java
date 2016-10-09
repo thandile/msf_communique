@@ -10,14 +10,28 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.BusProvider;
 import com.example.msf.msf.API.Communicator;
+import com.example.msf.msf.API.Deserializers.Admission;
+import com.example.msf.msf.API.Deserializers.Events;
 import com.example.msf.msf.API.ErrorEvent;
+import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.API.ServerEvent;
+import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
 import com.squareup.otto.Subscribe;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
+import retrofit.mime.TypedByteArray;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -32,7 +46,7 @@ public class EventInfoFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private EventInfoFragment.OnFragmentInteractionListener mListener;
-
+    TextView eventTitle, eventDate, eventStart, eventEnd, eventDescription;
     private final String TAG = this.getClass().getSimpleName();
     Button edit, delete;
     private Communicator communicator;
@@ -76,7 +90,12 @@ public class EventInfoFragment extends Fragment {
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_event_info, container, false);
         communicator = new Communicator();
-
+        eventTitle = (TextView) view.findViewById(R.id.eventTitleTV);
+        eventDescription = (TextView) view.findViewById(R.id.eventDescriptionTV);
+        eventDate = (TextView) view.findViewById(R.id.eventDateTV);
+        eventStart = (TextView) view.findViewById(R.id.eventStartTV);
+        eventEnd = (TextView) view.findViewById(R.id.eventEndTV);
+        eventGet(Long.parseLong(id));
         Log.d(TAG, id);
         // Instantiate Progress Dialog object
         prgDialog = new ProgressDialog(EventInfoFragment.this.getActivity());
@@ -89,6 +108,42 @@ public class EventInfoFragment extends Fragment {
         delete = (Button) view.findViewById(R.id.delBtn);
         deleteListener();
         return view;
+    }
+
+    public void eventGet(long admissionID){
+        //final List<String> patientList = new ArrayList<String>();
+        Interface communicatorInterface = Auth.getInterface(LoginActivity.username,
+                LoginActivity.password);
+        Callback<Events> callback = new Callback<Events>() {
+            @Override
+            public void success(Events serverResponse, Response response2) {
+                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
+                try{
+                    JSONObject jsonObject = new JSONObject(resp);
+
+                    eventTitle.setText(jsonObject.getString("name"));
+                    eventDescription.setText(jsonObject.getString("description"));
+                    eventDate.setText(jsonObject.getString("event_date"));
+                    eventStart.setText(jsonObject.getString("start_time"));
+                    eventEnd.setText(jsonObject.getString("end_time"));
+                    //ownerTV.setText(jsonObject.getString("owner"));
+                    //patientTV.setText(jsonObject.getString("patient"));
+                }
+                catch (JSONException e){
+                    System.out.print("unsuccessful");
+                }
+            }
+
+
+            @Override
+            public void failure(RetrofitError error) {
+                if(error != null ){
+                    Log.e(TAG, error.getMessage());
+                    error.printStackTrace();
+                }
+            }
+        };
+        communicatorInterface.getEvent(admissionID,callback);
     }
 
     public void deleteListener() {

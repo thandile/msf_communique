@@ -23,10 +23,10 @@
 
 
     <TextView
-        android:text="TextView"
+        android:text=""
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/textView44" />
+        android:id="@+id/patientNameTV" />
 
     <TextView
         android:text="Health Centre"
@@ -40,10 +40,10 @@
 
 
     <TextView
-        android:text="TextView"
+        android:text=""
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/textView45" />
+        android:id="@+id/health_centreTV" />
 
     <TextView
         android:text="Admission Date"
@@ -56,13 +56,13 @@
         android:paddingBottom="10dp"/>
 
     <TextView
-        android:text="TextView"
+        android:text=""
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/textView46" />
+        android:id="@+id/admissionDateTV" />
 
     <TextView
-        android:text="Discahrge Date"
+        android:text="Discharge Date"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/textView29"
@@ -73,10 +73,10 @@
 
 
     <TextView
-        android:text="TextView"
+        android:text=""
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/textView47" />
+        android:id="@+id/dischargeDateTV" />
 
     <TextView
         android:text="Notes"
@@ -89,10 +89,10 @@
         android:paddingBottom="10dp"/>
 
     <TextView
-        android:text="TextView"
+        android:text=""
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/textView48" />
+        android:id="@+id/notesTV" />
 
     <LinearLayout
         android:layout_width="match_parent"

@@ -100,27 +100,53 @@ public class AdverseEventFragment extends Fragment {
     }
 
 
-    public String getPatientInfo(Long pid) {
-        String patients = WriteRead.read(PATIENTINFOFILE, getContext());
-        String full_name = "";
+    public String getPatientInfo(Long eventID) {
+        String events = WriteRead.read(ADVERSEINFOFILE, getContext());
+        String eventType = "";
         try {
-            JSONArray jsonarray = new JSONArray(patients);
+            JSONArray jsonarray = new JSONArray(events);
             for (int i = 0; i < jsonarray.length(); i++) {
                 JSONObject jsonobject = jsonarray.getJSONObject(i);
                 Log.d(TAG, "ID: " + jsonobject.getString("id"));
-                if (jsonobject.getString("id").equals(""+pid)) {
+                if (jsonobject.getString("id").equals(""+eventID)) {
                     //String id = jsonobject.getString("id");
-                    final String first_name = jsonobject.getString("other_names");
-                    String last_name = jsonobject.getString("last_name");
-                    full_name = first_name + " " + last_name;
+                    final String name = jsonobject.getString("name");
+                    eventType = name;
                     break;
                 }
             }
         } catch (JSONException e) {
             System.out.print("unsuccessful");
         }
-        return full_name;
+        return eventType;
     }
+
+    public String eventTypeGet(String eventID){
+        String patients = WriteRead.read(PATIENTINFOFILE, getContext());
+        String fullName ="";
+        Log.d(TAG, "pName "+patients);
+        try{
+            JSONArray jsonarray = new JSONArray(patients);
+
+            // JSONArray jsonarray = new JSONArray(resp);
+            for (int i = 0; i < jsonarray.length(); i++) {
+                JSONObject jsonobject = jsonarray.getJSONObject(i);
+                String id = jsonobject.getString("id");
+
+                if (eventID.equals(id)) {
+                    fullName = jsonobject.getString("other_names") + " " +
+                            jsonobject.getString("last_name");
+                }
+            }
+
+
+        }
+        catch (JSONException e){
+            System.out.print("unsuccessful");
+        }
+        return fullName;
+    }
+
 
     public void adverseEventsGet(){
         final ArrayList<AdverseEvent> adverseEventArrayList = new ArrayList<AdverseEvent>();
@@ -141,14 +167,14 @@ public class AdverseEventFragment extends Fragment {
                             String adverseEvent = "";
                             if (fileExistance(ADVERSEINFOFILE)) {
                                 Log.d(TAG, "file exists");
-                                //adverseEvent = loadUserFromFile(Long.parseLong(jsonobject.getString("adverse_event_type")));
+                                adverseEvent = eventTypeGet(jsonobject.getString("adverse_event_type"));
                             }
                             else {
                                 //usersGet();
                             }
                             String notes = jsonobject.getString("notes");
 
-                            AdverseEvent appointment = new AdverseEvent(id, patient, adverseEvent, date,
+                            AdverseEvent appointment = new AdverseEvent(id, adverseEvent, patient, date,
                                     notes);
                             //userGet(adverseEvent);
                             adverseEventArrayList.add(appointment);
@@ -160,13 +186,13 @@ public class AdverseEventFragment extends Fragment {
                         dictionary.addStringField(R.id.titleTV, new StringExtractor<AdverseEvent>() {
                             @Override
                             public String getStringValue(AdverseEvent adverseEvent, int position) {
-                                return adverseEvent.getAdverseEventType();
+                                return "Patient: "+adverseEvent.getPatientName();
                             }
                         });
                         dictionary.addStringField(R.id.personTV, new StringExtractor<AdverseEvent>() {
                             @Override
                             public String getStringValue(AdverseEvent adverseEvent, int position) {
-                                return "Patient: "+adverseEvent.getPatientName();
+                                return "Event: "+adverseEvent.getAdverseEventType();
                             }
                         });
 

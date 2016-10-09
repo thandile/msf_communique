@@ -26,6 +26,7 @@ import com.example.msf.msf.Dialogs.DateDialog;
 import com.example.msf.msf.Fragments.Admissions.CreateAdmissionFragment;
 import com.example.msf.msf.Fragments.Counselling.CreateCounsellingFragment;
 import com.example.msf.msf.R;
+import com.example.msf.msf.Utils.AppStatus;
 import com.example.msf.msf.Utils.WriteRead;
 import com.mobsandgeeks.saripaar.ValidationError;
 import com.mobsandgeeks.saripaar.Validator;
@@ -173,7 +174,19 @@ public class CreateAdverseEventFragment extends Fragment implements Validator.Va
         String note = notes.getText().toString();
         String date = eventDate.getText().toString();
         Log.d(TAG,  adverseEvent +" "+patientId);
-        communicator.adverseEventPost(patientId[0], adverse[0], date, note);
+        if (AppStatus.getInstance(CreateAdverseEventFragment.this.getActivity()).isOnline()) {
+            communicator.adverseEventPost(patientId[0], adverse[0], date, note);
+        }
+        else {
+            prgDialog.hide();
+            Toast.makeText(CreateAdverseEventFragment.this.getActivity(),"You are not online." +
+                            " Data will be uploaded when you have an internet connection",
+                    Toast.LENGTH_LONG).show();
+            WriteRead.write("adverseEventPost",patientId[0]+"!"+ adverse[0]+"!"+  date+"!"+  note,
+                    CreateAdverseEventFragment.this.getActivity() );
+            Log.v("Home", "############################You are not online!!!!");
+        }
+
     }
 
     @Override
@@ -219,11 +232,6 @@ public class CreateAdverseEventFragment extends Fragment implements Validator.Va
         //AppointmentFragment appointmentFragment = new AppointmentFragment();
         FragmentManager manager = getActivity().getSupportFragmentManager();
         manager.popBackStack();
-        /**manager.beginTransaction()
-         .replace(R.id.rel_layout_for_frag, appointmentFragment,
-         appointmentFragment.getTag())
-         .addToBackStack(null)
-         .commit();**/
     }
 
     @Subscribe

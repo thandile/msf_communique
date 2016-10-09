@@ -23,6 +23,7 @@ import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.ServerEvent;
 import com.example.msf.msf.Dialogs.DateDialog;
 import com.example.msf.msf.R;
+import com.example.msf.msf.Utils.AppStatus;
 import com.example.msf.msf.Utils.WriteRead;
 import com.mobsandgeeks.saripaar.ValidationError;
 import com.mobsandgeeks.saripaar.Validator;
@@ -155,8 +156,19 @@ public class CreateAdmissionFragment extends Fragment implements Validator.Valid
         String admissionDate = this.admissionDate.getText().toString();
         String healthCen = healthCentre.getText().toString();
         // Log.d(TAG,  counsellingSession +" "+patientId);
-        communicator.admissionPost(patientId[0], admissionDate, dischargeDate,
-                healthCen, notesText);//, counsellingSession, notes);
+        if (AppStatus.getInstance(CreateAdmissionFragment.this.getActivity()).isOnline()) {
+            communicator.admissionPost(patientId[0], admissionDate, dischargeDate,
+                    healthCen, notesText);//, counsellingSession, notes);
+        }
+        else {
+            prgDialog.hide();
+            Toast.makeText(CreateAdmissionFragment.this.getActivity(),"You are not online." +
+                            " Data will be uploaded when you have an internet connection",
+                    Toast.LENGTH_LONG).show();
+            WriteRead.write("admissionPost",patientId[0]+"!"+ admissionDate+"!"+ dischargeDate+"!"+
+                    healthCen +"!"+notesText,
+                    CreateAdmissionFragment.this.getActivity() );
+        }
     }
 
     @Override
