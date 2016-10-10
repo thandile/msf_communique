@@ -59,6 +59,9 @@ import com.example.msf.msf.Fragments.MedicalRecords.CreateMedicalRecFragment;
 import com.example.msf.msf.Fragments.MedicalRecords.MedicalInfoFragment;
 import com.example.msf.msf.Fragments.MedicalRecords.MedicalRecordFragment;
 import com.example.msf.msf.Fragments.MedicalRecords.UpdateMedicalRecFragment;
+import com.example.msf.msf.Fragments.Outcomes.CreateOutcomeFragment;
+import com.example.msf.msf.Fragments.Outcomes.OutcomeFragment;
+import com.example.msf.msf.Fragments.Outcomes.OutcomeInfoFragment;
 import com.example.msf.msf.Fragments.Patient.PatientFragment;
 import com.example.msf.msf.Fragments.Patient.PatientTabs.AdverseEventTab;
 import com.example.msf.msf.Fragments.Patient.PatientTabs.PatientInfoTab;
@@ -119,7 +122,10 @@ public class HomeActivity extends AppCompatActivity
         AdverseEventInfoFragment.OnFragmentInteractionListener,
         UpdateAdverseEventFragment.OnFragmentInteractionListener,
         MedicalInfoFragment.OnFragmentInteractionListener,
-        UpdateMedicalRecFragment.OnFragmentInteractionListener{
+        UpdateMedicalRecFragment.OnFragmentInteractionListener,
+        OutcomeFragment.OnFragmentInteractionListener,
+        CreateOutcomeFragment.OnFragmentInteractionListener,
+        OutcomeInfoFragment.OnFragmentInteractionListener{
 
     // flag to load home fragment when user presses back key
     private boolean shouldLoadHomeFragOnBackPress = false;
@@ -557,6 +563,17 @@ public class HomeActivity extends AppCompatActivity
             manager.beginTransaction().replace(R.id.rel_layout_for_frag,
                     regimenFragment,
                     regimenFragment.getTag())
+                    .addToBackStack(null)
+                    .commit();
+            setToolbarTitle();
+        }
+        else if (id == R.id.nav_outcomes){
+            navItemIndex = 10;
+            OutcomeFragment outcomeFragment = new OutcomeFragment();
+            FragmentManager manager = getSupportFragmentManager();
+            manager.beginTransaction().replace(R.id.rel_layout_for_frag,
+                    outcomeFragment,
+                    outcomeFragment.getTag())
                     .addToBackStack(null)
                     .commit();
             setToolbarTitle();

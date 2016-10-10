@@ -77,6 +77,7 @@
         <item>Events</item>
         <item>Medical Records</item>
         <item>Adverse Events</item>
-        <item>Regimens</item>
+        <item>Medication</item>
+        <item>Patient Outcomes</item>
     </string-array>
 </resources>

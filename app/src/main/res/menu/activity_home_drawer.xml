@@ -42,6 +42,10 @@
             android:id="@+id/nav_regimen"
             android:icon="@drawable/ic_enrol"
             android:title="Regimens" />
+        <item
+            android:id="@+id/nav_outcomes"
+            android:icon="@drawable/ic_enrol"
+            android:title="Patient Outcomes" />
     </group>
 
 </menu>
