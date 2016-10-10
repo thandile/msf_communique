@@ -20,7 +20,6 @@ import com.example.msf.msf.API.BusProvider;
 import com.example.msf.msf.API.Communicator;
 import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.ServerEvent;
-import com.example.msf.msf.Fragments.Enrollments.CreateEnrollmentFragment;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.AppStatus;
 import com.example.msf.msf.Utils.WriteRead;
@@ -86,7 +85,7 @@ public class CreateMedicalRecFragment extends Fragment implements ValidationList
         submit = (Button) view.findViewById(R.id.appointment_submit);
         patientsGet();
         addListenerOnButton();
-        sessionGet();
+        recordTypeGet();
         return view;
     }
 
@@ -114,7 +113,7 @@ public class CreateMedicalRecFragment extends Fragment implements ValidationList
         }
     }
 
-    public void sessionGet(){
+    public void recordTypeGet(){
         final List<String> reportList = new ArrayList<String>();
         String sessionTypes = WriteRead.read(MEDICALRECORDFILE, getContext());
         try {
@@ -224,6 +223,8 @@ public class CreateMedicalRecFragment extends Fragment implements ValidationList
             }
         }
     }
+
+
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);

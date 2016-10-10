@@ -32,6 +32,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -111,9 +114,15 @@ public class RegimenInfoFragment extends Fragment {
         edit = (Button) view.findViewById(R.id.editButton);
         delete = (Button) view.findViewById(R.id.delBtn);
         deleteListener();
+        editListener();
         return view;
     }
 
+    public void onButtonPressed(String data) {
+        if (mListener != null) {
+            mListener.onFragmentInteraction(data);
+        }
+    }
     public void regimenGet(long regimenID){
         //final List<String> patientList = new ArrayList<String>();
         Interface communicatorInterface = Auth.getInterface(LoginActivity.username,
@@ -122,21 +131,40 @@ public class RegimenInfoFragment extends Fragment {
             @Override
             public void success(Regimen serverResponse, Response response2) {
                 String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
+                Regimen regimen = new Regimen();
                 try{
                     JSONObject jsonObject = new JSONObject(resp);
+                    int id = Integer.parseInt(jsonObject.getString("id"));
                     String  pName = patientGet(jsonObject.getString("patient"));
                     patientName.setText(pName);
                     Log.d(TAG, "patientName "+jsonObject.getString("patient"));
-                    notes.setText(jsonObject.getString("notes"));
-                    regimenStart.setText(jsonObject.getString("date_started"));
-                    regimenEnd.setText(jsonObject.getString("date_ended"));
-                    drugs.setText(jsonObject.getString("drugs"));
+                    String notes = jsonObject.getString("notes");
+                    String dateStarted = jsonObject.getString("date_started");
+                    String dateEnded = jsonObject.getString("date_ended");
+                    JSONArray drugJsonArray = jsonObject.getJSONArray("drugs");
+
+                    List<String> drugList = new ArrayList<String>();
+                    for (int j = 0; j <drugJsonArray.length(); j++) {
+
+                        drugList.add(drugJsonArray.getString(j));
+                    }
+
+                    String[] drugs = loadDrugs(drugList);
+                    Log.d(TAG, "druglist size "+drugs);
+                    regimen = new Regimen(id, pName, notes, drugs, dateStarted, dateEnded);
+                    //userGet(owner);
                     //ownerTV.setText(jsonObject.getString("owner"));
                     //patientTV.setText(jsonObject.getString("patient"));
                 }
                 catch (JSONException e){
                     System.out.print("unsuccessful");
                 }
+                patientName.setText(regimen.getPatient());
+                //Log.d(TAG, "patientName "+jsonObject.getString("patient"));
+                notes.setText(regimen.getNotes());
+                regimenStart.setText(regimen.getDateStarted());
+                regimenEnd.setText(regimen.getDateEnded());;
+                drugs.setText(regimen.drugs(regimen.getDrugs()));
             }
 
 
@@ -164,12 +192,10 @@ public class RegimenInfoFragment extends Fragment {
                 String id = jsonobject.getString("id");
 
                 if (patientID.equals(id)) {
-                    fullName = jsonobject.getString("other_names") + " " +
+                    fullName = id+":"+jsonobject.getString("other_names") + " " +
                             jsonobject.getString("last_name");
                 }
             }
-
-
         }
         catch (JSONException e){
             System.out.print("unsuccessful");
@@ -177,66 +203,30 @@ public class RegimenInfoFragment extends Fragment {
         return fullName;
     }
 
-    public String drugsGet(String drugID){
+    public String[]  loadDrugs(List<String> did){
         String drugs = WriteRead.read(REGIMENFILE, getContext());
-        String drugNames ="";
-        Log.d(TAG, "pName "+drugs);
-        try{
+        String[] drug = new String[did.size()];
+        try {
             JSONArray jsonarray = new JSONArray(drugs);
-
-            // JSONArray jsonarray = new JSONArray(resp);
+            Log.d(TAG, "drugs for patient " + jsonarray.length());
             for (int i = 0; i < jsonarray.length(); i++) {
                 JSONObject jsonobject = jsonarray.getJSONObject(i);
-                String id = jsonobject.getString("id");
 
-                if (drugID.equals(id)) {
-                    drugNames = drugNames+ " "+ jsonobject.getString("name") ;
-
+                for (int j = 0; j < did.size(); j++) {
+                    if (jsonobject.getString("id").equals("" + did.get(j))) {
+                        String id = jsonobject.getString("id");
+                        String name = jsonobject.getString("name");
+                        String id_name = id+":"+name;
+                        drug[j] = id_name;
+                    }
                 }
             }
-
-
-        }
-        catch (JSONException e){
+        }catch (JSONException e) {
             System.out.print("unsuccessful");
         }
-        return drugNames;
+        return drug;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(String data) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(data);
-        }
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(String data);
@@ -253,6 +243,31 @@ public class RegimenInfoFragment extends Fragment {
             }
         });
     }
+
+    public void editListener() {
+
+        edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //prgDialog.show();
+                String app_id = id;
+                Log.e(TAG, id.toString());
+                String[] regimenInfo = {patientName.getText().toString(),
+                        regimenStart.getText().toString(), regimenEnd.getText().toString(),
+                        drugs.getText().toString(), notes.getText().toString(),id};
+                UpdateRegimenFragment updateRegimenFragment =
+                        new UpdateRegimenFragment().newInstance(regimenInfo);
+                FragmentManager manager = getActivity().getSupportFragmentManager();
+
+                manager.beginTransaction()
+                        .replace(R.id.rel_layout_for_frag, updateRegimenFragment,
+                                updateRegimenFragment.getTag())
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
+    }
+
 
     @Override
     public void onResume(){

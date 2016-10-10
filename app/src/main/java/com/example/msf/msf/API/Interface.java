@@ -242,11 +242,11 @@ public interface Interface {
     @Multipart
     @PUT("/regimen/{id}/")
     void updateRegimen(@Path("id") long regimenId,
-                       @Field("patient") String patientId,
-                       @Field("notes") String notes,
-                       @Field("drugs") String[] drugs,
-                       @Field("date_started") String startDate,
-                       @Field("date_ended") String endDate,
+                       @Part("patient") String patientId,
+                       @Part("notes") String notes,
+                       @Part("drugs") long[] drugs,
+                       @Part("date_started") String startDate,
+                       @Part("date_ended") String endDate,
                        Callback<Regimen> serverResponseCallback);
 
     @Multipart
@@ -331,7 +331,7 @@ public interface Interface {
                              @Part("title") String title,
                              @Part("report_type") String reportType,
                              @Part("patient") String patient,
-                             @Path("notes") String notes,
+                             @Part("notes") String notes,
                              Callback<MedicalRecord> serverResponseCallback);
 
     @Multipart

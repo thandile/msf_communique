@@ -21,6 +21,7 @@ import com.example.msf.msf.API.Deserializers.Admission;
 import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.API.ServerEvent;
+import com.example.msf.msf.Fragments.Appointment.UpdateAppointmentFragment;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.WriteRead;
@@ -114,6 +115,7 @@ public class AdmissionInfoFragment extends Fragment {
         edit = (Button) view.findViewById(R.id.editButton);
         delete = (Button) view.findViewById(R.id.delBtn);
         deleteListener();
+        editListener();
         return view;
     }
 
@@ -167,12 +169,10 @@ public class AdmissionInfoFragment extends Fragment {
                 String id = jsonobject.getString("id");
 
                 if (patientID.equals(id)) {
-                     fullName = jsonobject.getString("other_names") + " " +
+                     fullName = id+": "+jsonobject.getString("other_names") + " " +
                             jsonobject.getString("last_name");
                 }
             }
-
-
         }
         catch (JSONException e){
             System.out.print("unsuccessful");
@@ -189,6 +189,29 @@ public class AdmissionInfoFragment extends Fragment {
                 Log.d(TAG, "admission id: "+ id);
                 communicator.admissionDelete(Long.parseLong(id));
 
+            }
+        });
+    }
+
+    public void editListener() {
+        edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //prgDialog.show();
+                String app_id = id;
+                Log.e(TAG, id.toString());
+                String[] admissionInfo = {patientName.getText().toString(),
+                        healthCentre.getText().toString(), admissionDate.getText().toString(),
+                        dischargeDate.getText().toString(), notes.getText().toString(),id};
+                UpdateAdmissionFragment updateAdmissionFragment =
+                        new UpdateAdmissionFragment().newInstance(admissionInfo);
+                FragmentManager manager = getActivity().getSupportFragmentManager();
+
+                manager.beginTransaction()
+                        .replace(R.id.rel_layout_for_frag, updateAdmissionFragment,
+                                updateAdmissionFragment.getTag())
+                        .addToBackStack(null)
+                        .commit();
             }
         });
     }

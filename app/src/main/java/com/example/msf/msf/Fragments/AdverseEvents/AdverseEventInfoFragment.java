@@ -93,10 +93,10 @@ public class AdverseEventInfoFragment extends Fragment {
         // Set Cancelable as False
         prgDialog.setCancelable(false);
         admissionGet(Long.parseLong(id));
-        onButtonPressed(id);
         edit = (Button) view.findViewById(R.id.editButton);
         delete = (Button) view.findViewById(R.id.delBtn);
         deleteListener();
+        editListener();
         return view;
     }
 
@@ -150,7 +150,7 @@ public class AdverseEventInfoFragment extends Fragment {
                 String id = jsonobject.getString("id");
 
                 if (eventID.equals(id)) {
-                    eventType = jsonobject.getString("name");
+                    eventType = id+":"+jsonobject.getString("name");
                 }
             }
 
@@ -175,7 +175,7 @@ public class AdverseEventInfoFragment extends Fragment {
                 String id = jsonobject.getString("id");
 
                 if (patientID.equals(id)) {
-                    fullName = jsonobject.getString("other_names") + " " +
+                    fullName = id+":"+jsonobject.getString("other_names") + " " +
                             jsonobject.getString("last_name");
                 }
             }
@@ -201,8 +201,31 @@ public class AdverseEventInfoFragment extends Fragment {
         });
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(String data) {
+    public void editListener() {
+
+        edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //prgDialog.show();
+                String app_id = id;
+                Log.e(TAG, id.toString());
+                String[] adverseInfo = {patientName.getText().toString(),
+                        adverseEvent.getText().toString(), eventDate.getText().toString(),
+                        notes.getText().toString(),id};
+                UpdateAdverseEventFragment updateAdverseEventFragment =
+                        new UpdateAdverseEventFragment().newInstance(adverseInfo);
+                FragmentManager manager = getActivity().getSupportFragmentManager();
+
+                manager.beginTransaction()
+                        .replace(R.id.rel_layout_for_frag, updateAdverseEventFragment,
+                                updateAdverseEventFragment.getTag())
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
+    }
+
+    public void onButtonPressed(String[] data) {
         if (mListener != null) {
             mListener.onFragmentInteraction(data);
         }
@@ -224,7 +247,6 @@ public class AdverseEventInfoFragment extends Fragment {
         super.onDetach();
         mListener = null;
     }
-
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -237,7 +259,7 @@ public class AdverseEventInfoFragment extends Fragment {
      */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onFragmentInteraction(String data);
+        void onFragmentInteraction(String[] data);
     }
 
     @Override

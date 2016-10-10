@@ -100,6 +100,7 @@ public class RegimenFragment extends Fragment {
         return view;
     }
 
+
     public String getPatientInfo(Long pid) {
         String patients = WriteRead.read(PATIENTINFOFILE, getContext());
         String full_name = "";

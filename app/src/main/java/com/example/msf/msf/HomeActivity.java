@@ -33,9 +33,11 @@ import com.example.msf.msf.API.PilotsDeserializer;
 import com.example.msf.msf.Fragments.Admissions.AdmissionFragment;
 import com.example.msf.msf.Fragments.Admissions.AdmissionInfoFragment;
 import com.example.msf.msf.Fragments.Admissions.CreateAdmissionFragment;
+import com.example.msf.msf.Fragments.Admissions.UpdateAdmissionFragment;
 import com.example.msf.msf.Fragments.AdverseEvents.AdverseEventFragment;
 import com.example.msf.msf.Fragments.AdverseEvents.AdverseEventInfoFragment;
 import com.example.msf.msf.Fragments.AdverseEvents.CreateAdverseEventFragment;
+import com.example.msf.msf.Fragments.AdverseEvents.UpdateAdverseEventFragment;
 import com.example.msf.msf.Fragments.Appointment.AppointmentFragment;
 import com.example.msf.msf.Fragments.Appointment.AppointmentInfoFragment;
 import com.example.msf.msf.Fragments.Appointment.CreateAppointmentFragment;
@@ -51,11 +53,14 @@ import com.example.msf.msf.Fragments.Enrollments.UpdateEnrollmentFragment;
 import com.example.msf.msf.Fragments.Events.CreateEventFragment;
 import com.example.msf.msf.Fragments.Events.EventInfoFragment;
 import com.example.msf.msf.Fragments.Events.EventsFragment;
+import com.example.msf.msf.Fragments.Events.UpdateEventFragment;
 import com.example.msf.msf.Fragments.HomeFragment;
 import com.example.msf.msf.Fragments.MedicalRecords.CreateMedicalRecFragment;
 import com.example.msf.msf.Fragments.MedicalRecords.MedicalInfoFragment;
 import com.example.msf.msf.Fragments.MedicalRecords.MedicalRecordFragment;
+import com.example.msf.msf.Fragments.MedicalRecords.UpdateMedicalRecFragment;
 import com.example.msf.msf.Fragments.Patient.PatientFragment;
+import com.example.msf.msf.Fragments.Patient.PatientTabs.AdverseEventTab;
 import com.example.msf.msf.Fragments.Patient.PatientTabs.PatientInfoTab;
 import com.example.msf.msf.Fragments.Patient.PatientTabs.AdmissionsTab;
 import com.example.msf.msf.Fragments.Patient.PatientTabs.MedicalRecordTab;
@@ -65,6 +70,7 @@ import com.example.msf.msf.Fragments.Patient.UpdatePatientFragment;
 import com.example.msf.msf.Fragments.Regimens.CreateRegimenFragment;
 import com.example.msf.msf.Fragments.Regimens.RegimenFragment;
 import com.example.msf.msf.Fragments.Regimens.RegimenInfoFragment;
+import com.example.msf.msf.Fragments.Regimens.UpdateRegimenFragment;
 import com.example.msf.msf.Utils.AppStatus;
 import com.example.msf.msf.Utils.WriteRead;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -97,17 +103,23 @@ public class HomeActivity extends AppCompatActivity
         TabFragment.OnFragmentInteractionListener,
         AdmissionsTab.OnFragmentInteractionListener,
         MedicationTab.OnFragmentInteractionListener,
+        AdverseEventTab.OnFragmentInteractionListener,
         MedicalRecordTab.OnFragmentInteractionListener,
         CreateAdmissionFragment.OnFragmentInteractionListener,
         AdmissionInfoFragment.OnFragmentInteractionListener,
+        UpdateAdmissionFragment.OnFragmentInteractionListener,
         CreateMedicalRecFragment.OnFragmentInteractionListener,
         CreateEventFragment.OnFragmentInteractionListener,
         EventInfoFragment.OnFragmentInteractionListener,
+        UpdateEventFragment.OnFragmentInteractionListener,
         CreateAdverseEventFragment.OnFragmentInteractionListener,
         CreateRegimenFragment.OnFragmentInteractionListener,
         RegimenInfoFragment.OnFragmentInteractionListener,
+        UpdateRegimenFragment.OnFragmentInteractionListener,
         AdverseEventInfoFragment.OnFragmentInteractionListener,
-        MedicalInfoFragment.OnFragmentInteractionListener{
+        UpdateAdverseEventFragment.OnFragmentInteractionListener,
+        MedicalInfoFragment.OnFragmentInteractionListener,
+        UpdateMedicalRecFragment.OnFragmentInteractionListener{
 
     // flag to load home fragment when user presses back key
     private boolean shouldLoadHomeFragOnBackPress = false;

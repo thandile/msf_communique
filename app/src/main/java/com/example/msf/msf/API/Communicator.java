@@ -880,7 +880,7 @@ public class Communicator {
         communicatorInterface.deleteRegimen(regimenID, callback);
     }
 
-    public void regimenUpdate(long regimenID, String  patient, String notes, String[] drugs, String dateStarted,
+    public void regimenUpdate(long regimenID, String  patient, String notes, long[] drugs, String dateStarted,
                               String dateEnded){
         Callback<Regimen> callback = new Callback<Regimen>() {
 

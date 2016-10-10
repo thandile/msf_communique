@@ -4,12 +4,6 @@
     android:layout_height="match_parent"
     tools:context="com.example.msf.msf.Fragments.Patient.PatientTabs.AdmissionsTab">
 
-    <TextView
-        android:text="To be implemented"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/textView21" />
-
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/btnFloatingAction"
@@ -17,5 +11,17 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|right"
         android:src="@android:drawable/ic_input_add" />
+
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/admissionsLV" />
+
+
+    <TextView
+        android:text=""
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/defaultText" />
 
 </FrameLayout>

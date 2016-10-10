@@ -111,6 +111,7 @@ public class MedicalInfoFragment extends Fragment {
         edit = (Button) view.findViewById(R.id.editButton);
         delete = (Button) view.findViewById(R.id.delBtn);
         deleteListener();
+        editListener();
         return view;
     }
 
@@ -162,7 +163,7 @@ public class MedicalInfoFragment extends Fragment {
                 String id = jsonobject.getString("id");
 
                 if (patientID.equals(id)) {
-                    fullName = jsonobject.getString("other_names") + " " +
+                    fullName = id+": "+jsonobject.getString("other_names") + " " +
                             jsonobject.getString("last_name");
                 }
             }
@@ -188,7 +189,7 @@ public class MedicalInfoFragment extends Fragment {
                 String id = jsonobject.getString("id");
 
                 if (recordID.equals(id)) {
-                    recordType = jsonobject.getString("name");
+                    recordType = id+": "+jsonobject.getString("name");
                 }
             }
 
@@ -207,7 +208,29 @@ public class MedicalInfoFragment extends Fragment {
                 prgDialog.show();
                 Log.d(TAG, "regimen id: "+ id);
                 communicator.reportDelete(Long.parseLong(id));
+            }
+        });
+    }
 
+    public void editListener() {
+        edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //prgDialog.show();
+                String app_id = id;
+                Log.e(TAG, id.toString());
+                String[] medicalInfo = {recordTitle.getText().toString(),
+                        recordType.getText().toString(), patientName.getText().toString(),
+                        notes.getText().toString(),id};
+                UpdateMedicalRecFragment updateMedicalRecFragment =
+                        new UpdateMedicalRecFragment().newInstance(medicalInfo);
+                FragmentManager manager = getActivity().getSupportFragmentManager();
+
+                manager.beginTransaction()
+                        .replace(R.id.rel_layout_for_frag, updateMedicalRecFragment,
+                                updateMedicalRecFragment.getTag())
+                        .addToBackStack(null)
+                        .commit();
             }
         });
     }

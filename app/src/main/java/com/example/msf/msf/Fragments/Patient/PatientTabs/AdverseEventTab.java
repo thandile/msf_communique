@@ -1,6 +1,7 @@
-package com.example.msf.msf.Fragments.AdverseEvents;
+package com.example.msf.msf.Fragments.Patient.PatientTabs;
 
-
+import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -19,9 +20,10 @@ import com.amigold.fundapter.FunDapter;
 import com.amigold.fundapter.extractors.StringExtractor;
 import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.Deserializers.AdverseEvent;
-import com.example.msf.msf.API.Deserializers.Appointment;
 import com.example.msf.msf.API.Interface;
-import com.example.msf.msf.Fragments.Appointment.AppointmentFragment;
+import com.example.msf.msf.Fragments.AdverseEvents.AdverseEventFragment;
+import com.example.msf.msf.Fragments.AdverseEvents.AdverseEventInfoFragment;
+import com.example.msf.msf.Fragments.AdverseEvents.CreateAdverseEventFragment;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.WriteRead;
@@ -30,7 +32,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,49 +40,56 @@ import retrofit.RetrofitError;
 import retrofit.client.Response;
 import retrofit.mime.TypedByteArray;
 
-/**
- * A simple {@link Fragment} subclass.
- */
-public class AdverseEventFragment extends Fragment {
+
+public class AdverseEventTab extends Fragment {
+
+    private static final String ARG_PARAM1 = "param1";
+
+    private String id;
 
     FloatingActionButton fab;
     private final String TAG = this.getClass().getSimpleName();
     public static String PATIENTINFOFILE = "Patients";
     public static String ADVERSEINFOFILE = "AdverseEvents";
     ListView adverseEventLV;
+    private OnFragmentInteractionListener mListener;
 
-    public AdverseEventFragment() {
+    public AdverseEventTab() {
         // Required empty public constructor
     }
 
+    /**
+     * Use this factory method to create a new instance of
+     * this fragment using the provided parameters.
+     *
+     * @param param1 Parameter 1.
+     * @return A new instance of fragment AdverseEventTab.
+     */
+    // TODO: Rename and change types and number of parameters
+    public static AdverseEventTab newInstance(String param1) {
+        AdverseEventTab fragment = new AdverseEventTab();
+        Bundle args = new Bundle();
+        args.putString(ARG_PARAM1, param1);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            id = getArguments().getString(ARG_PARAM1);
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_adverse_event, container, false);
+        View view = inflater.inflate(R.layout.fragment_adverse_event_tab, container, false);
+
         adverseEventLV = (ListView) view.findViewById(R.id.adverseEventsLV);
-        adverseEventLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                TextView idTV = (TextView) view.findViewById(R.id.idTV);
-                String id = idTV.getText().toString().split(" ")[1];
-                Log.e(TAG, id.toString());
-                AdverseEventInfoFragment adverseEventInfoFragment = new AdverseEventInfoFragment()
-                        .newInstance(id);
-                FragmentManager manager = getActivity().getSupportFragmentManager();
-
-                manager.beginTransaction()
-                        .replace(R.id.rel_layout_for_frag, adverseEventInfoFragment,
-                                adverseEventInfoFragment.getTag())
-                        .addToBackStack(null)
-                        .commit();
-                //intent.putExtra(EXTRA_MESSAGE,id);
-                //startActivity(intent);
-            }
-        });
         adverseEventsGet();
-
         fab = (FloatingActionButton) view.findViewById(R.id.btnFloatingAction);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -95,10 +103,8 @@ public class AdverseEventFragment extends Fragment {
                         .commit();
             }
         });
-
         return view;
     }
-
 
     public String getPatientInfo(Long eventID) {
         String events = WriteRead.read(ADVERSEINFOFILE, getContext());
@@ -161,18 +167,20 @@ public class AdverseEventFragment extends Fragment {
                     if (jsonarray.length()>0) {
                         for (int i = 0; i < jsonarray.length(); i++) {
                             JSONObject jsonobject = jsonarray.getJSONObject(i);
-                            int id = Integer.parseInt(jsonobject.getString("id"));
-                            String date = jsonobject.getString("event_date");
-                            String patient = getPatientInfo(Long.parseLong(jsonobject.getString("patient")));
-                            String adverseEvent = eventTypeGet(jsonobject.getString("adverse_event_type"));
+                            Log.d(TAG,"ids "+jsonobject.getString("patient")+" "+id );
+                            if(jsonobject.getString("patient").equals(id)) {
+                                int id = Integer.parseInt(jsonobject.getString("id"));
+                                String date = jsonobject.getString("event_date");
+                                String patient = getPatientInfo(Long.parseLong(jsonobject.getString("patient")));
+                                String adverseEvent = eventTypeGet(jsonobject.getString("adverse_event_type"));
 
-                            String notes = jsonobject.getString("notes");
+                                String notes = jsonobject.getString("notes");
 
-                            AdverseEvent appointment = new AdverseEvent(id, adverseEvent, patient, date,
-                                    notes);
-                            //userGet(adverseEvent);
-                            adverseEventArrayList.add(appointment);
-
+                                AdverseEvent appointment = new AdverseEvent(id, adverseEvent, patient, date,
+                                        notes);
+                                //userGet(adverseEvent);
+                                adverseEventArrayList.add(appointment);
+                            }
                         }
 
                         Log.d(TAG, adverseEventArrayList.toString());
@@ -203,7 +211,7 @@ public class AdverseEventFragment extends Fragment {
                                 return "ID: "+adverseEvent.getId();
                             }
                         });
-                        FunDapter adapter = new FunDapter(AdverseEventFragment.this.getActivity(),
+                        FunDapter adapter = new FunDapter(AdverseEventTab.this.getActivity(),
                                 adverseEventArrayList,
                                 R.layout.appointment_list_layout, dictionary);
                         adverseEventLV.setAdapter(adapter);
@@ -211,7 +219,7 @@ public class AdverseEventFragment extends Fragment {
                     else{
                         TextView text = (TextView) getView().findViewById(R.id.defaultText);
                         text.setText("No Scheduled appointments");
-                        Toast.makeText(AdverseEventFragment.this.getActivity(),
+                        Toast.makeText(AdverseEventTab.this.getActivity(),
                                 "No Scheduled appointments", Toast.LENGTH_SHORT).show();
                         //adverseEventArrayList.add("No scheduled appointments.");
                     }
@@ -234,5 +242,33 @@ public class AdverseEventFragment extends Fragment {
         communicatorInterface.getAdverseEvents(callback);
     }
 
+    // TODO: Rename method, update argument and hook method into UI event
+    public void onButtonPressed(String data) {
+        if (mListener != null) {
+            mListener.onFragmentInteraction(data);
+        }
+    }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnFragmentInteractionListener) {
+            mListener = (OnFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
+
+    public interface OnFragmentInteractionListener {
+        // TODO: Update argument type and name
+        void onFragmentInteraction(String data);
+    }
 }

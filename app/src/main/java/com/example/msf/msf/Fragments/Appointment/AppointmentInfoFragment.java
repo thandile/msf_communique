@@ -210,10 +210,6 @@ public class AppointmentInfoFragment extends Fragment {
                     String last_name = jsonObject.getString("last_name");
                     String full_name = id + ": " +first_name + " " + last_name;
                     patientTV.setText(full_name);
-                    /**contact.setText(jsonObject.getString("contact_number"));
-                     dob.setText(jsonObject.getString("birth_date"));
-                     health_centre.setText(jsonObject.getString("reference_health_centre"));
-                     address.setText(jsonObject.getString("location"));**/
                 }
                 catch (JSONException e){
                     System.out.print("unsuccessful");
@@ -270,14 +266,12 @@ public class AppointmentInfoFragment extends Fragment {
             public void onClick(View v) {
                 prgDialog.show();
                 communicator.appointmentDelete(Long.parseLong(id));
-
             }
         });
-
     }
 
-    public void editListener() {
 
+    public void editListener() {
        edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

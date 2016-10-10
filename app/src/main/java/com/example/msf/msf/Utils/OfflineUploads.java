@@ -26,7 +26,7 @@ public class OfflineUploads {
                     drugIDs[i] = drugsSplit[i].split(":")[0];
                 }
             } else {
-                Log.i("NET", "drugsreplace with 1 " + drugsReplace);
+                Log.i("NET", "drugsReplace with 1 " + drugsReplace);
                 drugIDs[0] = drugsReplace;
             }
             //Log.i("NET", drugIDs[0] + " " + drugIDs[1]);

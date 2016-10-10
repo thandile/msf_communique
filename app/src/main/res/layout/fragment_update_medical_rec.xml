@@ -24,7 +24,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textPersonName"
-            android:text="Name"
+            android:text=""
             android:ems="10"
             android:id="@+id/titltET" />
 
@@ -53,10 +53,10 @@
             android:paddingTop="10dp"
             android:paddingBottom="10dp" />
 
-        <Spinner
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/patientSpinner" />
+        <AutoCompleteTextView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/autocomplete_patients"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
 
         <TextView
             android:text="Notes"
@@ -74,6 +74,16 @@
             android:inputType="textMultiLine"
             android:ems="10"
             android:id="@+id/notesET" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Submit"
+            android:id="@+id/appointment_submit"
+            android:layout_marginTop="20dip"
+            android:background="#ff6347"
+            android:textColor="#fff"
+            android:textSize="15dp" />
     </LinearLayout>
 
 </ScrollView>

@@ -38,7 +38,7 @@
         <Spinner
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/spinner" />
+            android:id="@+id/adverseEventSpinner" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -75,6 +75,16 @@
             android:inputType="textMultiLine"
             android:ems="10"
             android:id="@+id/noteET" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Submit"
+            android:id="@+id/adverse_submit"
+            android:layout_marginTop="20dip"
+            android:background="#ff6347"
+            android:textColor="#fff"
+            android:textSize="15dp" />
     </LinearLayout>
 
 </ScrollView>

@@ -23,7 +23,7 @@ public class TabFragment extends Fragment {
 
     public static TabLayout tabLayout;
     public static ViewPager viewPager;
-    public static int int_items = 7;
+    public static int int_items = 8;
     private static final String ARG_PARAM1 = "param1";
     private final String TAG = this.getClass().getSimpleName();
     // Progress Dialog Object
@@ -110,13 +110,13 @@ public class TabFragment extends Fragment {
                 case 1 : return new EnrollmentsTab().newInstance(id);
                 case 2 : return new SessionsTab().newInstance(id);
                 case 3 : return new AppointmentsTab().newInstance(id);
-                case 4 : return new AdmissionsTab();
-                case 5 : return new MedicationTab();
-                case 6 : return new MedicalRecordTab();
+                case 4 : return new AdmissionsTab().newInstance(id);
+                case 5 : return new MedicationTab().newInstance(id);
+                case 6 : return new MedicalRecordTab().newInstance(id);
+                case 7 : return new AdverseEventTab().newInstance(id);
             }
             return null;
         }
-
         @Override
         public int getCount() {
 
@@ -146,6 +146,8 @@ public class TabFragment extends Fragment {
                     return "Medication";
                 case 6 :
                     return "Medical Reports";
+                case 7 :
+                    return "Adverse Events";
             }
             return null;
         }

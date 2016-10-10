@@ -183,10 +183,6 @@ public class AdmissionFragment extends Fragment {
         communicatorInterface.getAdmissions(callback);
     }
 
-    public boolean fileExistance(String FILENAME){
-        File file = getContext().getFileStreamPath(FILENAME);
-        return file.exists();
-    }
 
 
     public String getPatientInfo(Long pid) {

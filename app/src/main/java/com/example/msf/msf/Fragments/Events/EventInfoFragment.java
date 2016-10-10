@@ -107,6 +107,7 @@ public class EventInfoFragment extends Fragment {
         edit = (Button) view.findViewById(R.id.editButton);
         delete = (Button) view.findViewById(R.id.delBtn);
         deleteListener();
+        editListener();
         return view;
     }
 
@@ -153,10 +154,33 @@ public class EventInfoFragment extends Fragment {
                 prgDialog.show();
                 Log.d(TAG, "event id: "+ id);
                 communicator.eventDelete(Long.parseLong(id));
-
             }
         });
     }
+
+    public void editListener() {
+        edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //prgDialog.show();
+                String app_id = id;
+                Log.e(TAG, id.toString());
+                String[] eventInfo = {eventTitle.getText().toString(),
+                        eventDate.getText().toString(), eventStart.getText().toString(),
+                        eventEnd.getText().toString(), eventDescription.getText().toString(),id};
+                UpdateEventFragment updateAppointmentFragment =
+                        new UpdateEventFragment().newInstance(eventInfo);
+                FragmentManager manager = getActivity().getSupportFragmentManager();
+
+                manager.beginTransaction()
+                        .replace(R.id.rel_layout_for_frag, updateAppointmentFragment,
+                                updateAppointmentFragment.getTag())
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
+    }
+
 
     public void onButtonPressed(String  data) {
         if (mListener != null) {

@@ -83,6 +83,9 @@ public class Regimen {
         this.dateEnded = dateEnded;
     }
 
+    public Regimen(){
+
+    }
     public Regimen(int id, String patient, String notes, String[] drugs, String dateStarted,
                    String dateEnded, String message, int responseCode) {
         this.id_no = id;
