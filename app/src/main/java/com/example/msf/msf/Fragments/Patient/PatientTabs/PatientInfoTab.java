@@ -40,7 +40,7 @@ public class PatientInfoTab extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private Communicator communicator;
     Button delete, edit;
-    TextView first_name, last_name, contact, dob, health_centre, address, sex, outcome, startDate;
+    TextView first_name, last_name, identifier, contact, contact2, contact3, dob, health_centre, address, sex, outcome, startDate;
     private final String TAG = this.getClass().getSimpleName();
     // Progress Dialog Object
     ProgressDialog prgDialog;
@@ -92,7 +92,10 @@ public class PatientInfoTab extends Fragment {
 
         first_name = (TextView) view.findViewById(R.id.first_nameTV);
         last_name = (TextView) view.findViewById(R.id.last_nameTV);
+        identifier = (TextView) view.findViewById(R.id.identifierTV) ;
         contact = (TextView) view.findViewById(R.id.contactTV);
+        contact2 = (TextView) view.findViewById(R.id.contactTV2);
+        contact3 = (TextView) view.findViewById(R.id.contactTV3);
         dob = (TextView) view.findViewById(R.id.dobTV);
         health_centre = (TextView) view.findViewById(R.id.health_centreTV);
         address = (TextView) view.findViewById(R.id.addressTV);
@@ -147,8 +150,15 @@ public class PatientInfoTab extends Fragment {
                 if (jsonobject.getString("id").equals(id)) {
                     first_name.setText(jsonobject.getString("other_names"));
                     last_name.setText(jsonobject.getString("last_name"));
+                    identifier.setText(jsonobject.getString("identifier"));
                     if (!jsonobject.getString("contact_number").equals("null")) {
                         contact.setText(jsonobject.getString("contact_number"));
+                    }
+                    if (!jsonobject.getString("second_contact_number").equals("null")) {
+                        contact2.setText(jsonobject.getString("second_contact_number"));
+                    }
+                    if (!jsonobject.getString("third_contact_number").equals("null")) {
+                        contact3.setText(jsonobject.getString("third_contact_number"));
                     }
                     if (!jsonobject.getString("birth_date").equals("null")) {
                         dob.setText(jsonobject.getString("birth_date"));
@@ -198,7 +208,9 @@ public class PatientInfoTab extends Fragment {
                         last_name.getText().toString(), health_centre.getText().toString(),
                         dob.getText().toString(), id, sex.getText().toString(),
                         outcome.getText().toString(), startDate.getText().toString(),
-                        address.getText().toString(),  contact.getText().toString()};
+                        address.getText().toString(),  contact.getText().toString(),
+                        contact2.getText().toString(), contact3.getText().toString(),
+                        identifier.getText().toString()};
                 UpdatePatientFragment updatePatientFragment =
                         new UpdatePatientFragment().newInstance(patientInfo);
                 FragmentManager manager = getActivity().getSupportFragmentManager();

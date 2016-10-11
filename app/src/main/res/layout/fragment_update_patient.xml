@@ -30,7 +30,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:inputType="textPersonName"
-            android:hint="@string/fname_text"
+            android:hint=""
             android:ems="10"
             android:id="@+id/patient_fname" />
 
@@ -48,9 +48,25 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:inputType="textPersonName"
-            android:hint="@string/sname_text"
+            android:hint=""
             android:ems="10"
             android:id="@+id/patient_sname" />
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Patient Identifier"
+            android:id="@+id/id"
+            android:textStyle="bold"
+            android:textSize="20dp"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp" />
+
+        <EditText
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:id="@+id/identifier" />
 
         <TextView
             android:layout_width="fill_parent"
@@ -89,7 +105,7 @@
         <TextView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="Contact number"
+            android:text="Contact number 1"
             android:id="@+id/contact"
             android:textStyle="bold"
             android:textSize="20dp"
@@ -99,10 +115,45 @@
         <EditText
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:hint="Contact number"
+            android:hint=""
             android:inputType="phone"
             android:ems="10"
             android:id="@+id/patient_contact" />
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Contact number 2"
+            android:id="@+id/contact2"
+            android:textStyle="bold"
+            android:textSize="20dp"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp" />
+
+        <EditText
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:hint=""
+            android:inputType="phone"
+            android:ems="10"
+            android:id="@+id/patient_contact2" />
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Contact number 3"
+            android:id="@+id/contact3"
+            android:textStyle="bold"
+            android:textSize="20dp"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp" />
+
+        <EditText
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:hint=""
+            android:inputType="phone"
+            android:ems="10"
+            android:id="@+id/patient_contact3" />
 
 
         <TextView
@@ -137,7 +188,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:inputType="textPersonName"
-            android:hint="@string/currFacility_text"
+            android:hint=""
             android:ems="10"
             android:id="@+id/interim_outcome"/>
 
@@ -155,7 +206,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textPersonName"
-            android:text="Patient's location"
+            android:text=""
             android:ems="10"
             android:id="@+id/patient_location" />
 
@@ -173,7 +224,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:inputType="textPersonName"
-            android:hint="@string/currFacility_text"
+            android:hint=""
             android:ems="10"
             android:id="@+id/patient_curr_facitlity" />
 

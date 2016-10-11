@@ -22,6 +22,21 @@ public class ServerEvent {
     private AdverseEvent AdverseEvent;
     private Regimen Regimen;
     private EmergencyContact EmergencyContact;
+    private Outcome Outcome;
+
+
+    /*************/
+    public ServerEvent(Outcome outcome) {
+        Outcome = outcome;
+    }
+
+    public Outcome getOutcome() {
+        return Outcome;
+    }
+
+    public void setOutcome(Outcome outcome) {
+        Outcome = outcome;
+    }
 
     /*************/
     public ServerEvent(AdverseEvent adverseEvent) {

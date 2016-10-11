@@ -12,6 +12,8 @@ import com.example.msf.msf.API.Deserializers.Appointment;
 import com.example.msf.msf.API.Deserializers.Events;
 import com.example.msf.msf.API.Deserializers.MedicalRecord;
 import com.example.msf.msf.API.Deserializers.MedicalRecordType;
+import com.example.msf.msf.API.Deserializers.Outcome;
+import com.example.msf.msf.API.Deserializers.OutcomeType;
 import com.example.msf.msf.API.Deserializers.Regimen;
 import com.example.msf.msf.API.Deserializers.Users;
 import com.example.msf.msf.API.Deserializers.SessionDeserialiser;
@@ -135,6 +137,19 @@ public interface Interface {
     @GET("/adverseEvents/{id}/")
     void getAdverseEvent(@Path("id") long adverseEventID,
             Callback<AdverseEvent> serverResponseCallback);
+    @GET("/outcome/")
+    void getOutcomes(Callback<List<Outcome>> serverResponseCallback);
+
+    @GET("/outcomeType/")
+    void getOutcomeTypes(Callback<List<OutcomeType>> serverResponseCallback);
+
+    @GET("/outcome/{id}/")
+    void getOutcome(@Path("id") long outcomeID,
+            Callback<Outcome> serverResponseCallback);
+
+    @GET("/outcomeType/{id}/")
+    void getOutcomeType(@Path("id") long outcomeTypeID,
+            Callback<OutcomeType> serverResponseCallback);
 
     @FormUrlEncoded
     @POST("/programs/")
@@ -185,6 +200,14 @@ public interface Interface {
                         @Field("health_centre") String healthCentre,
                         @Field("notes") String notes,
                         Callback<Admission> serverResponseCallback);
+
+    @FormUrlEncoded
+    @POST("/outcome/")
+    void postOutcome(@Field("patient") String patientID,
+                        @Field("outcome_type") String outcomeType,
+                        @Field("outcome_date") String outcomeDate,
+                        @Field("notes") String notes,
+                        Callback<Outcome> serverResponseCallback);
 
     @FormUrlEncoded
     @POST("/medicalReport/")
@@ -250,6 +273,15 @@ public interface Interface {
                        Callback<Regimen> serverResponseCallback);
 
     @Multipart
+    @PUT("/outcome/{id}/")
+    void updateOutcome(@Path("id") long outcomeID,
+                    @Part("patient") String patientID,
+                     @Part("outcome_type") String outcomeType,
+                     @Part("outcome_date") String outcomeDate,
+                     @Part("notes") String notes,
+                     Callback<Outcome> serverResponseCallback);
+
+    @Multipart
     @PUT("/adverseEventType/{id}/")
     void updateAdverseEventType(@Path("id") long adverseEventTypeID,
                                 @Part("name") String patientID,
@@ -278,10 +310,13 @@ public interface Interface {
     void updatePatient(@Path("id") long patientID,
                        @Part("other_names") String firstName,
                        @Part("last_name") String lastName,
+                       @Part("identifier") String identifier,
                        @Part("birth_date") String dob,
                        @Part("reference_health_centre ") String facility,
                        @Part("sex") String sex,
-                       @Part("contact_number") String contact,
+                       @Part("contact_number") String contact1,
+                       @Part("second_contact_number") String contact2,
+                       @Part("third_contact_number") String contact3,
                        @Part("treatment_start_date") String txStart,
                        @Part("location") String location,
                        @Part("interim_outcome") String outcome,
@@ -347,6 +382,10 @@ public interface Interface {
     @DELETE("/regimen/{id}/")
     void deleteRegimen(@Path("id") long regimenId,
                        Callback<Regimen> serverResponseCallback);
+
+    @DELETE("/outcome/{id}/")
+    void deleteOutcome(@Path("id") long outcomeID,
+                     Callback<Outcome> serverResponseCallback);
 
     @DELETE("/patients/{id}/")
     void deletePatient(@Path("id") long patientID,

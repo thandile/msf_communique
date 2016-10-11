@@ -47,6 +47,26 @@
             android:id="@+id/last_nameTV" />
 
         <TextView
+        android:layout_width="104dp"
+        android:layout_height="wrap_content"
+        android:text="Patient Identifier"
+        android:id="@+id/textView81"
+        android:layout_below="@+id/textView6"
+        android:layout_marginRight="171dp"
+        android:layout_marginEnd="171dp"
+        android:textStyle="bold"
+        android:textSize="20dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp" />
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/identifierTV" />
+
+
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Birth date"
@@ -82,7 +102,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Contact number"
+            android:text="Contact number 1"
             android:id="@+id/textView9"
             android:textStyle="bold"
             android:textSize="20dp"
@@ -93,6 +113,36 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/contactTV" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Contact number 2"
+            android:id="@+id/textView92"
+            android:textStyle="bold"
+            android:textSize="20dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/contactTV2" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Contact number 3"
+            android:id="@+id/textView93"
+            android:textStyle="bold"
+            android:textSize="20dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/contactTV3" />
 
 
         <TextView

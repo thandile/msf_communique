@@ -1,6 +1,7 @@
 package com.example.msf.msf.API;
 import android.util.Log;
 
+import com.amigold.fundapter.fields.StringField;
 import com.example.msf.msf.API.Deserializers.Users;
 import com.example.msf.msf.API.Deserializers.*;
 //import com.example.msf.msf.HomeActivity;
@@ -382,7 +383,7 @@ public class Communicator {
     }
 
     public void regimenPost(String  patient, String notes, String[] drugs, String dateStarted,
-                              String dateEnded){
+                             String dateEnded){
         Callback<Regimen> callback = new Callback<Regimen>() {
 
             @Override
@@ -406,6 +407,32 @@ public class Communicator {
         };
         communicatorInterface.postRegimen(patient, notes, drugs, dateStarted, dateEnded, callback);
     }
+
+    public void outcomePost(String  patient, String outcomeType, String outcomeDate, String notes ){
+        Callback<Outcome> callback = new Callback<Outcome>() {
+
+            @Override
+            public void success(Outcome serverResponse, Response response2) {
+                if(serverResponse.getResponseCode() == 0){
+                    BusProvider.getInstance().post(produceOutcomeServerResponse(serverResponse));
+                }else{
+                    BusProvider.getInstance().post(produceErrorEvent(serverResponse.getResponseCode(),
+                            serverResponse.getMessage()));
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                if(error != null ){
+                    Log.e(TAG, error.getMessage());
+                    error.printStackTrace();
+                }
+                BusProvider.getInstance().post(produceErrorEvent(-200,error.getMessage()));
+            }
+        };
+        communicatorInterface.postOutcome(patient, outcomeType, outcomeDate, notes, callback);
+    }
+
 
     public void reportUpdate(long reportID, String title, String reportType, String patient, String notes){
         Callback<MedicalRecord> callback = new Callback<MedicalRecord>() {
@@ -530,8 +557,8 @@ public class Communicator {
     }
 
 
-    public void patientUpdate(long id, String firstName, String lastName, String facility, String dob,
-                              String sex, String contact, String location, String outcome,
+    public void patientUpdate(long id, String firstName, String lastName, String identifier, String facility, String dob,
+                              String sex, String contact1, String contact2, String contact3, String location, String outcome,
                               String txStart){
         Callback<Users> callback = new Callback<Users>() {
 
@@ -554,8 +581,8 @@ public class Communicator {
                 BusProvider.getInstance().post(produceErrorEvent(-200,error.getMessage()));
             }
         };
-        communicatorInterface.updatePatient(id, firstName, lastName, dob, facility, sex, contact,
-                txStart, location, outcome, callback);
+        communicatorInterface.updatePatient(id, firstName, lastName, identifier, dob, facility, sex, contact1,
+                contact2, contact3, txStart, location, outcome, callback);
     }
 
 
@@ -582,6 +609,58 @@ public class Communicator {
             }
         };
         communicatorInterface.deletePatient(patientId, callback);
+    }
+
+    public void OutcomeUpdate(long id, String patient, String outcomeType, String outcomeDate,
+                              String notes){
+        Callback<Outcome> callback = new Callback<Outcome>() {
+
+            @Override
+            public void success(Outcome serverResponse, Response response2) {
+                if(serverResponse.getResponseCode() == 0){
+                    BusProvider.getInstance().post(produceOutcomeServerResponse(serverResponse));
+                }else{
+                    BusProvider.getInstance().post(produceErrorEvent(serverResponse.getResponseCode(),
+                            serverResponse.getMessage()));
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                if(error != null ){
+                    Log.e(TAG, error.getMessage());
+                    error.printStackTrace();
+                }
+                BusProvider.getInstance().post(produceErrorEvent(-200,error.getMessage()));
+            }
+        };
+        communicatorInterface.updateOutcome(id, patient, outcomeType, outcomeDate, notes, callback);
+    }
+
+
+    public void outcomeDelete(final long outcomeID){
+        Callback<Outcome> callback = new Callback<Outcome>() {
+            @Override
+            public void success(Outcome serverResponse, Response response2) {
+                ///if(serverResponse.getResponseCode() == 0){
+                BusProvider.getInstance().post(produceOutcomeServerResponse(serverResponse));
+                /**}else{
+                 BusProvider.getInstance().post(produceErrorEvent(serverResponse.getResponseCode(),
+                 serverResponse.getMessage()));
+                 }**/
+                Log.d(TAG,"Success, patient deleted "+ outcomeID);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                if(error != null ){
+                    Log.e(TAG, error.getMessage());
+                    error.printStackTrace();
+                }
+                BusProvider.getInstance().post(produceErrorEvent(-200,error.getMessage()));
+            }
+        };
+        communicatorInterface.deleteOutcome(outcomeID, callback);
     }
 
     public void appointmentDelete(final long appointmentID){
@@ -967,6 +1046,11 @@ public class Communicator {
     @Produce
     public ServerEvent produceEmergencyContactServerResponse(EmergencyContact EmergencyContact){
         return new ServerEvent(EmergencyContact);
+    }
+
+    @Produce
+    public ServerEvent produceOutcomeServerResponse(Outcome Outcome){
+        return new ServerEvent(Outcome);
     }
 }
 

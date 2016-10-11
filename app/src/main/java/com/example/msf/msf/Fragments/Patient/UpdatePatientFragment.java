@@ -51,18 +51,18 @@ public class UpdatePatientFragment extends Fragment implements Validator.Validat
     @NotEmpty
     EditText patient_sname;
     EditText patient_currFacility;
-    @NotEmpty
-    @Past
     EditText patient_dob;
-    EditText contact;
+    EditText contact, contact2, contact3;
     EditText outcome;
     EditText location;
+    @NotEmpty
+    EditText identifier;
     @Past
     EditText treatment_start;
     @Select(message = "Select a sex")
     Spinner sex;
-    String sname, fname, curr_facility, dob, patientSex, patientLocation, tx_start, patientContact,
-            interimOutcome;
+    String sname, fname, id, curr_facility, dob, patientSex, patientLocation, tx_start, patientContact,
+            patientContact2, patientContact3, interimOutcome;
     private Communicator communicator;
     // TODO: Rename and change types of parameters
     private String[] patientInfo;
@@ -106,8 +106,20 @@ public class UpdatePatientFragment extends Fragment implements Validator.Validat
         patient_fname = (EditText) view.findViewById(R.id.patient_fname);
         patient_sname = (EditText) view.findViewById(R.id.patient_sname);
         patient_dob = (EditText) view.findViewById(R.id.patient_dob);
+        identifier = (EditText) view.findViewById(R.id.identifier);
+        patient_dob.setOnFocusChangeListener(new View.OnFocusChangeListener(){
+            public void onFocusChange(View view, boolean hasfocus){
+                if(hasfocus){
+                    DateDialog dialog=new DateDialog(view);
+                    FragmentTransaction ft =getFragmentManager().beginTransaction();
+                    dialog.show(ft, "DatePicker");
+                }
+            }
+        });
         patient_currFacility = (EditText) view.findViewById(R.id.patient_curr_facitlity);
         contact = (EditText) view.findViewById(R.id.patient_contact);
+        contact2 = (EditText) view.findViewById(R.id.patient_contact2);
+        contact3 = (EditText) view.findViewById(R.id.patient_contact3);
         location = (EditText) view.findViewById(R.id.patient_location);
         outcome = (EditText) view.findViewById(R.id.interim_outcome);
         treatment_start = (EditText) view.findViewById(R.id.tx_start_date) ;
@@ -157,6 +169,7 @@ public class UpdatePatientFragment extends Fragment implements Validator.Validat
     public void fillPatientInfo(){
         patient_fname.setText(patientInfo[0], TextView.BufferType.EDITABLE);
         patient_sname.setText(patientInfo[1], TextView.BufferType.EDITABLE);
+        identifier.setText(patientInfo[12], TextView.BufferType.EDITABLE);
         if (!patientInfo[3].equals("null")) {
             patient_dob.setText(patientInfo[3], TextView.BufferType.EDITABLE);
         }
@@ -171,6 +184,12 @@ public class UpdatePatientFragment extends Fragment implements Validator.Validat
         }
         if (!patientInfo[9].equals("null")) {
             contact.setText(patientInfo[9], TextView.BufferType.EDITABLE);
+        }
+        if (!patientInfo[10].equals("null")) {
+            contact2.setText(patientInfo[10], TextView.BufferType.EDITABLE);
+        }
+        if (!patientInfo[11].equals("null")) {
+            contact3.setText(patientInfo[11], TextView.BufferType.EDITABLE);
         }
         if (!patientInfo[7].equals("null")) {
             treatment_start.setText(patientInfo[7], TextView.BufferType.EDITABLE);
@@ -214,13 +233,16 @@ public class UpdatePatientFragment extends Fragment implements Validator.Validat
         dob = patient_dob.getText().toString();
         patientSex = String.valueOf(sex.getSelectedItem()).substring(0,1);
         patientContact = contact.getText().toString();
+        patientContact2 = contact2.getText().toString();
+        patientContact3 = contact3.getText().toString();
         patientLocation = location.getText().toString();
         interimOutcome = outcome.getText().toString();
         tx_start = treatment_start.getText().toString();
+        id =identifier.getText().toString();
 
-        communicator.patientUpdate(Long.parseLong(patientInfo[4]), fname, sname,
-                curr_facility, dob, patientSex, patientContact, patientLocation,
-                interimOutcome, tx_start);
+        communicator.patientUpdate(Long.parseLong(patientInfo[4]), fname, sname,id,
+                curr_facility, dob, patientSex, patientContact, patientContact2, patientContact3,
+                patientLocation, interimOutcome, tx_start);
     }
 
     @Override
