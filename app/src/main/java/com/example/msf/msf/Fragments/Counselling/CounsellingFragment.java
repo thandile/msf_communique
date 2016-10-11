@@ -48,7 +48,7 @@ public class CounsellingFragment extends Fragment {
     private final String TAG = this.getClass().getSimpleName();
     public static String PATIENTINFOFILE = "Patients";
     public static String SESSIONTYPEFILE = "SessionType";
-
+    TextView text;
     public CounsellingFragment() {
         // Required empty public constructor
     }
@@ -61,6 +61,7 @@ public class CounsellingFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_counselling, container, false);
         counsellingLV = (ListView) view.findViewById(R.id.counsellingLV);
         counsellingGet();
+        text = (TextView) view.findViewById(R.id.defaultText);
         counsellingLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -151,7 +152,6 @@ public class CounsellingFragment extends Fragment {
                         counsellingLV.setAdapter(adapter);
                     }
                     else{
-                        TextView text = (TextView) getView().findViewById(R.id.defaultText);
                         text.setText("No recorded counselling sessions");
                         Toast.makeText(CounsellingFragment.this.getActivity(),
                                 "No recorded counselling sessions", Toast.LENGTH_SHORT).show();

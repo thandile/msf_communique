@@ -49,6 +49,7 @@ public class AdverseEventFragment extends Fragment {
     public static String PATIENTINFOFILE = "Patients";
     public static String ADVERSEINFOFILE = "AdverseEvents";
     ListView adverseEventLV;
+    TextView text;
 
     public AdverseEventFragment() {
         // Required empty public constructor
@@ -60,6 +61,7 @@ public class AdverseEventFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_adverse_event, container, false);
+        text = (TextView) view.findViewById(R.id.defaultText);
         adverseEventLV = (ListView) view.findViewById(R.id.adverseEventsLV);
         adverseEventLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -209,7 +211,7 @@ public class AdverseEventFragment extends Fragment {
                         adverseEventLV.setAdapter(adapter);
                     }
                     else{
-                        TextView text = (TextView) getView().findViewById(R.id.defaultText);
+
                         text.setText("No Scheduled appointments");
                         Toast.makeText(AdverseEventFragment.this.getActivity(),
                                 "No Scheduled appointments", Toast.LENGTH_SHORT).show();

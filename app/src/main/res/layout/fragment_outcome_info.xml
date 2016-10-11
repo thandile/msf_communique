@@ -1,13 +1,103 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.msf.msf.Fragments.Outcomes.OutcomeInfoFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="10dip" >
 
-</FrameLayout>
+
+        <TextView
+        android:text="Patient Name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView21"
+        android:textStyle="bold"
+        android:textSize="20dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/patientNameTV" />
+
+        <TextView
+        android:text="Outcome"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView31"
+        android:textStyle="bold"
+        android:textSize="20dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/outcomeTV" />
+
+        <TextView
+        android:text="Date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView32"
+        android:textStyle="bold"
+        android:textSize="20dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/dateTV" />
+
+        <TextView
+        android:text="Notes"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView33"
+        android:textStyle="bold"
+        android:textSize="20dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/notesTV" />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal" >
+
+            <Button android:id="@+id/editButton"
+                android:text="Edit"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="50dp"
+                android:background="#ff6347"
+                android:textColor="#fff"
+                android:textSize="15dp"
+                android:clickable="true" />
+
+            <Button android:id="@+id/delBtn"
+                android:text="Delete"
+                android:layout_marginTop="20dip"
+                android:background="#ff6347"
+                android:textColor="#fff"
+                android:textSize="15dp"
+                android:layout_height="wrap_content"
+                android:layout_width="120dp"
+                android:clickable="true"
+                android:layout_margin="50dp"
+                android:layout_marginLeft="50dp" />
+        </LinearLayout>
+</LinearLayout>
+</ScrollView>

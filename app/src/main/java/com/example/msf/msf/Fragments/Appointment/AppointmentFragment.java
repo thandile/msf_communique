@@ -57,6 +57,7 @@ public class AppointmentFragment extends Fragment {
     DateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
     Date dateobj = new Date();
     RadioButton all, own;
+    TextView text;
     public AppointmentFragment() {
         // Required empty public constructor
     }
@@ -67,6 +68,7 @@ public class AppointmentFragment extends Fragment {
                              Bundle savedInstanceState) {
         HomeActivity.navItemIndex = 2;
         View view  = inflater.inflate(R.layout.fragment_appointment, container, false);
+        text = (TextView) view.findViewById(R.id.defaultText);
         appointmentsGet("all");
         all = (RadioButton) view.findViewById(R.id.allRadioButton);
         own = (RadioButton) view.findViewById(R.id.ownRadioButton);
@@ -171,7 +173,6 @@ public class AppointmentFragment extends Fragment {
 
                             }
                         }
-                        TextView text = (TextView) getView().findViewById(R.id.defaultText);
                         text.setText("Upcoming appointments");
 
                         Collections.sort(appointmentList, new DateComparator());
@@ -209,7 +210,7 @@ public class AppointmentFragment extends Fragment {
                         appointmentLV.setAdapter(adapter);
                     }
                     else{
-                        TextView text = (TextView) getView().findViewById(R.id.defaultText);
+
                         text.setText("No Scheduled appointments");
                         Toast.makeText(AppointmentFragment.this.getActivity(),
                                 "No Scheduled appointments", Toast.LENGTH_SHORT).show();

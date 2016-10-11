@@ -52,6 +52,7 @@ public class AdverseEventTab extends Fragment {
     public static String PATIENTINFOFILE = "Patients";
     public static String ADVERSEINFOFILE = "AdverseEvents";
     ListView adverseEventLV;
+    TextView text;
     private OnFragmentInteractionListener mListener;
 
     public AdverseEventTab() {
@@ -90,6 +91,7 @@ public class AdverseEventTab extends Fragment {
 
         adverseEventLV = (ListView) view.findViewById(R.id.adverseEventsLV);
         adverseEventsGet();
+        text = (TextView) view.findViewById(R.id.defaultText);
         fab = (FloatingActionButton) view.findViewById(R.id.btnFloatingAction);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -217,10 +219,9 @@ public class AdverseEventTab extends Fragment {
                         adverseEventLV.setAdapter(adapter);
                     }
                     else{
-                        TextView text = (TextView) getView().findViewById(R.id.defaultText);
                         text.setText("No Scheduled appointments");
-                        Toast.makeText(AdverseEventTab.this.getActivity(),
-                                "No Scheduled appointments", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(AdverseEventTab.this.getActivity(),
+                             //   "No Scheduled appointments", Toast.LENGTH_SHORT).show();
                         //adverseEventArrayList.add("No scheduled appointments.");
                     }
                     //swipeRefreshLayout.setRefreshing(false);

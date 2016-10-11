@@ -49,6 +49,7 @@ public class AdmissionsTab extends Fragment {
     public static String PATIENTINFOFILE = "Patients";
     FloatingActionButton fab;
     ListView admissionsLV;
+    TextView text;
     private static final String ARG_PARAM1 = "param1";
 
     // TODO: Rename and change types of parameters
@@ -91,7 +92,7 @@ public class AdmissionsTab extends Fragment {
         View view = inflater.inflate(R.layout.fragment_admissions_tab, container, false);
         admissionsLV = (ListView) view.findViewById(R.id.admissionsLV);
         admissionsGet();
-
+        text = (TextView) view.findViewById(R.id.defaultText);
         fab = (FloatingActionButton) view.findViewById(R.id.btnFloatingAction);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -174,10 +175,10 @@ public class AdmissionsTab extends Fragment {
                         admissionsLV.setAdapter(adapter);
                     }
                     else{
-                        TextView text = (TextView) getView().findViewById(R.id.defaultText);
+
                         text.setText("No recorded hospital admissions");
-                        Toast.makeText(AdmissionsTab.this.getActivity(),
-                                "No hospital admissions", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(AdmissionsTab.this.getActivity(),
+                              //  "No hospital admissions", Toast.LENGTH_SHORT).show();
                         //admissionList.add("No scheduled appointments.");
                     }
                     //appointmentLV.setAdapter(adapter);

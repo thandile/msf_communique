@@ -1,14 +1,35 @@
 package com.example.msf.msf.Fragments.Outcomes;
 
+import android.app.ProgressDialog;
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
 
+import com.example.msf.msf.API.Auth;
+import com.example.msf.msf.API.Communicator;
+import com.example.msf.msf.API.Deserializers.Enrollment;
+import com.example.msf.msf.API.Deserializers.Outcome;
+import com.example.msf.msf.API.Interface;
+import com.example.msf.msf.Fragments.Enrollments.UpdateEnrollmentFragment;
+import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
+import com.example.msf.msf.Utils.WriteRead;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
+import retrofit.mime.TypedByteArray;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -22,11 +43,15 @@ public class OutcomeInfoFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private final String TAG = this.getClass().getSimpleName();
+    TextView patientTV, outcomeTypeTV, dateTV, notesTV;
+    Button edit, delete;
+    private Communicator communicator;
+    public static String PATIENTINFOFILE = "Patients";
+    public static String OUTCOMEFILE = "Outcomes";
+    // Progress Dialog Object
+    ProgressDialog prgDialog;
+    private String id;
 
     private OnFragmentInteractionListener mListener;
 
@@ -39,15 +64,13 @@ public class OutcomeInfoFragment extends Fragment {
      * this fragment using the provided parameters.
      *
      * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
      * @return A new instance of fragment OutcomeInfoFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static OutcomeInfoFragment newInstance(String param1, String param2) {
+    public static OutcomeInfoFragment newInstance(String param1) {
         OutcomeInfoFragment fragment = new OutcomeInfoFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -56,8 +79,7 @@ public class OutcomeInfoFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            id = getArguments().getString(ARG_PARAM1);
         }
     }
 
@@ -65,13 +87,146 @@ public class OutcomeInfoFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_outcome_info, container, false);
+        View view = inflater.inflate(R.layout.fragment_outcome_info, container, false);
+        prgDialog = new ProgressDialog(OutcomeInfoFragment.this.getActivity());
+        // Set Progress Dialog Text
+        prgDialog.setMessage("Please wait...");
+        // Set Cancelable as False
+        prgDialog.setCancelable(false);
+        onButtonPressed(id);
+
+        edit = (Button) view.findViewById(R.id.editBtn);
+        delete = (Button) view.findViewById(R.id.delBtn);
+        patientTV = (TextView) view.findViewById(R.id.patientName);
+        outcomeTypeTV = (TextView) view.findViewById(R.id.outcomeTV);
+        dateTV = (TextView) view.findViewById(R.id.dateTV);
+        notesTV = (TextView) view.findViewById(R.id.notesTV);
+        outcomeGet(Long.parseLong(id));
+        communicator = new Communicator();
+        deleteListener();
+        editListener();
+        return view;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
+    public void outcomeGet(long outcomeID){
+        //final ArrayList<Enrollment> enrollmentList = new ArrayList<Enrollment>();
+        Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
+        Callback<Outcome> callback = new Callback<Outcome>() {
+            @Override
+            public void success(Outcome serverResponse, Response response2) {
+                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
+                try{
+
+                    JSONObject jsonobject = new JSONObject(resp);
+                    int id = Integer.parseInt(jsonobject.getString("id"));
+                    outcomeTypeGet(jsonobject.getString("program"));
+                    patientGet(jsonobject.getString("patient"));
+                    dateTV.setText(jsonobject.getString("date_enrolled"));
+                    notesTV.setText(jsonobject.getString("comment"));
+                }
+                catch (JSONException e){
+                    System.out.print("unsuccessful");
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                if(error != null ){
+                    Log.e(TAG, error.getMessage());
+                    error.printStackTrace();
+                }
+            }
+        };
+        communicatorInterface.getOutcome(outcomeID, callback);
+    }
+
+    public String patientGet(String patientID){
+        String patients = WriteRead.read(PATIENTINFOFILE, getContext());
+        String fullName ="";
+        Log.d(TAG, "pName "+patients);
+        try{
+            JSONArray jsonarray = new JSONArray(patients);
+            // JSONArray jsonarray = new JSONArray(resp);
+            for (int i = 0; i < jsonarray.length(); i++) {
+                JSONObject jsonobject = jsonarray.getJSONObject(i);
+                String id = jsonobject.getString("id");
+
+                if (patientID.equals(id)) {
+                    fullName = id+": "+jsonobject.getString("other_names") + " " +
+                            jsonobject.getString("last_name");
+                }
+            }
+        }
+        catch (JSONException e){
+            System.out.print("unsuccessful");
+        }
+        return fullName;
+    }
+
+    public String outcomeTypeGet(String recordID){
+        String records = WriteRead.read(OUTCOMEFILE, getContext());
+        String recordType ="";
+        //Log.d(TAG, "pName "+patients);
+        try{
+            JSONArray jsonarray = new JSONArray(records);
+
+            // JSONArray jsonarray = new JSONArray(resp);
+            for (int i = 0; i < jsonarray.length(); i++) {
+                JSONObject jsonobject = jsonarray.getJSONObject(i);
+                String id = jsonobject.getString("id");
+
+                if (recordID.equals(id)) {
+                    recordType = id+": "+jsonobject.getString("name");
+                }
+            }
+        }
+        catch (JSONException e){
+            System.out.print("unsuccessful");
+        }
+        return recordType;
+    }
+
+
+
+    public void deleteListener() {
+        delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                prgDialog.show();
+                communicator.enrollmentDelete(Long.parseLong(id));
+            }
+        });
+
+    }
+
+    public void editListener() {
+
+        edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //prgDialog.show();
+                //String app_id = id;
+                Log.e(TAG, id.toString());
+                String[] outcomeInfo = {outcomeTypeTV.getText().toString(),
+                        patientTV.getText().toString(),
+                        dateTV.getText().toString(), notesTV.getText().toString(),id};
+                UpdateOutcomeFragment updateOutcomeFragment =
+                        new UpdateOutcomeFragment().newInstance(outcomeInfo);
+                FragmentManager manager = getActivity().getSupportFragmentManager();
+
+                manager.beginTransaction()
+                        .replace(R.id.rel_layout_for_frag, updateOutcomeFragment,
+                                updateOutcomeFragment.getTag())
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
+    }
+
+
+    public void onButtonPressed(String data) {
         if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
+            mListener.onFragmentInteraction(data);
         }
     }
 
@@ -92,18 +247,8 @@ public class OutcomeInfoFragment extends Fragment {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+        void onFragmentInteraction(String data);
     }
 }

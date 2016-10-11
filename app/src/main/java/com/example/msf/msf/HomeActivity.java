@@ -23,6 +23,7 @@ import com.example.msf.msf.API.Deserializers.AdverseEventType;
 import com.example.msf.msf.API.Deserializers.Drug;
 import com.example.msf.msf.API.Deserializers.Events;
 import com.example.msf.msf.API.Deserializers.MedicalRecordType;
+import com.example.msf.msf.API.Deserializers.OutcomeType;
 import com.example.msf.msf.API.Deserializers.Patients;
 import com.example.msf.msf.API.Deserializers.Regimen;
 import com.example.msf.msf.API.Deserializers.SessionDeserialiser;
@@ -123,7 +124,6 @@ public class HomeActivity extends AppCompatActivity
         UpdateAdverseEventFragment.OnFragmentInteractionListener,
         MedicalInfoFragment.OnFragmentInteractionListener,
         UpdateMedicalRecFragment.OnFragmentInteractionListener,
-        OutcomeFragment.OnFragmentInteractionListener,
         CreateOutcomeFragment.OnFragmentInteractionListener,
         OutcomeInfoFragment.OnFragmentInteractionListener{
 
@@ -143,6 +143,7 @@ public class HomeActivity extends AppCompatActivity
     public static String REGIMENFILE = "Drugs";
     public static String ADVERSEEVENTSFILE = "AdverseEvents";
     public static String MEDICALRECORDFILE = "MedicalRecords";
+    public static String OUTCOMEFILE = "Outcomes";
     public static final String MyPREFERENCES = "MyLogin";
 
 
@@ -158,6 +159,7 @@ public class HomeActivity extends AppCompatActivity
         FirebaseMessaging.getInstance().subscribeToTopic("test");
         //String token =
         FirebaseInstanceId.getInstance().getToken();
+        Log.d(TAG, "TOKEN "+FirebaseInstanceId.getInstance().getToken());
         //communicator.registrationPost(token);
         // load toolbar titles from string resources
         activityTitles = getResources().getStringArray(R.array.nav_item_activity_titles);
@@ -278,6 +280,8 @@ public class HomeActivity extends AppCompatActivity
             regimensGet();
             HomeActivity.this.deleteFile(ADVERSEEVENTSFILE);
             adverseEventsGet();
+            HomeActivity.this.deleteFile(OUTCOMEFILE);
+            outcomesGet();
         }
         else {
             Toast.makeText(HomeActivity.this.getApplicationContext(),"You are not online." +
@@ -306,6 +310,27 @@ public class HomeActivity extends AppCompatActivity
             }
         };
         communicatorInterface.getAdverseEventType(callback);
+    }
+
+    private void outcomesGet() {
+        Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
+        Callback<List<OutcomeType>> callback = new Callback<List<OutcomeType>>() {
+            @Override
+            public void success(List<OutcomeType> serverResponse, Response response2) {
+                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
+                WriteRead.write(OUTCOMEFILE, resp, HomeActivity.this);
+                Log.d(TAG, "read from server");
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                if (error != null) {
+                    Log.e(TAG, error.getMessage());
+                    error.printStackTrace();
+                }
+            }
+        };
+        communicatorInterface.getOutcomeTypes(callback);
     }
 
 
@@ -383,7 +408,7 @@ public class HomeActivity extends AppCompatActivity
             public void success(List<PilotsDeserializer> serverResponse, Response response2) {
                 String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
                 WriteRead.write(PILOTFILE, resp, HomeActivity.this);
-                //enrollmentsGet();
+                //outcomesGet();
                 //swipeRefreshLayout.setRefreshing(false);
             }
 

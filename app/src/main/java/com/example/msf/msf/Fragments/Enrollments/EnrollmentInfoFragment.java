@@ -24,8 +24,10 @@ import com.example.msf.msf.API.PilotsDeserializer;
 import com.example.msf.msf.API.ServerEvent;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
+import com.example.msf.msf.Utils.WriteRead;
 import com.squareup.otto.Subscribe;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -56,6 +58,7 @@ public class EnrollmentInfoFragment extends Fragment {
     // Progress Dialog Object
     ProgressDialog prgDialog;
     private String id;
+    public static String PATIENTINFOFILE = "Patients";
 
     private OnFragmentInteractionListener mListener;
 
@@ -164,7 +167,7 @@ public class EnrollmentInfoFragment extends Fragment {
                         JSONObject jsonobject = new JSONObject(resp);
                         int id = Integer.parseInt(jsonobject.getString("id"));
                         pilotGet(Long.parseLong(jsonobject.getString("program")));
-                        patientGet(Long.parseLong(jsonobject.getString("patient")));
+                        patientGet(jsonobject.getString("patient"));
                         dateTV.setText(jsonobject.getString("date_enrolled"));
                         commentTV.setText(jsonobject.getString("comment"));
                 }
@@ -184,40 +187,32 @@ public class EnrollmentInfoFragment extends Fragment {
         communicatorInterface.getEnrollment(enrollmentID, callback);
     }
 
-    public void patientGet(long patientID){
-        final List<String> patientList = new ArrayList<String>();
-        Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
-        Callback<Users> callback = new Callback<Users>() {
-            @Override
-            public void success(Users serverResponse, Response response2) {
-                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
-                try{
-                    JSONObject jsonObject = new JSONObject(resp);
-                    String id = jsonObject.getString("id");
-                    String first_name = jsonObject.getString("other_names");
-                    String last_name = jsonObject.getString("last_name");
-                    String full_name = id + ": " +first_name + " " + last_name;
-                    patientTV.setText(full_name);
-                    /**contact.setText(jsonObject.getString("contact_number"));
-                     dob.setText(jsonObject.getString("birth_date"));
-                     health_centre.setText(jsonObject.getString("reference_health_centre"));
-                     address.setText(jsonObject.getString("location"));**/
-                }
-                catch (JSONException e){
-                    System.out.print("unsuccessful");
+    public String patientGet(String patientID){
+        String patients = WriteRead.read(PATIENTINFOFILE, getContext());
+        String fullName ="";
+        Log.d(TAG, "pName "+patients);
+        try{
+            JSONArray jsonarray = new JSONArray(patients);
+
+            // JSONArray jsonarray = new JSONArray(resp);
+            for (int i = 0; i < jsonarray.length(); i++) {
+                JSONObject jsonobject = jsonarray.getJSONObject(i);
+                String id = jsonobject.getString("id");
+
+                if (patientID.equals(id)) {
+                    fullName = id+": "+jsonobject.getString("other_names") + " " +
+                            jsonobject.getString("last_name");
                 }
             }
 
-            @Override
-            public void failure(RetrofitError error) {
-                if(error != null ){
-                    Log.e(TAG, error.getMessage());
-                    error.printStackTrace();
-                }
-            }
-        };
-        communicatorInterface.getPatient(patientID,callback);
+
+        }
+        catch (JSONException e){
+            System.out.print("unsuccessful");
+        }
+        return fullName;
     }
+
 
     public void pilotGet(long pilotID){
         Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);

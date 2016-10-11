@@ -46,6 +46,7 @@ public class EnrollmentsTab extends Fragment {
     private PatientInfoTab.OnFragmentInteractionListener mListener;
     public static String FILENAME = "Patients";
     public static String PILOTINFOFILE = "Pilots";
+    TextView text;
     private final String TAG = this.getClass().getSimpleName();
 
 
@@ -76,6 +77,7 @@ public class EnrollmentsTab extends Fragment {
         View view = inflater.inflate(R.layout.fragment_tab_enrollment, container, false);
         getPatientInfo();
         enrollmentsGet();
+        text = (TextView) view.findViewById(R.id.defaultText);
         enrollmentLV = (ListView) view.findViewById(R.id.enrollmentsLV);
         fab = (FloatingActionButton) view.findViewById(R.id.btnFloatingAction);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -215,24 +217,17 @@ public class EnrollmentsTab extends Fragment {
                             public String getStringValue(Enrollment enrollment, int position) {
                                 return enrollment.getComment();
                             }
-                        });/**
+                        });
 
-                        dictionary.addStringField(R.id.idTV, new StringExtractor<Enrollment>() {
-                            @Override
-                            public String getStringValue(Enrollment enrollment, int position) {
-                                return "ID: "+enrollment.getId();
-                            }
-                        });**/
                         FunDapter adapter = new FunDapter(EnrollmentsTab.this.getActivity(),
                                 enrollmentList,
                                 R.layout.tabs_list_layout, dictionary);
                         enrollmentLV.setAdapter(adapter);
                     }
                     else{
-                        TextView text = (TextView) getView().findViewById(R.id.defaultText);
                         text.setText("No recorded enrollments");
-                        Toast.makeText(EnrollmentsTab.this.getActivity(),
-                                "No recorded enrollments", Toast.LENGTH_SHORT).show();
+                       // Toast.makeText(EnrollmentsTab.this.getActivity(),
+                             //   "No recorded enrollments", Toast.LENGTH_SHORT).show();
                         //appointmentList.add("No scheduled appointments.");**/
                     }
                 }

@@ -48,6 +48,7 @@ public class MedicalRecordTab extends Fragment {
     public static String MEDICALRECORDFILE = "MedicalRecords";
     ListView recordsLV;
     private String id;
+    TextView text;
 
     private OnFragmentInteractionListener mListener;
 
@@ -85,6 +86,7 @@ public class MedicalRecordTab extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_medical_record_tab, container, false);
         appointmentsGet();
+        text = (TextView) view.findViewById(R.id.defaultText);
         recordsLV = (ListView) view.findViewById(R.id.recordsLV);
         fab = (FloatingActionButton) view.findViewById(R.id.btnFloatingAction);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -169,10 +171,9 @@ public class MedicalRecordTab extends Fragment {
                         recordsLV.setAdapter(adapter);
                     }
                     else{
-                        TextView text = (TextView) getView().findViewById(R.id.defaultText);
                         text.setText("No medical records");
-                        Toast.makeText(MedicalRecordTab.this.getActivity(),
-                                "No medical records", Toast.LENGTH_LONG).show();
+                        //Toast.makeText(MedicalRecordTab.this.getActivity(),
+                                //"No medical records", Toast.LENGTH_LONG).show();
                         //appointmentList.add("No scheduled appointments.");
                     }
                     //appointmentLV.setAdapter(adapter);

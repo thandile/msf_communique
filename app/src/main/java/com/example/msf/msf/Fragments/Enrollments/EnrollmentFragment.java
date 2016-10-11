@@ -44,7 +44,7 @@ public class EnrollmentFragment extends Fragment {
     private final String TAG = this.getClass().getSimpleName();
     public static String PATIENTINFOFILE = "Patients";
     public static String PILOTINFOFILE = "Pilots";
-
+    TextView text;
 
     public EnrollmentFragment() {
 
@@ -59,6 +59,7 @@ public class EnrollmentFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_enrollment, container, false);
         enrollmentLV = (ListView) view.findViewById(R.id.enrollmentLV);
         enrollmentsGet();
+        text = (TextView) view.findViewById(R.id.defaultText);
         enrollmentLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -152,7 +153,6 @@ public class EnrollmentFragment extends Fragment {
                         enrollmentLV.setAdapter(adapter);
                     }
                     else{
-                        TextView text = (TextView) getView().findViewById(R.id.defaultText);
                         text.setText("No recorded enrollments");
                         Toast.makeText(EnrollmentFragment.this.getActivity(),
                                 "No recorded enrollments", Toast.LENGTH_SHORT).show();

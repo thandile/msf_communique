@@ -114,6 +114,7 @@ public class TabFragment extends Fragment {
                 case 5 : return new MedicationTab().newInstance(id);
                 case 6 : return new MedicalRecordTab().newInstance(id);
                 case 7 : return new AdverseEventTab().newInstance(id);
+                case 8 : return new OutcomeTab().newInstance(id);
             }
             return null;
         }
@@ -148,6 +149,8 @@ public class TabFragment extends Fragment {
                     return "Medical Reports";
                 case 7 :
                     return "Adverse Events";
+                case 8 :
+                    return "Patient Outcomes";
             }
             return null;
         }

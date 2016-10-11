@@ -46,6 +46,7 @@ public class MedicalRecordFragment extends Fragment {
     public static String PATIENTINFOFILE = "Patients";
     public static String MEDICALRECORDFILE = "MedicalRecords";
     ListView recordsLV;
+    TextView text;
 
     public MedicalRecordFragment() {
         // Required empty public constructor
@@ -58,6 +59,7 @@ public class MedicalRecordFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_medical_record, container, false);
         appointmentsGet();
+        text = (TextView) getView().findViewById(R.id.defaultText);
         recordsLV = (ListView) view.findViewById(R.id.recordsLV);
         recordsLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -160,7 +162,6 @@ public class MedicalRecordFragment extends Fragment {
                         recordsLV.setAdapter(adapter);
                     }
                     else{
-                        TextView text = (TextView) getView().findViewById(R.id.defaultText);
                         text.setText("No medical records");
                         Toast.makeText(MedicalRecordFragment.this.getActivity(),
                                 "No medical records", Toast.LENGTH_LONG).show();

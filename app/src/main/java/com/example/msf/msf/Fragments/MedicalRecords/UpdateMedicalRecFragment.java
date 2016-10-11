@@ -15,6 +15,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.msf.msf.API.BusProvider;
@@ -115,9 +116,9 @@ public class UpdateMedicalRecFragment extends Fragment implements Validator.Vali
         patientsGet();
         addListenerOnButton();
         recordTypeGet();
-        title.setText(input[0]);
-        patientNames.setText(input[2]);
-        notesET.setText(input[3]);
+        title.setText(input[0], TextView.BufferType.EDITABLE);
+        patientNames.setText(input[2], TextView.BufferType.EDITABLE);
+        notesET.setText(input[3], TextView.BufferType.EDITABLE);
         return view;
     }
 
@@ -201,7 +202,7 @@ public class UpdateMedicalRecFragment extends Fragment implements Validator.Vali
     @Subscribe
     public void onErrorEvent(ErrorEvent errorEvent){
         prgDialog.hide();
-        Toast.makeText(UpdateMedicalRecFragment.this.getActivity(), "error1   " +
+        Toast.makeText(UpdateMedicalRecFragment.this.getActivity(), "error " +
                 errorEvent.getErrorMsg(), Toast.LENGTH_SHORT).show();
     }
 
@@ -274,16 +275,6 @@ public class UpdateMedicalRecFragment extends Fragment implements Validator.Vali
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(String[] data);

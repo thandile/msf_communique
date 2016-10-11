@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,9 +17,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.msf.msf.API.Auth;
+import com.example.msf.msf.API.BusProvider;
 import com.example.msf.msf.API.Deserializers.Users;
+import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.API.PatientsDeserialiser;
+import com.example.msf.msf.API.ServerEvent;
+import com.example.msf.msf.Fragments.Outcomes.CreateOutcomeFragment;
+import com.squareup.otto.Subscribe;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -42,7 +48,7 @@ public class LoginActivity extends AppCompatActivity {
     public static String password = null;
     Context context = this;
     private final String TAG = this.getClass().getSimpleName();
-    public static final String SERVER_URL =  "https://stormy-cliffs-34069.herokuapp.com/api/";
+    public static final String SERVER_URL =  "https://agile-beach-31802.herokuapp.com/api/";
     public static final String MyPREFERENCES = "MyLogin" ;
     public static String Username = "usernameKey";
     public static String Password = "passwordKey";
@@ -70,7 +76,7 @@ public class LoginActivity extends AppCompatActivity {
 
             final String pass = sharedpreferences.getString(Password, null);
             final String uname = sharedpreferences.getString(Username, null);
-            Toast.makeText(LoginActivity.this, uname + " " + pass, Toast.LENGTH_SHORT).show();
+           // Toast.makeText(LoginActivity.this, uname + " " + pass, Toast.LENGTH_SHORT).show();
             usernameET.setText(uname);
             pwdET.setText(pass);
 
@@ -87,10 +93,10 @@ public class LoginActivity extends AppCompatActivity {
                 if (uname != null) {
                     String pass = sharedpreferences.getString(Password, null);
                     String uname = sharedpreferences.getString(Username, null);
-                    Toast.makeText(LoginActivity.this, uname + " " + pass, Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(LoginActivity.this, uname + " " + pass, Toast.LENGTH_SHORT).show();
                     if (pass.equals(password) && uname.equals(username)){
-                        Toast.makeText(LoginActivity.this, "correct",
-                                Toast.LENGTH_SHORT).show();
+                      //  Toast.makeText(LoginActivity.this, "correct",
+                        //        Toast.LENGTH_SHORT).show();
                         navigateToHomeActivity();
                     }
                     else {
@@ -127,8 +133,8 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void failure(RetrofitError error) {
                 if (error != null) {
-                    prgDialog.hide();
-                    Toast.makeText(getApplicationContext(), "Incorrect username/password", Toast.LENGTH_LONG).show();
+                   // prgDialog.hide();
+                    //Toast.makeText(getApplicationContext(), "Incorrect username/password", Toast.LENGTH_LONG).show();
                     Log.e(TAG, error.getMessage());
                     error.printStackTrace();
                 }
@@ -168,6 +174,32 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        BusProvider.getInstance().register(this);
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        BusProvider.getInstance().unregister(this);
+    }
+
+
+    @Subscribe
+    public void onServerEvent(ServerEvent serverEvent){
+
+
+    }
+
+    @Subscribe
+    public void onErrorEvent(ErrorEvent errorEvent){
+        prgDialog.hide();
+        Toast.makeText(LoginActivity.this, "error   " +
+                errorEvent.getErrorMsg(), Toast.LENGTH_SHORT).show();
     }
 
 }

@@ -40,6 +40,7 @@ import retrofit.mime.TypedByteArray;
 public class EventsFragment extends Fragment {
     FloatingActionButton fab;
     ListView eventsLV;
+    TextView text;
     private final String TAG = this.getClass().getSimpleName();
 
 
@@ -53,7 +54,7 @@ public class EventsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_events, container, false);
-
+        text = (TextView) view.findViewById(R.id.defaultText);
         eventsLV = (ListView) view.findViewById(R.id.eventsLV);
         eventsGet();
         eventsLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -155,7 +156,6 @@ public class EventsFragment extends Fragment {
                         eventsLV.setAdapter(adapter);
                     }
                     else{
-                        TextView text = (TextView) getView().findViewById(R.id.defaultText);
                         text.setText("No Scheduled events");
                         Toast.makeText(EventsFragment.this.getActivity(),
                                 "No Scheduled events", Toast.LENGTH_SHORT).show();

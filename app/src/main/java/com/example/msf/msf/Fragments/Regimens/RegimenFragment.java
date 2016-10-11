@@ -50,6 +50,7 @@ public class RegimenFragment extends Fragment {
     public static String PATIENTINFOFILE = "Patients";
     public static String REGIMENINFOFILE = "Drugs";
     ListView regimenLV;
+    TextView text;
 
 
     public RegimenFragment() {
@@ -62,7 +63,7 @@ public class RegimenFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_regimen, container, false);
-
+        text = (TextView) view.findViewById(R.id.defaultText);
         regimenLV = (ListView) view.findViewById(R.id.regimenLV);
         regimenLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -195,7 +196,6 @@ public class RegimenFragment extends Fragment {
                         regimenLV.setAdapter(adapter);
                     }
                     else{
-                        TextView text = (TextView) getView().findViewById(R.id.defaultText);
                         text.setText("No recorded counselling sessions");
                         Toast.makeText(RegimenFragment.this.getActivity(),
                                 "No recorded counselling sessions", Toast.LENGTH_SHORT).show();

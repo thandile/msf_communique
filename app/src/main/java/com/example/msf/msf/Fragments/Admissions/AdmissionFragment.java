@@ -45,7 +45,7 @@ public class AdmissionFragment extends Fragment {
     public static String PATIENTINFOFILE = "Patients";
     FloatingActionButton fab;
     ListView admissionsLV;
-
+    TextView text;
 
     public AdmissionFragment() {
         // Required empty public constructor
@@ -61,6 +61,7 @@ public class AdmissionFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_admission, container, false);
         admissionsLV = (ListView) view.findViewById(R.id.admissionLV);
         admissionsGet();
+        text = (TextView) view.findViewById(R.id.defaultText);
         admissionsLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -159,7 +160,7 @@ public class AdmissionFragment extends Fragment {
                         admissionsLV.setAdapter(adapter);
                     }
                     else{
-                        TextView text = (TextView) getView().findViewById(R.id.defaultText);
+
                         text.setText("No recorded hospital admissions");
                         Toast.makeText(AdmissionFragment.this.getActivity(),
                                 "No hospital admissions", Toast.LENGTH_SHORT).show();

@@ -45,6 +45,7 @@ public class AppointmentsTab extends Fragment {
     public static String PATIENTINFOFILE = "Patients";
     public static String USERINFOFILE = "Users";
     ListView appointmentLV;
+    TextView text;
 
     // TODO: Rename and change types of parameters
 
@@ -76,6 +77,7 @@ public class AppointmentsTab extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_tab_appointments, container, false);
         appointmentsGet();
+        text = (TextView) view.findViewById(R.id.defaultText);
         appointmentLV = (ListView) view.findViewById(R.id.enrollmentsLV) ;
         fab = (FloatingActionButton) view.findViewById(R.id.btnFloatingAction);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -186,7 +188,6 @@ public class AppointmentsTab extends Fragment {
                         appointmentLV.setAdapter(adapter);
                     }
                     else{
-                        TextView text = (TextView) getView().findViewById(R.id.defaultText);
                         text.setText("No Scheduled appointments");
                         //Toast.makeText(AppointmentsTab.this.getActivity(),
                                // "No Scheduled appointments", Toast.LENGTH_LONG).show();

@@ -46,6 +46,7 @@ public class SessionsTab extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     ListView counsellingLV;
     private String id;
+    TextView text;
     private PatientInfoTab.OnFragmentInteractionListener mListener;
     FloatingActionButton fab;
 
@@ -75,6 +76,7 @@ public class SessionsTab extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_tab_sessions, container, false);
         counsellingGet();
+        text = (TextView) view.findViewById(R.id.defaultText);
         counsellingLV = (ListView) view.findViewById(R.id.counsellingLV);
         fab = (FloatingActionButton) view.findViewById(R.id.btnFloatingAction);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -177,11 +179,10 @@ public class SessionsTab extends Fragment {
                         counsellingLV.setAdapter(adapter);
                     } else {
 
-                        TextView text = (TextView) getView().findViewById(R.id.defaultText);
                         text.setText("No recorded counselling sessions");
 
-                        Toast.makeText(SessionsTab.this.getActivity(),
-                                "No recorded counselling sessions", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(SessionsTab.this.getActivity(),
+                             //   "No recorded counselling sessions", Toast.LENGTH_SHORT).show();
                         //counsellingList.add("No scheduled appointments.");
                     }
                     //appointmentLV.setAdapter(adapter);

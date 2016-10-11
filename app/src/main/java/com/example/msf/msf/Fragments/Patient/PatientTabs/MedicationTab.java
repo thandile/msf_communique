@@ -58,6 +58,7 @@ public class MedicationTab extends Fragment {
     public static String PATIENTINFOFILE = "Patients";
     public static String REGIMENINFOFILE = "Drugs";
     ListView regimenLV;
+    TextView text;
 
     private OnFragmentInteractionListener mListener;
 
@@ -96,6 +97,7 @@ public class MedicationTab extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_medication_tab, container, false);
+        text = (TextView) view.findViewById(R.id.defaultText);
         regimenLV = (ListView) view.findViewById(R.id.medicationLV);
         regimensGet();
         fab = (FloatingActionButton) view.findViewById(R.id.btnFloatingAction);
@@ -210,10 +212,9 @@ public class MedicationTab extends Fragment {
                         regimenLV.setAdapter(adapter);
                     }
                     else{
-                        TextView text = (TextView) getView().findViewById(R.id.defaultText);
-                        text.setText("No recorded counselling sessions");
-                        Toast.makeText(MedicationTab.this.getActivity(),
-                                "No recorded counselling sessions", Toast.LENGTH_SHORT).show();
+                        text.setText("No recorded medications");
+                       // Toast.makeText(MedicationTab.this.getActivity(),
+                       //         "No recorded counselling sessions", Toast.LENGTH_SHORT).show();
                         //regimenList.add("No scheduled appointments.");
                     }
                     // swipeRefreshLayout.setRefreshing(false);
