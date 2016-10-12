@@ -24,6 +24,7 @@ import com.example.msf.msf.API.Deserializers.Appointment;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
+import com.example.msf.msf.Utils.AppStatus;
 import com.example.msf.msf.Utils.WriteRead;
 
 import org.json.JSONArray;
@@ -60,8 +61,14 @@ public class AdmissionFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_admission, container, false);
         admissionsLV = (ListView) view.findViewById(R.id.admissionLV);
-        admissionsGet();
         text = (TextView) view.findViewById(R.id.defaultText);
+        if (AppStatus.getInstance(AdmissionFragment.this.getActivity()).isOnline()) {
+            admissionsGet();
+        }
+        else {
+            text.setText("You are currently offline, therefore patient hospital admissions cannot be loaded");
+        }
+
         admissionsLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {

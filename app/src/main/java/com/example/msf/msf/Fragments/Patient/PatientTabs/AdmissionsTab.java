@@ -107,6 +107,24 @@ public class AdmissionsTab extends Fragment {
 
             }
         });
+        admissionsLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                TextView idTV = (TextView) view.findViewById(R.id.idTV);
+                String id = idTV.getText().toString().split(" ")[1];
+                Log.e(TAG, id.toString());
+                AdmissionInfoFragment admissionInfoFragment = new AdmissionInfoFragment().newInstance(id);
+                FragmentManager manager = getActivity().getSupportFragmentManager();
+
+                manager.beginTransaction()
+                        .replace(R.id.rel_layout_for_frag, admissionInfoFragment,
+                                admissionInfoFragment.getTag())
+                        .addToBackStack(null)
+                        .commit();
+                //intent.putExtra(EXTRA_MESSAGE,id);
+                //startActivity(intent);
+            }
+        });
         return view;
     }
 

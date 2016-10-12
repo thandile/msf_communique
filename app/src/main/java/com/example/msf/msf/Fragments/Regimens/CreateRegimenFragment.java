@@ -151,6 +151,8 @@ public class CreateRegimenFragment extends Fragment implements Validator.Validat
             WriteRead.write("regimenPost",patientId[0]+"!"+notes+"!"+drug+"!"+startdate+"!"+ endDate,
                     CreateRegimenFragment.this.getActivity() );
             Log.v("Home", "############################You are not online!!!!");
+            FragmentManager manager = getActivity().getSupportFragmentManager();
+            manager.popBackStack();
         }
     }
 
@@ -244,7 +246,7 @@ public class CreateRegimenFragment extends Fragment implements Validator.Validat
     public void onServerEvent(ServerEvent serverEvent){
         prgDialog.hide();
         Toast.makeText(CreateRegimenFragment.this.getActivity(),
-                "You have successfully added a created a new appointment",
+                "You have successfully added the patient's medication",
                 Toast.LENGTH_LONG).show();
         FragmentManager manager = getActivity().getSupportFragmentManager();
         manager.popBackStack();

@@ -24,9 +24,11 @@ import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.Deserializers.Appointment;
 import com.example.msf.msf.API.Deserializers.Users;
 import com.example.msf.msf.API.Interface;
+import com.example.msf.msf.Fragments.AdverseEvents.AdverseEventFragment;
 import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
+import com.example.msf.msf.Utils.AppStatus;
 import com.example.msf.msf.Utils.WriteRead;
 
 import org.json.JSONArray;
@@ -69,7 +71,12 @@ public class AppointmentFragment extends Fragment {
         HomeActivity.navItemIndex = 2;
         View view  = inflater.inflate(R.layout.fragment_appointment, container, false);
         text = (TextView) view.findViewById(R.id.defaultText);
-        appointmentsGet("all");
+        if (AppStatus.getInstance(AppointmentFragment.this.getActivity()).isOnline()) {
+            appointmentsGet("all");
+        }
+        else {
+            text.setText("You are currently offline, therefore upcoming appointments cannot be loaded");
+        }
         all = (RadioButton) view.findViewById(R.id.allRadioButton);
         own = (RadioButton) view.findViewById(R.id.ownRadioButton);
         appointmentLV = (ListView) view.findViewById(R.id.appointmentLV);

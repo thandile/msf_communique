@@ -20,8 +20,10 @@ import com.example.msf.msf.API.BusProvider;
 import com.example.msf.msf.API.Communicator;
 import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.ServerEvent;
+import com.example.msf.msf.Fragments.Enrollments.UpdateEnrollmentFragment;
 import com.example.msf.msf.Fragments.Patient.PatientFragment;
 import com.example.msf.msf.R;
+import com.example.msf.msf.Utils.AppStatus;
 import com.example.msf.msf.Utils.WriteRead;
 import com.mobsandgeeks.saripaar.ValidationError;
 import com.mobsandgeeks.saripaar.Validator;
@@ -161,8 +163,21 @@ public class UpdateCounsellingFragment extends Fragment implements Validator.Val
         String[] counsellingSession = String.valueOf(sessionType.getSelectedItem()).split(":");
         String notes = notesET.getText().toString();
         Log.d(TAG, "heyyo " + counsellingSession[0] +" "+patientId[0] + " " + notes);
-        communicator.counsellingUpdate(Long.parseLong(counsellingInfo[3]), patientId[0],
-                counsellingSession[0], notes);
+        if (AppStatus.getInstance(UpdateCounsellingFragment.this.getActivity()).isOnline()) {
+            communicator.counsellingUpdate(Long.parseLong(counsellingInfo[3]), patientId[0],
+                    counsellingSession[0], notes);
+        }
+        else {
+            prgDialog.hide();
+            Toast.makeText(UpdateCounsellingFragment.this.getActivity(),"You are not online." +
+                            " Data will be uploaded when you have an internet connection",
+                    Toast.LENGTH_LONG).show();
+            WriteRead.write("counsellingUpdate",patientId[0]+"!"+counsellingSession[0]+"!"+notes+"!"+counsellingInfo[3],
+                    UpdateCounsellingFragment.this.getActivity() );
+            Log.v("Home", "############################You are not online!!!!");
+            FragmentManager manager = getActivity().getSupportFragmentManager();
+            manager.popBackStack();
+        }
     }
 
     @Override

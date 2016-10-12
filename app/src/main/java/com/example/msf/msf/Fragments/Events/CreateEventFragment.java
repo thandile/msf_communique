@@ -144,6 +144,8 @@ public class CreateEventFragment extends Fragment implements Validator.Validatio
             WriteRead.write("eventPost",appointmentType+"!"+notes+"!"+ date+"!"+ startTime+"!"+endTime,
                     CreateEventFragment.this.getActivity() );
             Log.v("Home", "############################You are not online!!!!");
+            FragmentManager manager = getActivity().getSupportFragmentManager();
+            manager.popBackStack();
         }
     }
 
@@ -192,7 +194,7 @@ public class CreateEventFragment extends Fragment implements Validator.Validatio
     public void onServerEvent(ServerEvent serverEvent){
         prgDialog.hide();
         Toast.makeText(CreateEventFragment.this.getActivity(),
-                "You have successfully added a created a new appointment",
+                "You have successfully added a created a new event",
                 Toast.LENGTH_LONG).show();
 
         description.setText("");

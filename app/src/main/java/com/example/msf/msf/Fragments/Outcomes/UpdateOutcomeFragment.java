@@ -104,7 +104,7 @@ public class UpdateOutcomeFragment extends Fragment implements Validator.Validat
         outcomeType = (Spinner) view.findViewById(R.id.OutcomeET);
         outcomeDateET = (EditText) view.findViewById(R.id.dateET);
         notesET = (EditText) view.findViewById(R.id.notesET);
-        submit = (Button) view.findViewById(R.id.appointment_submit);
+        submit = (Button) view.findViewById(R.id.outcome_submit);
         patientNames.setText(input[1], TextView.BufferType.EDITABLE);
         outcomeDateET.setText(input[2], TextView.BufferType.EDITABLE);
         notesET.setText(input[3], TextView.BufferType.EDITABLE);
@@ -194,7 +194,7 @@ public class UpdateOutcomeFragment extends Fragment implements Validator.Validat
     public void onServerEvent(ServerEvent serverEvent){
         prgDialog.hide();
         Toast.makeText(UpdateOutcomeFragment.this.getActivity(),
-                "You have successfully added a created a new patient outcome",
+                "You have successfully added the patient's medication",
                 Toast.LENGTH_LONG).show();
 
         FragmentManager manager = getActivity().getSupportFragmentManager();
@@ -204,7 +204,7 @@ public class UpdateOutcomeFragment extends Fragment implements Validator.Validat
     @Subscribe
     public void onErrorEvent(ErrorEvent errorEvent){
         prgDialog.hide();
-        Toast.makeText(UpdateOutcomeFragment.this.getActivity(), "error1   " +
+        Toast.makeText(UpdateOutcomeFragment.this.getActivity(), " " +
                 errorEvent.getErrorMsg(), Toast.LENGTH_SHORT).show();
     }
 
@@ -225,9 +225,11 @@ public class UpdateOutcomeFragment extends Fragment implements Validator.Validat
             Toast.makeText(UpdateOutcomeFragment.this.getActivity(),"You are not online." +
                             " Data will be uploaded when you have an internet connection",
                     Toast.LENGTH_LONG).show();
-            WriteRead.write("outcomePost", patientId[0]+"!"+ outcome[0]+"!"+ date+"!"+ notes,
+            WriteRead.write("OutcomeUpdate", patientId[0]+"!"+ outcome[0]+"!"+ date+"!"+ notes+ "!"+Long.parseLong(input[4]),
                     UpdateOutcomeFragment.this.getActivity() );
             Log.v("Home", "############################You are not online!!!!");
+            FragmentManager manager = getActivity().getSupportFragmentManager();
+            manager.popBackStack();
         }
 
     }

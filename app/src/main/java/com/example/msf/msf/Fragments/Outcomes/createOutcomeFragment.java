@@ -191,7 +191,7 @@ public class CreateOutcomeFragment extends Fragment implements Validator.Validat
     @Subscribe
     public void onErrorEvent(ErrorEvent errorEvent){
         prgDialog.hide();
-        Toast.makeText(CreateOutcomeFragment.this.getActivity(), "error1   " +
+        Toast.makeText(CreateOutcomeFragment.this.getActivity(), " " +
                 errorEvent.getErrorMsg(), Toast.LENGTH_SHORT).show();
     }
 
@@ -215,6 +215,8 @@ public class CreateOutcomeFragment extends Fragment implements Validator.Validat
             WriteRead.write("outcomePost", patientId[0]+"!"+ outcome[0]+"!"+ date+"!"+ notes,
                     CreateOutcomeFragment.this.getActivity() );
             Log.v("Home", "############################You are not online!!!!");
+            FragmentManager manager = getActivity().getSupportFragmentManager();
+            manager.popBackStack();
         }
 
     }

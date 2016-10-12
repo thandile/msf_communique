@@ -184,9 +184,11 @@ public class UpdateEventFragment extends Fragment implements Validator.Validatio
             Toast.makeText(UpdateEventFragment.this.getActivity(),"You are not online." +
                             " Data will be uploaded when you have an internet connection",
                     Toast.LENGTH_LONG).show();
-            WriteRead.write("eventPost",appointmentType+"!"+notes+"!"+ date+"!"+ startTime+"!"+endTime,
+            WriteRead.write("eventUpdate",appointmentType+"!"+notes+"!"+ date+"!"+ startTime+"!"+endTime+"!"+Long.parseLong(input[5]),
                     UpdateEventFragment.this.getActivity() );
             Log.v("Home", "############################You are not online!!!!");
+            FragmentManager manager = getActivity().getSupportFragmentManager();
+            manager.popBackStack();
         }
     }
 
@@ -250,7 +252,7 @@ public class UpdateEventFragment extends Fragment implements Validator.Validatio
     public void onServerEvent(ServerEvent serverEvent){
         prgDialog.hide();
         Toast.makeText(UpdateEventFragment.this.getActivity(),
-                "You have successfully edited an appointment",
+                "You have successfully edited an event",
                 Toast.LENGTH_LONG).show();
         FragmentManager manager = getActivity().getSupportFragmentManager();
         manager.popBackStackImmediate();

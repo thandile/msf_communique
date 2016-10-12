@@ -34,6 +34,16 @@ public class UpdateReceiver extends BroadcastReceiver {
             OfflineUploads.counselling(context);
             OfflineUploads.medicalReport(context);
             OfflineUploads.adverseEvent(context);
+            OfflineUploads.patientOutcome(context);
+            OfflineUploads.patientOutcomeUpdate(context);
+            OfflineUploads.medicalReportUpdate(context);
+            OfflineUploads.regimenUpdate(context);
+            OfflineUploads.admissionUpdate(context);
+            OfflineUploads.appointmentUpdate(context);
+            OfflineUploads.counsellingUpdate(context);
+            OfflineUploads.eventUpdate(context);
+            OfflineUploads.adverseEventUpdate(context);
+            OfflineUploads.enrollmentUpdate(context);
             Log.i("NET", "connected" + isConnected);
         }
         else  Log.i("NET", "not connected " +isConnected);

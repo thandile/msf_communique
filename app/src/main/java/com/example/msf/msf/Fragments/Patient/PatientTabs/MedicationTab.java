@@ -99,6 +99,25 @@ public class MedicationTab extends Fragment {
         View view = inflater.inflate(R.layout.fragment_medication_tab, container, false);
         text = (TextView) view.findViewById(R.id.defaultText);
         regimenLV = (ListView) view.findViewById(R.id.medicationLV);
+        regimenLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                TextView idTV = (TextView) view.findViewById(R.id.idTV);
+                String id = idTV.getText().toString().split(" ")[1];
+                Log.e(TAG, id.toString());
+                RegimenInfoFragment regimenInfoFragment = new RegimenInfoFragment()
+                        .newInstance(id);
+                FragmentManager manager = getActivity().getSupportFragmentManager();
+
+                manager.beginTransaction()
+                        .replace(R.id.rel_layout_for_frag, regimenInfoFragment,
+                                regimenInfoFragment.getTag())
+                        .addToBackStack(null)
+                        .commit();
+                //intent.putExtra(EXTRA_MESSAGE,id);
+                //startActivity(intent);
+            }
+        });
         regimensGet();
         fab = (FloatingActionButton) view.findViewById(R.id.btnFloatingAction);
         fab.setOnClickListener(new View.OnClickListener() {

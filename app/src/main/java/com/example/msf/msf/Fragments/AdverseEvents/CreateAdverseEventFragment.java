@@ -185,6 +185,8 @@ public class CreateAdverseEventFragment extends Fragment implements Validator.Va
             WriteRead.write("adverseEventPost",patientId[0]+"!"+ adverse[0]+"!"+  date+"!"+  note,
                     CreateAdverseEventFragment.this.getActivity() );
             Log.v("Home", "############################You are not online!!!!");
+            FragmentManager manager = getActivity().getSupportFragmentManager();
+            manager.popBackStack();
         }
 
     }

@@ -14,7 +14,7 @@
         completions."
     </string>
 
-    <string name="app_name">Communique</string>
+    <string name="app_name">MSF Communique</string>
     <string name="action_settings">Logout</string>
     <string name="title_activity_login">Login</string>
     <string name="title_activity_home">Home</string>

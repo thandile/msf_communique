@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,6 +21,7 @@ import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.Deserializers.MedicalRecord;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.Fragments.MedicalRecords.CreateMedicalRecFragment;
+import com.example.msf.msf.Fragments.MedicalRecords.MedicalInfoFragment;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.WriteRead;
@@ -88,6 +90,24 @@ public class MedicalRecordTab extends Fragment {
         appointmentsGet();
         text = (TextView) view.findViewById(R.id.defaultText);
         recordsLV = (ListView) view.findViewById(R.id.recordsLV);
+        recordsLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                TextView idTV = (TextView) view.findViewById(R.id.idTV);
+                String id = idTV.getText().toString().split(" ")[1];
+                Log.e(TAG, id.toString());
+                MedicalInfoFragment medicalInfoFragment = new MedicalInfoFragment().newInstance(id);
+                FragmentManager manager = getActivity().getSupportFragmentManager();
+
+                manager.beginTransaction()
+                        .replace(R.id.rel_layout_for_frag, medicalInfoFragment,
+                                medicalInfoFragment.getTag())
+                        .addToBackStack(null)
+                        .commit();
+                //intent.putExtra(EXTRA_MESSAGE,id);
+                //startActivity(intent);
+            }
+        });
         fab = (FloatingActionButton) view.findViewById(R.id.btnFloatingAction);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override

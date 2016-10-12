@@ -201,6 +201,8 @@ public class CreateCounsellingFragment extends Fragment implements Validator.Val
             WriteRead.write("counsellingPost",patientId[0]+"!"+counsellingSession[0]+"!"+notes+"!",
                     CreateCounsellingFragment.this.getActivity() );
             Log.v("Home", "############################You are not online!!!!");
+            FragmentManager manager = getActivity().getSupportFragmentManager();
+            manager.popBackStack();
         }
     }
 

@@ -43,12 +43,9 @@
             android:paddingTop="10dp"
             android:paddingBottom="10dp"/>
 
-        <EditText
+        <Spinner
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textPersonName"
-            android:text=""
-            android:ems="10"
             android:id="@+id/OutcomeET" />
 
         <TextView
@@ -91,7 +88,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Submit"
-            android:id="@+id/session_submit"
+            android:id="@+id/outcome_submit"
             android:layout_marginTop="20dip"
             android:background="#ff6347"
             android:textColor="#fff"

@@ -5,4 +5,7 @@
     <item name="ic_menu_manage" type="drawable">@android:drawable/ic_menu_manage</item>
     <item name="ic_menu_share" type="drawable">@android:drawable/ic_menu_share</item>
     <item name="ic_menu_send" type="drawable">@android:drawable/ic_menu_send</item>
+    <item name="fa_ambulance" type="drawable">&#xf0f9;</item>
+    <item name="fa_wheelchair" type="drawable">&#xf193;</item>
+    <item name="fa_calendar_plus_o" type="drawable">&#xf201;</item>
 </resources>

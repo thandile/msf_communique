@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,6 +21,7 @@ import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.Deserializers.Enrollment;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.Fragments.Enrollments.CreateEnrollmentFragment;
+import com.example.msf.msf.Fragments.Enrollments.EnrollmentInfoFragment;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.WriteRead;
@@ -79,6 +81,21 @@ public class EnrollmentsTab extends Fragment {
         enrollmentsGet();
         text = (TextView) view.findViewById(R.id.defaultText);
         enrollmentLV = (ListView) view.findViewById(R.id.enrollmentsLV);
+        enrollmentLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                TextView idTV = (TextView) view.findViewById(R.id.idTV);
+                String id = idTV.getText().toString().split(" ")[1];
+                Log.e(TAG, id.toString());
+                EnrollmentInfoFragment enrollmentInfoFragment = new EnrollmentInfoFragment().newInstance(id);
+                FragmentManager manager = getActivity().getSupportFragmentManager();
+                manager.beginTransaction()
+                        .replace(R.id.rel_layout_for_frag, enrollmentInfoFragment,
+                                enrollmentInfoFragment.getTag())
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
         fab = (FloatingActionButton) view.findViewById(R.id.btnFloatingAction);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -212,16 +229,22 @@ public class EnrollmentsTab extends Fragment {
                             }
                         });
 
-                       dictionary.addStringField(R.id.descriptionTV, new StringExtractor<Enrollment>() {
+                       dictionary.addStringField(R.id.personTV, new StringExtractor<Enrollment>() {
                             @Override
                             public String getStringValue(Enrollment enrollment, int position) {
-                                return enrollment.getComment();
+                                return enrollment.getPatientName();
+                            }
+                        });
+                        dictionary.addStringField(R.id.idTV, new StringExtractor<Enrollment>() {
+                            @Override
+                            public String getStringValue(Enrollment enrolment, int position) {
+                                return "ID: "+enrolment.getId();
                             }
                         });
 
                         FunDapter adapter = new FunDapter(EnrollmentsTab.this.getActivity(),
                                 enrollmentList,
-                                R.layout.tabs_list_layout, dictionary);
+                                R.layout.appointment_list_layout, dictionary);
                         enrollmentLV.setAdapter(adapter);
                     }
                     else{

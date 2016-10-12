@@ -21,9 +21,11 @@ import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.Deserializers.AdverseEvent;
 import com.example.msf.msf.API.Deserializers.Appointment;
 import com.example.msf.msf.API.Interface;
+import com.example.msf.msf.Fragments.Admissions.AdmissionFragment;
 import com.example.msf.msf.Fragments.Appointment.AppointmentFragment;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
+import com.example.msf.msf.Utils.AppStatus;
 import com.example.msf.msf.Utils.WriteRead;
 
 import org.json.JSONArray;
@@ -82,7 +84,12 @@ public class AdverseEventFragment extends Fragment {
                 //startActivity(intent);
             }
         });
-        adverseEventsGet();
+        if (AppStatus.getInstance(AdverseEventFragment.this.getActivity()).isOnline()) {
+            adverseEventsGet();
+        }
+        else {
+            text.setText("You are currently offline, therefore patient adverse events cannot be loaded");
+        }
 
         fab = (FloatingActionButton) view.findViewById(R.id.btnFloatingAction);
         fab.setOnClickListener(new View.OnClickListener() {

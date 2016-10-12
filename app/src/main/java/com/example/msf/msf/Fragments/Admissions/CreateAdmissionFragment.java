@@ -168,6 +168,8 @@ public class CreateAdmissionFragment extends Fragment implements Validator.Valid
             WriteRead.write("admissionPost",patientId[0]+"!"+ admissionDate+"!"+ dischargeDate+"!"+
                     healthCen +"!"+notesText,
                     CreateAdmissionFragment.this.getActivity() );
+            FragmentManager manager = getActivity().getSupportFragmentManager();
+            manager.popBackStack();
         }
     }
 
@@ -207,7 +209,7 @@ public class CreateAdmissionFragment extends Fragment implements Validator.Valid
     public void onServerEvent(ServerEvent serverEvent){
         prgDialog.hide();
         Toast.makeText(CreateAdmissionFragment.this.getActivity(),
-                "You have successfully added a created a new appointment",
+                "You have successfully added a created a hospital admission",
                 Toast.LENGTH_LONG).show();
         patientNames.setText("");
         notes.setText("");

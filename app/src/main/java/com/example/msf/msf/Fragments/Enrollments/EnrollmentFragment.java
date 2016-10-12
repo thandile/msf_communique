@@ -21,8 +21,10 @@ import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.Deserializers.Enrollment;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.API.PilotsDeserializer;
+import com.example.msf.msf.Fragments.AdverseEvents.AdverseEventFragment;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
+import com.example.msf.msf.Utils.AppStatus;
 import com.example.msf.msf.Utils.WriteRead;
 
 import org.json.JSONArray;
@@ -58,8 +60,13 @@ public class EnrollmentFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_enrollment, container, false);
         enrollmentLV = (ListView) view.findViewById(R.id.enrollmentLV);
-        enrollmentsGet();
         text = (TextView) view.findViewById(R.id.defaultText);
+        if (AppStatus.getInstance(EnrollmentFragment.this.getActivity()).isOnline()) {
+            enrollmentsGet();
+        }
+        else {
+            text.setText("You are currently offline, therefore patient enrolments cannot be loaded");
+        }
         enrollmentLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {

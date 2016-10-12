@@ -206,6 +206,8 @@ public class CreateMedicalRecFragment extends Fragment implements ValidationList
             WriteRead.write("reportPost",titleText+"!"+ record[0]+"!"+ patientId[0]+"!"+ notes,
                     CreateMedicalRecFragment.this.getActivity() );
             Log.v("Home", "############################You are not online!!!!");
+            FragmentManager manager = getActivity().getSupportFragmentManager();
+            manager.popBackStack();
         }
     }
 

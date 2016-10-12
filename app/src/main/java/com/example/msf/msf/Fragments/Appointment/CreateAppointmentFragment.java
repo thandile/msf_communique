@@ -271,6 +271,8 @@ public class CreateAppointmentFragment extends Fragment implements ValidationLis
                     endTime+"!"+startTime,
                     CreateAppointmentFragment.this.getActivity() );
             Log.v("Home", "############################You are not online!!!!");
+            FragmentManager manager = getActivity().getSupportFragmentManager();
+            manager.popBackStack();
         }
     }
 

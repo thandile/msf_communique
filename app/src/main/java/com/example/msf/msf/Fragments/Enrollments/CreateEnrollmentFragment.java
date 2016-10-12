@@ -235,15 +235,7 @@ public class CreateEnrollmentFragment extends Fragment implements Validator.Vali
         //EnrollmentFragment enrollmentFragment = new EnrollmentFragment();
         FragmentManager manager = getActivity().getSupportFragmentManager();
         manager.popBackStackImmediate();
-        //FragmentTransaction transaction = manager.beginTransaction();
-        //transaction.remove(enrollmentFragment);
-       // transaction.commit();
 
-         /**manager.beginTransaction()
-                .replace(R.id.rel_layout_for_frag, enrollmentFragment,
-                      enrollmentFragment.getTag())
-                 .addToBackStack(null)
-                 .commit();**/
     }
 
     @Subscribe
@@ -274,6 +266,8 @@ public class CreateEnrollmentFragment extends Fragment implements Validator.Vali
             WriteRead.write("enrollmentPost",patientId[0]+"!"+enrollmentComment+"!"+program[0]+"!"+date,
                     CreateEnrollmentFragment.this.getActivity() );
             Log.v("Home", "############################You are not online!!!!");
+            FragmentManager manager = getActivity().getSupportFragmentManager();
+            manager.popBackStack();
         }
         prgDialog.hide();
     }

@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,19 +17,17 @@ import com.amigold.fundapter.BindDictionary;
 import com.amigold.fundapter.FunDapter;
 import com.amigold.fundapter.extractors.StringExtractor;
 import com.example.msf.msf.API.Auth;
-import com.example.msf.msf.API.Deserializers.Appointment;
 import com.example.msf.msf.API.Deserializers.MedicalRecord;
-import com.example.msf.msf.API.Deserializers.MedicalRecordType;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
+import com.example.msf.msf.Utils.AppStatus;
 import com.example.msf.msf.Utils.WriteRead;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,8 +55,14 @@ public class MedicalRecordFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_medical_record, container, false);
-        appointmentsGet();
-        text = (TextView) getView().findViewById(R.id.defaultText);
+
+        text = (TextView) view.findViewById(R.id.defaultText);
+        if (AppStatus.getInstance(MedicalRecordFragment.this.getActivity()).isOnline()) {
+            medicalRecordsGet();
+        }
+        else {
+            text.setText("You are currently offline, therefore patient medical records cannot be loaded");
+        }
         recordsLV = (ListView) view.findViewById(R.id.recordsLV);
         recordsLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -97,7 +100,7 @@ public class MedicalRecordFragment extends Fragment {
 
     }
 
-    public void appointmentsGet(){
+    public void medicalRecordsGet(){
         final ArrayList<MedicalRecord> appointmentList = new ArrayList<MedicalRecord>();
         Interface communicatorInterface;
         communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);

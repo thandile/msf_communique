@@ -21,8 +21,10 @@ import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.Deserializers.Appointment;
 import com.example.msf.msf.API.Deserializers.Events;
 import com.example.msf.msf.API.Interface;
+import com.example.msf.msf.Fragments.AdverseEvents.AdverseEventFragment;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
+import com.example.msf.msf.Utils.AppStatus;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -56,7 +58,12 @@ public class EventsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_events, container, false);
         text = (TextView) view.findViewById(R.id.defaultText);
         eventsLV = (ListView) view.findViewById(R.id.eventsLV);
-        eventsGet();
+        if (AppStatus.getInstance(EventsFragment.this.getActivity()).isOnline()) {
+            eventsGet();
+        }
+        else {
+            text.setText("You are currently offline, therefore events cannot be loaded");
+        }
         eventsLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {

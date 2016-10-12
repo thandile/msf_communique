@@ -22,8 +22,10 @@ import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.Deserializers.AddCounsellingResponse;
 import com.example.msf.msf.API.Deserializers.SessionDeserialiser;
 import com.example.msf.msf.API.Interface;
+import com.example.msf.msf.Fragments.AdverseEvents.AdverseEventFragment;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
+import com.example.msf.msf.Utils.AppStatus;
 import com.example.msf.msf.Utils.WriteRead;
 
 import org.json.JSONArray;
@@ -60,8 +62,13 @@ public class CounsellingFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_counselling, container, false);
         counsellingLV = (ListView) view.findViewById(R.id.counsellingLV);
-        counsellingGet();
         text = (TextView) view.findViewById(R.id.defaultText);
+        if (AppStatus.getInstance(CounsellingFragment.this.getActivity()).isOnline()) {
+            counsellingGet();
+        }
+        else {
+            text.setText("You are currently offline, therefore patient counselling information cannot be loaded");
+        }
         counsellingLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {

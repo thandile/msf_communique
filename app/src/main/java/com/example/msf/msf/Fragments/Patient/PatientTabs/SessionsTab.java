@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,7 +19,9 @@ import com.amigold.fundapter.FunDapter;
 import com.amigold.fundapter.extractors.StringExtractor;
 import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.Deserializers.AddCounsellingResponse;
+import com.example.msf.msf.API.Deserializers.Enrollment;
 import com.example.msf.msf.API.Interface;
+import com.example.msf.msf.Fragments.Counselling.CounsellingInfoFragment;
 import com.example.msf.msf.Fragments.Counselling.CreateCounsellingFragment;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
@@ -78,6 +81,22 @@ public class SessionsTab extends Fragment {
         counsellingGet();
         text = (TextView) view.findViewById(R.id.defaultText);
         counsellingLV = (ListView) view.findViewById(R.id.counsellingLV);
+        counsellingLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                TextView idTV = (TextView) view.findViewById(R.id.idTV);
+                String id = idTV.getText().toString().split(" ")[1];
+                Log.e(TAG, id.toString());
+                CounsellingInfoFragment counsellingInfoFragment = new CounsellingInfoFragment()
+                        .newInstance(id);
+                FragmentManager manager = getActivity().getSupportFragmentManager();
+                manager.beginTransaction()
+                        .replace(R.id.rel_layout_for_frag, counsellingInfoFragment,
+                                counsellingInfoFragment.getTag())
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
         fab = (FloatingActionButton) view.findViewById(R.id.btnFloatingAction);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -159,10 +178,10 @@ public class SessionsTab extends Fragment {
                                 return counselling.getSession_type();
                             }
                         });
-                        dictionary.addStringField(R.id.descriptionTV, new StringExtractor<AddCounsellingResponse>() {
+                        dictionary.addStringField(R.id.personTV, new StringExtractor<AddCounsellingResponse>() {
                             @Override
                             public String getStringValue(AddCounsellingResponse counselling, int position) {
-                                return counselling.getNotes();
+                                return counselling.getPatient_name();
                             }
                         });
 
@@ -173,9 +192,15 @@ public class SessionsTab extends Fragment {
                                 return "Date: "+counselling.getDate();
                             }
                         });
+                        dictionary.addStringField(R.id.idTV, new StringExtractor<AddCounsellingResponse>() {
+                            @Override
+                            public String getStringValue(AddCounsellingResponse counselling, int position) {
+                                return "ID: "+counselling.getId();
+                            }
+                        });
                         FunDapter adapter = new FunDapter(SessionsTab.this.getActivity(),
                                 counsellingList,
-                                R.layout.tabs_list_layout, dictionary);
+                                R.layout.appointment_list_layout, dictionary);
                         counsellingLV.setAdapter(adapter);
                     } else {
 

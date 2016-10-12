@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -18,6 +19,7 @@ import com.amigold.fundapter.extractors.StringExtractor;
 import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.Deserializers.Appointment;
 import com.example.msf.msf.API.Interface;
+import com.example.msf.msf.Fragments.Appointment.AppointmentInfoFragment;
 import com.example.msf.msf.Fragments.Appointment.CreateAppointmentFragment;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
@@ -92,6 +94,24 @@ public class AppointmentsTab extends Fragment {
                         .commit();
             }
         });
+        appointmentLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                TextView idTV = (TextView) view.findViewById(R.id.idTV);
+                String id = idTV.getText().toString().split(" ")[1];
+                Log.e(TAG, id.toString());
+                AppointmentInfoFragment appointmentListFragment = new AppointmentInfoFragment().newInstance(id);
+                FragmentManager manager = getActivity().getSupportFragmentManager();
+
+                manager.beginTransaction()
+                        .replace(R.id.rel_layout_for_frag, appointmentListFragment,
+                                appointmentListFragment.getTag())
+                        .addToBackStack(null)
+                        .commit();
+                //intent.putExtra(EXTRA_MESSAGE,id);
+                //startActivity(intent);
+            }
+        });
         return view;
     }
 
@@ -162,7 +182,7 @@ public class AppointmentsTab extends Fragment {
                                 return appointment.getTitle();
                             }
                         });
-                        dictionary.addStringField(R.id.descriptionTV, new StringExtractor<Appointment>() {
+                        dictionary.addStringField(R.id.personTV, new StringExtractor<Appointment>() {
                             @Override
                             public String getStringValue(Appointment appointment, int position) {
                                 return "Owner: " +appointment.getOwnerName();
@@ -176,15 +196,15 @@ public class AppointmentsTab extends Fragment {
                             }
                         });
 
-                        dictionary.addStringField(R.id.patientTV, new StringExtractor<Appointment>() {
+                        dictionary.addStringField(R.id.idTV, new StringExtractor<Appointment>() {
                             @Override
                             public String getStringValue(Appointment appointment, int position) {
-                                return "Patient: "+appointment.getPatientName();
+                                return "Patient: "+appointment.getId();
                             }
                         });
                         FunDapter adapter = new FunDapter(AppointmentsTab.this.getActivity(),
                                 appointmentList,
-                                R.layout.appointment_layout, dictionary);
+                                R.layout.appointment_list_layout, dictionary);
                         appointmentLV.setAdapter(adapter);
                     }
                     else{

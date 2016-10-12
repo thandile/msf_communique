@@ -20,8 +20,10 @@ import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.Deserializers.Enrollment;
 import com.example.msf.msf.API.Deserializers.Outcome;
 import com.example.msf.msf.API.Interface;
+import com.example.msf.msf.Fragments.AdverseEvents.AdverseEventFragment;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
+import com.example.msf.msf.Utils.AppStatus;
 import com.example.msf.msf.Utils.WriteRead;
 
 import org.json.JSONArray;
@@ -59,7 +61,7 @@ public class OutcomeFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_outcome, container, false);
         outcomeLV = (ListView) view.findViewById(R.id.outcomeLV);
-        outcomesGet();
+
         outcomeLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -76,6 +78,12 @@ public class OutcomeFragment extends Fragment {
             }
         });
         text = (TextView) view.findViewById(R.id.defaultText);
+        if (AppStatus.getInstance(OutcomeFragment.this.getActivity()).isOnline()) {
+            outcomesGet();
+        }
+        else {
+            text.setText("You are currently offline, therefore patient outcomes cannot be loaded");
+        }
         fab = (FloatingActionButton) view.findViewById(R.id.btnFloatingAction);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override

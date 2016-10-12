@@ -11,16 +11,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.msf.msf.API.Auth;
+import com.example.msf.msf.API.BusProvider;
 import com.example.msf.msf.API.Communicator;
 import com.example.msf.msf.API.Deserializers.Enrollment;
 import com.example.msf.msf.API.Deserializers.Outcome;
+import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.Interface;
+import com.example.msf.msf.API.ServerEvent;
+import com.example.msf.msf.Fragments.Admissions.AdmissionInfoFragment;
 import com.example.msf.msf.Fragments.Enrollments.UpdateEnrollmentFragment;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.WriteRead;
+import com.squareup.otto.Subscribe;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -95,9 +101,9 @@ public class OutcomeInfoFragment extends Fragment {
         prgDialog.setCancelable(false);
         onButtonPressed(id);
 
-        edit = (Button) view.findViewById(R.id.editBtn);
+        edit = (Button) view.findViewById(R.id.editButton);
         delete = (Button) view.findViewById(R.id.delBtn);
-        patientTV = (TextView) view.findViewById(R.id.patientName);
+        patientTV = (TextView) view.findViewById(R.id.patientNameTV);
         outcomeTypeTV = (TextView) view.findViewById(R.id.outcomeTV);
         dateTV = (TextView) view.findViewById(R.id.dateTV);
         notesTV = (TextView) view.findViewById(R.id.notesTV);
@@ -119,10 +125,10 @@ public class OutcomeInfoFragment extends Fragment {
 
                     JSONObject jsonobject = new JSONObject(resp);
                     int id = Integer.parseInt(jsonobject.getString("id"));
-                    outcomeTypeGet(jsonobject.getString("program"));
-                    patientGet(jsonobject.getString("patient"));
-                    dateTV.setText(jsonobject.getString("date_enrolled"));
-                    notesTV.setText(jsonobject.getString("comment"));
+                    outcomeTypeTV.setText(outcomeTypeGet(jsonobject.getString("outcome_type")));
+                    patientTV.setText(patientGet(jsonobject.getString("patient")));
+                    dateTV.setText(jsonobject.getString("outcome_date"));
+                    notesTV.setText(jsonobject.getString("notes"));
                 }
                 catch (JSONException e){
                     System.out.print("unsuccessful");
@@ -193,7 +199,7 @@ public class OutcomeInfoFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 prgDialog.show();
-                communicator.enrollmentDelete(Long.parseLong(id));
+                communicator.outcomeDelete(Long.parseLong(id));
             }
         });
 
@@ -250,5 +256,33 @@ public class OutcomeInfoFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(String data);
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        BusProvider.getInstance().register(this);
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        BusProvider.getInstance().unregister(this);
+    }
+
+    @Subscribe
+    public void onServerEvent(ServerEvent serverEvent){
+        prgDialog.hide();
+        Toast.makeText(OutcomeInfoFragment.this.getActivity(),
+                "You have successfully deleted a patient outcome", Toast.LENGTH_SHORT).show();
+        FragmentManager manager = getActivity().getSupportFragmentManager();
+        manager.popBackStackImmediate();
+    }
+
+    @Subscribe
+    public void onErrorEvent(ErrorEvent errorEvent){
+        prgDialog.hide();
+        Toast.makeText(OutcomeInfoFragment.this.getActivity(), "" + errorEvent.getErrorMsg(),
+                Toast.LENGTH_SHORT).show();
     }
 }

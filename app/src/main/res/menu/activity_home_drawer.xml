@@ -4,47 +4,47 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_home"
-            android:icon="@drawable/ic_home"
+            android:icon="@drawable/home"
             android:title="Home" />
         <item
             android:id="@+id/nav_patients"
-            android:icon="@drawable/ic_appointment"
+            android:icon="@drawable/patient"
             android:title="Patients" />
         <item
             android:id="@+id/nav_gallery"
-            android:icon="@drawable/ic_appointment"
+            android:icon="@drawable/appointment_reminders"
             android:title="Appointments" />
         <item
             android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_counsel"
+            android:icon="@drawable/mental_state"
             android:title="Counselling Sessions" />
         <item
             android:id="@+id/nav_manage"
-            android:icon="@drawable/ic_enrol"
+            android:icon="@drawable/treatment_plan"
             android:title="Pilot Enrollments" />
         <item
             android:id="@+id/nav_admission"
-            android:icon="@drawable/ic_enrol"
+            android:icon="@drawable/clinic"
             android:title="Admissions" />
         <item
             android:id="@+id/nav_event"
-            android:icon="@drawable/ic_enrol"
+            android:icon="@drawable/event_accepted_tentatively"
             android:title="Events" />
         <item
             android:id="@+id/nav_records"
-            android:icon="@drawable/ic_enrol"
+            android:icon="@drawable/folder"
             android:title="Medical Records" />
         <item
             android:id="@+id/nav_adverseEvent"
-            android:icon="@drawable/ic_enrol"
+            android:icon="@drawable/wheelchair"
             android:title="Adverse Events" />
         <item
             android:id="@+id/nav_regimen"
-            android:icon="@drawable/ic_enrol"
-            android:title="Regimens" />
+            android:icon="@drawable/stethoscope"
+            android:title="Medication" />
         <item
             android:id="@+id/nav_outcomes"
-            android:icon="@drawable/ic_enrol"
+            android:icon="@drawable/heart_health"
             android:title="Patient Outcomes" />
     </group>
 

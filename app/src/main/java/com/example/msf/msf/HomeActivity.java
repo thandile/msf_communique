@@ -3,6 +3,7 @@ package com.example.msf.msf;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -63,8 +64,10 @@ import com.example.msf.msf.Fragments.MedicalRecords.UpdateMedicalRecFragment;
 import com.example.msf.msf.Fragments.Outcomes.CreateOutcomeFragment;
 import com.example.msf.msf.Fragments.Outcomes.OutcomeFragment;
 import com.example.msf.msf.Fragments.Outcomes.OutcomeInfoFragment;
+import com.example.msf.msf.Fragments.Outcomes.UpdateOutcomeFragment;
 import com.example.msf.msf.Fragments.Patient.PatientFragment;
 import com.example.msf.msf.Fragments.Patient.PatientTabs.AdverseEventTab;
+import com.example.msf.msf.Fragments.Patient.PatientTabs.OutcomeTab;
 import com.example.msf.msf.Fragments.Patient.PatientTabs.PatientInfoTab;
 import com.example.msf.msf.Fragments.Patient.PatientTabs.AdmissionsTab;
 import com.example.msf.msf.Fragments.Patient.PatientTabs.MedicalRecordTab;
@@ -125,7 +128,9 @@ public class HomeActivity extends AppCompatActivity
         MedicalInfoFragment.OnFragmentInteractionListener,
         UpdateMedicalRecFragment.OnFragmentInteractionListener,
         CreateOutcomeFragment.OnFragmentInteractionListener,
-        OutcomeInfoFragment.OnFragmentInteractionListener{
+        OutcomeInfoFragment.OnFragmentInteractionListener,
+        UpdateOutcomeFragment.OnFragmentInteractionListener,
+        OutcomeTab.OnFragmentInteractionListener{
 
     // flag to load home fragment when user presses back key
     private boolean shouldLoadHomeFragOnBackPress = false;
@@ -222,9 +227,9 @@ public class HomeActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         // show menu only when home fragment is selected
-        if (navItemIndex!=0) {
-            getMenuInflater().inflate(R.menu.refresh, menu);
-        }
+
+        getMenuInflater().inflate(R.menu.refresh, menu);
+
         getMenuInflater().inflate(R.menu.home, menu);
 
         return true;

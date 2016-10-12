@@ -21,12 +21,14 @@ import com.amigold.fundapter.extractors.StringExtractor;
 import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.Deserializers.Appointment;
 import com.example.msf.msf.API.Interface;
+import com.example.msf.msf.Fragments.AdverseEvents.AdverseEventFragment;
 import com.example.msf.msf.Fragments.Appointment.AppointmentFragment;
 import com.example.msf.msf.Fragments.Appointment.AppointmentInfoFragment;
 import com.example.msf.msf.Fragments.Appointment.CreateAppointmentFragment;
 import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
+import com.example.msf.msf.Utils.AppStatus;
 import com.example.msf.msf.Utils.WriteRead;
 
 import org.json.JSONArray;
@@ -91,7 +93,12 @@ public class HomeFragment extends Fragment {
                 //startActivity(intent);
             }
         });
-        appointmentsGet();
+        if (AppStatus.getInstance(HomeFragment.this.getActivity()).isOnline()) {
+            appointmentsGet();
+        }
+        else {
+            text.setText("You are currently offline, therefore your upcoming appointments cannot be loaded");
+        }
         fab = (FloatingActionButton) view.findViewById(R.id.btnFloatingAction);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override

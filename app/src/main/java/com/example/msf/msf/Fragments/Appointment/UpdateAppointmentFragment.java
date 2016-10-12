@@ -26,6 +26,7 @@ import com.example.msf.msf.Dialogs.DateDialog;
 import com.example.msf.msf.Dialogs.TimeDialog;
 import com.example.msf.msf.Fragments.Patient.PatientFragment;
 import com.example.msf.msf.R;
+import com.example.msf.msf.Utils.AppStatus;
 import com.example.msf.msf.Utils.WriteRead;
 import com.mobsandgeeks.saripaar.ValidationError;
 import com.mobsandgeeks.saripaar.Validator;
@@ -218,9 +219,23 @@ public class UpdateAppointmentFragment extends Fragment implements Validator.Val
         startTime = startTimeET.getText().toString();
         endTime = endTimeET.getText().toString();
         notes = notesET.getText().toString();
-        communicator.appointmentUpdate(Long.parseLong(mParam1[0].split(":")[0]),
-                appointmentType, owner,
-                patient, date, startTime, endTime, notes);
+        if (AppStatus.getInstance(UpdateAppointmentFragment.this.getActivity()).isOnline()) {
+            communicator.appointmentUpdate(Long.parseLong(mParam1[0].split(":")[0]),
+                    appointmentType, owner,
+                    patient, date, startTime, endTime, notes);
+        }
+        else {
+            prgDialog.hide();
+            Toast.makeText(UpdateAppointmentFragment.this.getActivity(),"You are not online." +
+                            " Data will be uploaded when you have an internet connection",
+                    Toast.LENGTH_LONG).show();
+            WriteRead.write("appointmentUpdate",appointmentType+"!"+owner+"!"+ patient+"!"+ date+"!"+
+                            startTime+"!"+endTime+"!"+notes+"!"+mParam1[0],
+                    UpdateAppointmentFragment.this.getActivity() );
+            Log.v("Home", "############################You are not online!!!!");
+            FragmentManager manager = getActivity().getSupportFragmentManager();
+            manager.popBackStack();
+        }
     }
 
     @Override
