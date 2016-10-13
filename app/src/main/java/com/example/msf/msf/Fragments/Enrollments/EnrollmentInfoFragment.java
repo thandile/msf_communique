@@ -53,7 +53,7 @@ public class EnrollmentInfoFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private final String TAG = this.getClass().getSimpleName();
     TextView patientTV, pilotTV, dateTV, commentTV;
-    Button edit, delete;
+    Button edit;
     private Communicator communicator;
     // Progress Dialog Object
     ProgressDialog prgDialog;
@@ -104,14 +104,12 @@ public class EnrollmentInfoFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_enrollment_info, container, false);
         edit = (Button) view.findViewById(R.id.editBtn);
-        delete = (Button) view.findViewById(R.id.delBtn);
         patientTV = (TextView) view.findViewById(R.id.patientName);
         pilotTV = (TextView) view.findViewById(R.id.pilotTV);
         dateTV = (TextView) view.findViewById(R.id.enroll_date);
         commentTV = (TextView) view.findViewById(R.id.commentTV);
         enrollmentGet(Long.parseLong(id));
         communicator = new Communicator();
-        deleteListener();
         editListener();
         return view;
     }
@@ -156,6 +154,7 @@ public class EnrollmentInfoFragment extends Fragment {
     }
 
     public void enrollmentGet(long enrollmentID){
+        prgDialog.show();
         //final ArrayList<Enrollment> enrollmentList = new ArrayList<Enrollment>();
         Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
         Callback<Enrollment> callback = new Callback<Enrollment>() {
@@ -185,6 +184,7 @@ public class EnrollmentInfoFragment extends Fragment {
             }
         };
         communicatorInterface.getEnrollment(enrollmentID, callback);
+        prgDialog.hide();
     }
 
     public String patientGet(String patientID){
@@ -244,17 +244,6 @@ public class EnrollmentInfoFragment extends Fragment {
             }
         };
         communicatorInterface.getPilot(pilotID, callback);
-    }
-
-    public void deleteListener() {
-        delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                prgDialog.show();
-                communicator.enrollmentDelete(Long.parseLong(id));
-            }
-        });
-
     }
 
     public void editListener() {

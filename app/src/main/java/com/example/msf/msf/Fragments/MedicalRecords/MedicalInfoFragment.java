@@ -51,7 +51,7 @@ public class MedicalInfoFragment extends Fragment {
     private String id;
 
     private final String TAG = this.getClass().getSimpleName();
-    Button edit, delete;
+    Button edit;
     TextView recordTitle, recordType, patientName, notes;
     private Communicator communicator;
     public static String PATIENTINFOFILE = "Patients";
@@ -109,8 +109,6 @@ public class MedicalInfoFragment extends Fragment {
         prgDialog.setCancelable(false);
         onButtonPressed(id);
         edit = (Button) view.findViewById(R.id.editButton);
-        delete = (Button) view.findViewById(R.id.delBtn);
-        deleteListener();
         editListener();
         return view;
     }
@@ -199,17 +197,6 @@ public class MedicalInfoFragment extends Fragment {
             System.out.print("unsuccessful");
         }
         return recordType;
-    }
-
-    public void deleteListener() {
-        delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                prgDialog.show();
-                Log.d(TAG, "regimen id: "+ id);
-                communicator.reportDelete(Long.parseLong(id));
-            }
-        });
     }
 
     public void editListener() {

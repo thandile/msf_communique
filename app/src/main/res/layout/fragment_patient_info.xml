@@ -206,11 +206,6 @@
             android:layout_height="wrap_content"
             android:id="@+id/health_centreTV" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal" >
-
 
             <Button android:id="@+id/editBtn"
                 android:text="Edit"
@@ -222,19 +217,7 @@
                 android:textSize="15dp"
                 android:clickable="true" />
 
-            <Button android:id="@+id/delBtn"
-                android:text="Delete"
-                android:layout_marginTop="20dip"
-                android:background="#ff6347"
-                android:textColor="#fff"
-                android:textSize="15dp"
-                android:layout_height="wrap_content"
-                android:layout_width="100dp"
-                android:clickable="true"
-                android:layout_margin="50dp"
-                android:layout_marginLeft="50dp" />
 
-        </LinearLayout>
 
     </LinearLayout>
 

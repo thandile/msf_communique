@@ -61,6 +61,7 @@ import com.example.msf.msf.Fragments.MedicalRecords.CreateMedicalRecFragment;
 import com.example.msf.msf.Fragments.MedicalRecords.MedicalInfoFragment;
 import com.example.msf.msf.Fragments.MedicalRecords.MedicalRecordFragment;
 import com.example.msf.msf.Fragments.MedicalRecords.UpdateMedicalRecFragment;
+import com.example.msf.msf.Fragments.Notfications.NotificationFragment;
 import com.example.msf.msf.Fragments.Outcomes.CreateOutcomeFragment;
 import com.example.msf.msf.Fragments.Outcomes.OutcomeFragment;
 import com.example.msf.msf.Fragments.Outcomes.OutcomeInfoFragment;
@@ -140,6 +141,7 @@ public class HomeActivity extends AppCompatActivity
     Communicator communicator;
     // toolbar titles respected to selected nav menu item
     private String[] activityTitles;
+    NavigationView navigationView;
 
     public static String PATIENTFILE = "Patients";
     public static String PILOTFILE = "Pilots";
@@ -174,8 +176,9 @@ public class HomeActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        navigationView.getMenu().getItem(1).setActionView(R.layout.menu_dot);
 
 
         if (savedInstanceState == null) {
@@ -507,8 +510,19 @@ public class HomeActivity extends AppCompatActivity
                     .commit();
             setToolbarTitle();
         }
-        else if (id == R.id.nav_gallery) {
+        else if (id == R.id.nav_notifications){
             navItemIndex = 2;
+            NotificationFragment notificationFragment = new NotificationFragment();
+            FragmentManager manager = getSupportFragmentManager();
+            manager.beginTransaction().replace(R.id.rel_layout_for_frag,
+                    notificationFragment,
+                    notificationFragment.getTag())
+                    .addToBackStack(null)
+                    .commit();
+            setToolbarTitle();
+        }
+        else if (id == R.id.nav_gallery) {
+            navItemIndex = 3;
             AppointmentFragment appointmentFragment = new AppointmentFragment();
             FragmentManager manager = getSupportFragmentManager();
             manager.beginTransaction().replace(R.id.rel_layout_for_frag,
@@ -519,7 +533,7 @@ public class HomeActivity extends AppCompatActivity
             setToolbarTitle();
         }
         else if (id == R.id.nav_slideshow) {
-            navItemIndex = 3;
+            navItemIndex = 4;
             CounsellingFragment counsellingFragment = new CounsellingFragment();
             FragmentManager manager = getSupportFragmentManager();
             manager.beginTransaction().replace(R.id.rel_layout_for_frag,
@@ -530,7 +544,7 @@ public class HomeActivity extends AppCompatActivity
             setToolbarTitle();
         }
         else if (id == R.id.nav_manage) {
-            navItemIndex = 4;
+            navItemIndex = 5;
             EnrollmentFragment enrollmentFragment = new EnrollmentFragment();
             FragmentManager manager = getSupportFragmentManager();
             manager.beginTransaction().replace(R.id.rel_layout_for_frag,
@@ -542,7 +556,7 @@ public class HomeActivity extends AppCompatActivity
         }
 
         else if (id == R.id.nav_admission) {
-            navItemIndex = 5;
+            navItemIndex = 6;
             AdmissionFragment admissionFragment = new AdmissionFragment();
             FragmentManager manager = getSupportFragmentManager();
             manager.beginTransaction().replace(R.id.rel_layout_for_frag,
@@ -554,7 +568,7 @@ public class HomeActivity extends AppCompatActivity
         }
 
         else if (id == R.id.nav_event) {
-            navItemIndex = 6;
+            navItemIndex = 7;
             EventsFragment eventsFragment = new EventsFragment();
             FragmentManager manager = getSupportFragmentManager();
             manager.beginTransaction().replace(R.id.rel_layout_for_frag,
@@ -565,7 +579,7 @@ public class HomeActivity extends AppCompatActivity
             setToolbarTitle();
         }
         else if (id == R.id.nav_records) {
-            navItemIndex = 7;
+            navItemIndex = 8;
             MedicalRecordFragment medicalRecordFragment = new MedicalRecordFragment();
             FragmentManager manager = getSupportFragmentManager();
             manager.beginTransaction().replace(R.id.rel_layout_for_frag,
@@ -576,7 +590,7 @@ public class HomeActivity extends AppCompatActivity
             setToolbarTitle();
         }
         else if (id == R.id.nav_adverseEvent){
-            navItemIndex = 8;
+            navItemIndex = 9;
             AdverseEventFragment adverseEventFragment = new AdverseEventFragment();
             FragmentManager manager = getSupportFragmentManager();
             manager.beginTransaction().replace(R.id.rel_layout_for_frag,
@@ -587,7 +601,7 @@ public class HomeActivity extends AppCompatActivity
             setToolbarTitle();
         }
         else if (id == R.id.nav_regimen){
-            navItemIndex = 9;
+            navItemIndex = 10;
             RegimenFragment regimenFragment = new RegimenFragment();
             FragmentManager manager = getSupportFragmentManager();
             manager.beginTransaction().replace(R.id.rel_layout_for_frag,
@@ -598,7 +612,7 @@ public class HomeActivity extends AppCompatActivity
             setToolbarTitle();
         }
         else if (id == R.id.nav_outcomes){
-            navItemIndex = 10;
+            navItemIndex = 11;
             OutcomeFragment outcomeFragment = new OutcomeFragment();
             FragmentManager manager = getSupportFragmentManager();
             manager.beginTransaction().replace(R.id.rel_layout_for_frag,

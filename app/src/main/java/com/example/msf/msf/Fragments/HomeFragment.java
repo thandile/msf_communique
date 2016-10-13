@@ -20,6 +20,7 @@ import com.amigold.fundapter.FunDapter;
 import com.amigold.fundapter.extractors.StringExtractor;
 import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.Deserializers.Appointment;
+import com.example.msf.msf.API.Deserializers.Events;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.Fragments.AdverseEvents.AdverseEventFragment;
 import com.example.msf.msf.Fragments.Appointment.AppointmentFragment;
@@ -57,10 +58,10 @@ public class HomeFragment extends Fragment {
     private final String TAG = this.getClass().getSimpleName();
     public static String PATIENTINFOFILE = "Patients";
     public static String USERINFOFILE = "Users";
-    ListView appointmentLV;
+    ListView appointmentLV, eventsLV;
     DateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
     Date dateobj = new Date();
-    TextView text;
+    TextView text, text2;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -74,7 +75,9 @@ public class HomeFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         text = (TextView) view.findViewById(R.id.defaultText);
+        text2 = (TextView) view.findViewById(R.id.defaultText2);
         appointmentLV = (ListView) view.findViewById(R.id.appointmentLV);
+        eventsLV = (ListView) view.findViewById(R.id.eventsLV);
         appointmentLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -95,6 +98,7 @@ public class HomeFragment extends Fragment {
         });
         if (AppStatus.getInstance(HomeFragment.this.getActivity()).isOnline()) {
             appointmentsGet();
+            eventsGet();
         }
         else {
             text.setText("You are currently offline, therefore your upcoming appointments cannot be loaded");
@@ -130,11 +134,9 @@ public class HomeFragment extends Fragment {
                             JSONObject jsonobject = jsonarray.getJSONObject(i);
                             String date = jsonobject.getString("appointment_date");
                             if (df.format(dateobj).compareTo(date)<=0) {
-
                                 String owner = loadUserFromFile(Long.parseLong(jsonobject.getString("owner")));
                                 if (owner.equals(LoginActivity.username)) {
                                     int id = Integer.parseInt(jsonobject.getString("id"));
-
                                     String startTime = jsonobject.getString("start_time");
                                     String endTime = jsonobject.getString("end_time");
                                     String patient = getPatientInfo(Long.parseLong(jsonobject.getString("patient")));
@@ -150,7 +152,15 @@ public class HomeFragment extends Fragment {
                         }
                         text.setText("Your upcoming appointments");
 
-                        Collections.sort(appointmentList, new HomeFragment.DateComparator());
+                        Collections.sort(appointmentList, new DateComparator());
+                        final ArrayList<Appointment> topAppointments = new ArrayList<Appointment>();
+                        if (appointmentList.size()>2) {
+                            for (int j = 0; j < 3; j++) {
+                                topAppointments.add(appointmentList.get(j));
+                            }
+                        }else {
+                            topAppointments.addAll(appointmentList);
+                        }
                         Log.d(TAG, appointmentList.toString());
                         BindDictionary<Appointment> dictionary = new BindDictionary<>();
                         dictionary.addStringField(R.id.titleTV, new StringExtractor<Appointment>() {
@@ -180,7 +190,7 @@ public class HomeFragment extends Fragment {
                             }
                         });
                         FunDapter adapter = new FunDapter(HomeFragment.this.getActivity(),
-                                appointmentList,
+                                topAppointments,
                                 R.layout.appointment_list_layout, dictionary);
                         appointmentLV.setAdapter(adapter);
                     }
@@ -206,6 +216,100 @@ public class HomeFragment extends Fragment {
             }
         };
         communicatorInterface.getAppointments(callback);
+    }
+
+    public void eventsGet(){
+        final ArrayList<Events> eventsList = new ArrayList<Events>();
+        Interface communicatorInterface;
+        communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
+        Callback<List<Events>> callback = new Callback<List<Events>>() {
+            @Override
+            public void success(List<Events> serverResponse, Response response2) {
+                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
+                try{
+                    Events events = new Events();
+                    JSONArray jsonarray = new JSONArray(resp);
+                    if (jsonarray.length()>0) {
+                        for (int i = 0; i < jsonarray.length(); i++) {
+                            JSONObject jsonobject = jsonarray.getJSONObject(i);
+                            int id = Integer.parseInt(jsonobject.getString("id"));
+                            String date = jsonobject.getString("event_date");
+                            String startTime = jsonobject.getString("start_time");
+                            String endTime = jsonobject.getString("end_time");
+                            String title = jsonobject.getString("name");
+                            String description = jsonobject.getString("description");
+
+                            events = new Events(id, title,
+                                    description, date, startTime, endTime);
+                            //userGet(owner);
+                            eventsList.add(events);
+                        }
+                        text2.setText("Upcoming events");
+                        Collections.sort(eventsList, new EventDateComparator());
+                        final ArrayList<Events> topEvents = new ArrayList<Events>();
+                        if (eventsList.size()>2) {
+                            for (int j = 0; j < 3; j++) {
+                                topEvents.add(eventsList.get(j));
+                            }
+                        }
+                        else {
+                            topEvents.addAll(eventsList);
+                        }
+                        Log.d(TAG, eventsList.toString());
+                        BindDictionary<Events> dictionary = new BindDictionary<>();
+                        dictionary.addStringField(R.id.titleTV, new StringExtractor<Events>() {
+                            @Override
+                            public String getStringValue(Events event, int position) {
+                                return event.getName();
+                            }
+                        });
+                        dictionary.addStringField(R.id.personTV, new StringExtractor<Events>() {
+                            @Override
+                            public String getStringValue(Events event, int position) {
+                                return event.getDescription();
+                            }
+                        });
+
+                        dictionary.addStringField(R.id.dateTV, new StringExtractor<Events>() {
+                            @Override
+                            public String getStringValue(Events event, int position) {
+                                return event.getEventDate();
+                            }
+                        });
+
+                        dictionary.addStringField(R.id.idTV, new StringExtractor<Events>() {
+                            @Override
+                            public String getStringValue(Events event, int position) {
+                                return "ID: "+event.getId();
+                            }
+                        });
+                        FunDapter adapter = new FunDapter(HomeFragment.this.getActivity(),
+                                topEvents,
+                                R.layout.appointment_list_layout, dictionary);
+                        eventsLV.setAdapter(adapter);
+                    }
+                    else{
+                        text2.setText("No Scheduled events");
+                        Toast.makeText(HomeFragment.this.getActivity(),
+                                "No Scheduled events", Toast.LENGTH_SHORT).show();
+                        //eventsList.add("No scheduled appointments.");
+                    }
+                    //appointmentLV.setAdapter(adapter);
+                }
+                catch (JSONException e){
+                    System.out.print("unsuccessful");
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                if(error != null ){
+                    Log.e(TAG, error.getMessage());
+                    error.printStackTrace();
+                }
+            }
+        };
+        communicatorInterface.getEvents(callback);
     }
 
 
@@ -263,6 +367,14 @@ public class HomeFragment extends Fragment {
         public int compare(Appointment o1, Appointment o2)
         {
             return o1.getDate().compareTo(o2.getDate());
+        }
+    }
+
+    public class EventDateComparator implements Comparator<Events>
+    {
+        public int compare(Events o1, Events o2)
+        {
+            return o1.getEventDate().compareTo(o2.getEventDate());
         }
     }
 

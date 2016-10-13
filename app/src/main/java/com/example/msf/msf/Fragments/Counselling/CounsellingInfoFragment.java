@@ -1,5 +1,6 @@
 package com.example.msf.msf.Fragments.Counselling;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -20,6 +21,7 @@ import com.example.msf.msf.API.Deserializers.Users;
 import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.API.ServerEvent;
+import com.example.msf.msf.Fragments.Admissions.AdmissionFragment;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.WriteRead;
@@ -53,11 +55,12 @@ public class CounsellingInfoFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String id;
     TextView patient, sessionType, notes;
-    Button edit, delete;
+    Button edit;
     private final String TAG = this.getClass().getSimpleName();
     public static String FILENAME = "Patients";
     public static String SESSIONTYPEFILE = "SessionType";
     private Communicator communicator;
+    ProgressDialog prgDialog;
 
 
     private OnFragmentInteractionListener mListener;
@@ -99,10 +102,13 @@ public class CounsellingInfoFragment extends Fragment {
         sessionType = (TextView) view.findViewById(R.id.sessionTypeTv);
         notes = (TextView) view.findViewById(R.id.notesTV);
         edit = (Button) view.findViewById(R.id.editButton);
-        delete = (Button) view.findViewById(R.id.delBtn);
         communicator = new Communicator();
+        prgDialog = new ProgressDialog(CounsellingInfoFragment.this.getActivity());
+        // Set Progress Dialog Text
+        prgDialog.setMessage("Please wait...");
+        // Set Cancelable as False
+        prgDialog.setCancelable(false);
         sessionGet(Long.parseLong(id));
-        deleteListener();
         editListener();
         return view;
     }
@@ -147,6 +153,7 @@ public class CounsellingInfoFragment extends Fragment {
     }
 
     public void sessionGet(long sessionID){
+        prgDialog.show();
         Interface communicatorInterface;
         communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
         Callback<AddCounsellingResponse> callback = new Callback<AddCounsellingResponse>() {
@@ -173,6 +180,7 @@ public class CounsellingInfoFragment extends Fragment {
             }
         };
         communicatorInterface.getCounsellingSession(sessionID, callback);
+        prgDialog.hide();
     }
 
     public void patientGet(long patientID){
@@ -253,17 +261,7 @@ public class CounsellingInfoFragment extends Fragment {
         }
     }
 
-    public void deleteListener() {
-        delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //prgDialog.show();
-                communicator.counsellingDelete(Long.parseLong(id));
 
-            }
-        });
-
-    }
 
     public void editListener() {
 

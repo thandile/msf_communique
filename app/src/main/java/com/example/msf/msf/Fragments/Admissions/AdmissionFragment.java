@@ -1,5 +1,6 @@
 package com.example.msf.msf.Fragments.Admissions;
 
+import android.app.ProgressDialog;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -47,6 +48,7 @@ public class AdmissionFragment extends Fragment {
     FloatingActionButton fab;
     ListView admissionsLV;
     TextView text;
+    ProgressDialog prgDialog;
 
     public AdmissionFragment() {
         // Required empty public constructor
@@ -62,6 +64,11 @@ public class AdmissionFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_admission, container, false);
         admissionsLV = (ListView) view.findViewById(R.id.admissionLV);
         text = (TextView) view.findViewById(R.id.defaultText);
+        prgDialog = new ProgressDialog(AdmissionFragment.this.getActivity());
+        // Set Progress Dialog Text
+        prgDialog.setMessage("Please wait...");
+        // Set Cancelable as False
+        prgDialog.setCancelable(false);
         if (AppStatus.getInstance(AdmissionFragment.this.getActivity()).isOnline()) {
             admissionsGet();
         }
@@ -106,6 +113,7 @@ public class AdmissionFragment extends Fragment {
     }
 
     public void admissionsGet(){
+        prgDialog.show();
         final ArrayList<Admission> admissionList = new ArrayList<Admission>();
         Interface communicatorInterface;
         communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
@@ -189,6 +197,7 @@ public class AdmissionFragment extends Fragment {
             }
         };
         communicatorInterface.getAdmissions(callback);
+        prgDialog.hide();
     }
 
 

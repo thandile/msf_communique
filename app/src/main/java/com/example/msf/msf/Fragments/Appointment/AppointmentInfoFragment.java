@@ -157,6 +157,7 @@ public class AppointmentInfoFragment extends Fragment {
 
 
     public void appointmentGet(long appointmentID){
+        prgDialog.show();
         //final List<String> patientList = new ArrayList<String>();
         Interface communicatorInterface = Auth.getInterface(LoginActivity.username,
                 LoginActivity.password);
@@ -192,6 +193,7 @@ public class AppointmentInfoFragment extends Fragment {
             }
         };
         communicatorInterface.getAppointment(appointmentID,callback);
+        prgDialog.hide();
     }
 
 

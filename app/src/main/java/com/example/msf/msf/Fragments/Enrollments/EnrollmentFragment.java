@@ -1,5 +1,6 @@
 package com.example.msf.msf.Fragments.Enrollments;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -47,6 +48,8 @@ public class EnrollmentFragment extends Fragment {
     public static String PATIENTINFOFILE = "Patients";
     public static String PILOTINFOFILE = "Pilots";
     TextView text;
+    ProgressDialog prgDialog;
+
 
     public EnrollmentFragment() {
 
@@ -61,6 +64,11 @@ public class EnrollmentFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_enrollment, container, false);
         enrollmentLV = (ListView) view.findViewById(R.id.enrollmentLV);
         text = (TextView) view.findViewById(R.id.defaultText);
+        prgDialog = new ProgressDialog(EnrollmentFragment.this.getActivity());
+        // Set Progress Dialog Text
+        prgDialog.setMessage("Please wait...");
+        // Set Cancelable as False
+        prgDialog.setCancelable(false);
         if (AppStatus.getInstance(EnrollmentFragment.this.getActivity()).isOnline()) {
             enrollmentsGet();
         }
@@ -100,6 +108,7 @@ public class EnrollmentFragment extends Fragment {
 
 
     public void enrollmentsGet(){
+        prgDialog.show();
         final ArrayList<Enrollment> enrollmentList = new ArrayList<Enrollment>();
         Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
         Callback<List<Enrollment>> callback = new Callback<List<Enrollment>>() {
@@ -180,6 +189,7 @@ public class EnrollmentFragment extends Fragment {
             }
         };
         communicatorInterface.getEnrollments(callback);
+        prgDialog.hide();
     }
 
     public String getPatientInfo(Long pid) {

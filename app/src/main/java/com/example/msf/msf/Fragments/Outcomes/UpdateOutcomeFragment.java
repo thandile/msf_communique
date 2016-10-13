@@ -50,7 +50,7 @@ public class UpdateOutcomeFragment extends Fragment implements Validator.Validat
     ProgressDialog prgDialog;
     @NotEmpty
     AutoCompleteTextView patientNames;
-    @Select(message = "Select a medical record type")
+    @Select(message = "Select an outcome type")
     Spinner outcomeType;
     EditText outcomeDateET;
     EditText notesET;

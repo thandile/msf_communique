@@ -88,17 +88,6 @@
                 android:textSize="15dp"
                 android:clickable="true" />
 
-            <Button android:id="@+id/delBtn"
-                android:text="Delete"
-                android:layout_marginTop="20dip"
-                android:background="#ff6347"
-                android:textColor="#fff"
-                android:textSize="15dp"
-                android:layout_height="wrap_content"
-                android:layout_width="120dp"
-                android:clickable="true"
-                android:layout_margin="50dp"
-                android:layout_marginLeft="50dp" />
         </LinearLayout>
 
     </LinearLayout>

@@ -52,7 +52,6 @@ public class AdmissionInfoFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
 
-    // TODO: Rename and change types of parameters
     private String id;
     private final String TAG = this.getClass().getSimpleName();
     Button edit, delete;
@@ -120,6 +119,7 @@ public class AdmissionInfoFragment extends Fragment {
     }
 
     public void admissionGet(long admissionID){
+        prgDialog.show();
         //final List<String> patientList = new ArrayList<String>();
         Interface communicatorInterface = Auth.getInterface(LoginActivity.username,
                 LoginActivity.password);
@@ -154,6 +154,7 @@ public class AdmissionInfoFragment extends Fragment {
             }
         };
         communicatorInterface.getAdmission(admissionID,callback);
+        prgDialog.hide();
     }
 
     public String patientGet(String patientID){

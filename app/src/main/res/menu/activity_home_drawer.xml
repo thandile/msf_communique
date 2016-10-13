@@ -7,6 +7,10 @@
             android:icon="@drawable/home"
             android:title="Home" />
         <item
+            android:id="@+id/nav_notifications"
+            android:icon="@drawable/appointment_reminders"
+            android:title="Notifications" />
+        <item
             android:id="@+id/nav_patients"
             android:icon="@drawable/patient"
             android:title="Patients" />

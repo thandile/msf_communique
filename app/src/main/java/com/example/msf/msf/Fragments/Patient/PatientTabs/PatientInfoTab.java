@@ -39,7 +39,7 @@ public class PatientInfoTab extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private Communicator communicator;
-    Button delete, edit;
+    Button edit;
     TextView first_name, last_name, identifier, contact, contact2, contact3, dob, health_centre, address, sex, outcome, startDate;
     private final String TAG = this.getClass().getSimpleName();
     // Progress Dialog Object
@@ -102,11 +102,11 @@ public class PatientInfoTab extends Fragment {
         sex = (TextView) view.findViewById(R.id.sexTV);
         outcome = (TextView) view.findViewById(R.id.outcomeTV);
         startDate = (TextView) view.findViewById(R.id.start_dateTV);
-        delete = (Button) view.findViewById(R.id.delBtn);
+
         edit = (Button) view.findViewById(R.id.editBtn);
         communicator = new Communicator();
         getPatientInfo();
-        deleteListener();
+
         editListener();
         return view;
     }
@@ -188,15 +188,6 @@ public class PatientInfoTab extends Fragment {
     }
 
 
-    public void deleteListener() {
-        delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                prgDialog.show();
-                communicator.patientDelete(Long.parseLong(id));
-            }
-        });
-    }
 
     public void editListener() {
         edit.setOnClickListener(new View.OnClickListener() {

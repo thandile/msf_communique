@@ -2,7 +2,6 @@ package com.example.msf.msf.Fragments.AdverseEvents;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -17,7 +16,6 @@ import android.widget.Toast;
 import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.BusProvider;
 import com.example.msf.msf.API.Communicator;
-import com.example.msf.msf.API.Deserializers.Admission;
 import com.example.msf.msf.API.Deserializers.AdverseEvent;
 import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.Interface;
@@ -46,7 +44,7 @@ public class AdverseEventInfoFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String id;
     private final String TAG = this.getClass().getSimpleName();
-    Button edit, delete;
+    Button edit;
     TextView adverseEvent, patientName, eventDate, notes;
     private Communicator communicator;
     // Progress Dialog Object
@@ -92,15 +90,14 @@ public class AdverseEventInfoFragment extends Fragment {
         prgDialog.setMessage("Please wait...");
         // Set Cancelable as False
         prgDialog.setCancelable(false);
-        admissionGet(Long.parseLong(id));
+        adverseEventGet(Long.parseLong(id));
         edit = (Button) view.findViewById(R.id.editButton);
-        delete = (Button) view.findViewById(R.id.delBtn);
-        deleteListener();
         editListener();
         return view;
     }
 
-    public void admissionGet(long admissionID){
+    public void adverseEventGet(long admissionID){
+        prgDialog.show();
         //final List<String> patientList = new ArrayList<String>();
         Interface communicatorInterface = Auth.getInterface(LoginActivity.username,
                 LoginActivity.password);
@@ -135,6 +132,7 @@ public class AdverseEventInfoFragment extends Fragment {
             }
         };
         communicatorInterface.getAdverseEvent(admissionID,callback);
+        prgDialog.hide();
     }
 
     public String adverseEventGet(String eventID){
@@ -189,17 +187,7 @@ public class AdverseEventInfoFragment extends Fragment {
     }
 
 
-    public void deleteListener() {
-        delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                prgDialog.show();
-                Log.d(TAG, "regimen id: "+ id);
-                communicator.adverseEventDelete(Long.parseLong(id));
 
-            }
-        });
-    }
 
     public void editListener() {
 

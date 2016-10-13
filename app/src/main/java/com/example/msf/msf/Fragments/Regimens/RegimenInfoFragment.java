@@ -57,7 +57,7 @@ public class RegimenInfoFragment extends Fragment {
     private String id;
     TextView patientName, regimenStart, regimenEnd, drugs, notes;
     private final String TAG = this.getClass().getSimpleName();
-    Button edit, delete;
+    Button edit;
     private Communicator communicator;
     // Progress Dialog Object
     ProgressDialog prgDialog;
@@ -112,8 +112,6 @@ public class RegimenInfoFragment extends Fragment {
         onButtonPressed(id);
         regimenGet(Long.parseLong(id));
         edit = (Button) view.findViewById(R.id.editButton);
-        delete = (Button) view.findViewById(R.id.delBtn);
-        deleteListener();
         editListener();
         return view;
     }
@@ -232,17 +230,6 @@ public class RegimenInfoFragment extends Fragment {
         void onFragmentInteraction(String data);
     }
 
-    public void deleteListener() {
-        delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                prgDialog.show();
-                Log.d(TAG, "regimen id: "+ id);
-                communicator.regimenDelete(Long.parseLong(id));
-
-            }
-        });
-    }
 
     public void editListener() {
 

@@ -1,6 +1,7 @@
 package com.example.msf.msf.Fragments.AdverseEvents;
 
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -52,6 +53,7 @@ public class AdverseEventFragment extends Fragment {
     public static String ADVERSEINFOFILE = "AdverseEvents";
     ListView adverseEventLV;
     TextView text;
+    ProgressDialog prgDialog;
 
     public AdverseEventFragment() {
         // Required empty public constructor
@@ -64,6 +66,11 @@ public class AdverseEventFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_adverse_event, container, false);
         text = (TextView) view.findViewById(R.id.defaultText);
+        prgDialog = new ProgressDialog(AdverseEventFragment.this.getActivity());
+        // Set Progress Dialog Text
+        prgDialog.setMessage("Please wait...");
+        // Set Cancelable as False
+        prgDialog.setCancelable(false);
         adverseEventLV = (ListView) view.findViewById(R.id.adverseEventsLV);
         adverseEventLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -158,6 +165,7 @@ public class AdverseEventFragment extends Fragment {
 
 
     public void adverseEventsGet(){
+        prgDialog.show();
         final ArrayList<AdverseEvent> adverseEventArrayList = new ArrayList<AdverseEvent>();
         Interface communicatorInterface;
         communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
@@ -241,6 +249,7 @@ public class AdverseEventFragment extends Fragment {
             }
         };
         communicatorInterface.getAdverseEvents(callback);
+        prgDialog.hide();
     }
 
 

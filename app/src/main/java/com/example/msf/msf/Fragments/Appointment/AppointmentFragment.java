@@ -1,6 +1,7 @@
 package com.example.msf.msf.Fragments.Appointment;
 
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -24,6 +25,7 @@ import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.Deserializers.Appointment;
 import com.example.msf.msf.API.Deserializers.Users;
 import com.example.msf.msf.API.Interface;
+import com.example.msf.msf.Fragments.Admissions.AdmissionFragment;
 import com.example.msf.msf.Fragments.AdverseEvents.AdverseEventFragment;
 import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.LoginActivity;
@@ -60,6 +62,7 @@ public class AppointmentFragment extends Fragment {
     Date dateobj = new Date();
     RadioButton all, own;
     TextView text;
+    ProgressDialog prgDialog;
     public AppointmentFragment() {
         // Required empty public constructor
     }
@@ -71,12 +74,18 @@ public class AppointmentFragment extends Fragment {
         HomeActivity.navItemIndex = 2;
         View view  = inflater.inflate(R.layout.fragment_appointment, container, false);
         text = (TextView) view.findViewById(R.id.defaultText);
+        prgDialog = new ProgressDialog(AppointmentFragment.this.getActivity());
+        // Set Progress Dialog Text
+        prgDialog.setMessage("Please wait...");
+        // Set Cancelable as False
+        prgDialog.setCancelable(false);
         if (AppStatus.getInstance(AppointmentFragment.this.getActivity()).isOnline()) {
             appointmentsGet("all");
         }
         else {
             text.setText("You are currently offline, therefore upcoming appointments cannot be loaded");
         }
+
         all = (RadioButton) view.findViewById(R.id.allRadioButton);
         own = (RadioButton) view.findViewById(R.id.ownRadioButton);
         appointmentLV = (ListView) view.findViewById(R.id.appointmentLV);
@@ -132,6 +141,7 @@ public class AppointmentFragment extends Fragment {
     }
 
     public void appointmentsGet(final String app){
+        prgDialog.show();
         final ArrayList<Appointment> appointmentList = new ArrayList<Appointment>();
         Interface communicatorInterface;
         communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
@@ -239,6 +249,7 @@ public class AppointmentFragment extends Fragment {
             }
         };
         communicatorInterface.getAppointments(callback);
+        prgDialog.hide();
     }
 
 

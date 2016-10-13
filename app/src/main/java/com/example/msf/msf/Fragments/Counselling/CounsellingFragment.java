@@ -1,6 +1,7 @@
 package com.example.msf.msf.Fragments.Counselling;
 
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -51,6 +52,8 @@ public class CounsellingFragment extends Fragment {
     public static String PATIENTINFOFILE = "Patients";
     public static String SESSIONTYPEFILE = "SessionType";
     TextView text;
+    ProgressDialog prgDialog;
+
     public CounsellingFragment() {
         // Required empty public constructor
     }
@@ -63,6 +66,11 @@ public class CounsellingFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_counselling, container, false);
         counsellingLV = (ListView) view.findViewById(R.id.counsellingLV);
         text = (TextView) view.findViewById(R.id.defaultText);
+        prgDialog = new ProgressDialog(CounsellingFragment.this.getActivity());
+        // Set Progress Dialog Text
+        prgDialog.setMessage("Please wait...");
+        // Set Cancelable as False
+        prgDialog.setCancelable(false);
         if (AppStatus.getInstance(CounsellingFragment.this.getActivity()).isOnline()) {
             counsellingGet();
         }
@@ -100,10 +108,12 @@ public class CounsellingFragment extends Fragment {
 
             }
         });
+
         return view;
     }
 
     public void counsellingGet(){
+        prgDialog.show();
         final ArrayList<AddCounsellingResponse> counsellingList = new ArrayList<AddCounsellingResponse>();
         Interface communicatorInterface;
         communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
@@ -180,6 +190,7 @@ public class CounsellingFragment extends Fragment {
             }
         };
         communicatorInterface.getCounselling(callback);
+        prgDialog.hide();
     }
 
     public String getPatientInfo(Long pid) {

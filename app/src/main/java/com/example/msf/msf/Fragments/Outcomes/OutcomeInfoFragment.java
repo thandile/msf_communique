@@ -51,7 +51,7 @@ public class OutcomeInfoFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private final String TAG = this.getClass().getSimpleName();
     TextView patientTV, outcomeTypeTV, dateTV, notesTV;
-    Button edit, delete;
+    Button edit;
     private Communicator communicator;
     public static String PATIENTINFOFILE = "Patients";
     public static String OUTCOMEFILE = "Outcomes";
@@ -102,14 +102,12 @@ public class OutcomeInfoFragment extends Fragment {
         onButtonPressed(id);
 
         edit = (Button) view.findViewById(R.id.editButton);
-        delete = (Button) view.findViewById(R.id.delBtn);
         patientTV = (TextView) view.findViewById(R.id.patientNameTV);
         outcomeTypeTV = (TextView) view.findViewById(R.id.outcomeTV);
         dateTV = (TextView) view.findViewById(R.id.dateTV);
         notesTV = (TextView) view.findViewById(R.id.notesTV);
         outcomeGet(Long.parseLong(id));
         communicator = new Communicator();
-        deleteListener();
         editListener();
         return view;
     }
@@ -192,18 +190,6 @@ public class OutcomeInfoFragment extends Fragment {
         return recordType;
     }
 
-
-
-    public void deleteListener() {
-        delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                prgDialog.show();
-                communicator.outcomeDelete(Long.parseLong(id));
-            }
-        });
-
-    }
 
     public void editListener() {
 

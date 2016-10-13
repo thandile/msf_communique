@@ -63,7 +63,6 @@ public class UpdateEnrollmentFragment extends Fragment implements Validator.Vali
     ProgressDialog prgDialog;
     @Select(message = "Select a pilot")
     Spinner pilotPrograms;
-    @NotEmpty
     EditText comment;
     @NotEmpty
     EditText enrollment_date;

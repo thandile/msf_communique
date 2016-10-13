@@ -69,6 +69,7 @@
     <!-- Toolbar titles when navigation menu item is selected -->
     <string-array name="nav_item_activity_titles">
         <item>Home</item>
+        <item>Notifications</item>
         <item>Patients</item>
         <item>Appointments</item>
         <item>Counselling</item>

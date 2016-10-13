@@ -56,9 +56,7 @@ public class CreateRegimenFragment extends Fragment implements Validator.Validat
     AutoCompleteTextView patientNames;
     @NotEmpty
     EditText startDateET;
-    @NotEmpty
     EditText endDateET;
-    @NotEmpty
     EditText notesET;
     //create validator
     MultiSelectionSpinner drugsSpinner;

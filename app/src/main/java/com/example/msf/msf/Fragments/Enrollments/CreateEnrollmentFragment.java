@@ -61,7 +61,6 @@ public class CreateEnrollmentFragment extends Fragment implements Validator.Vali
     @NotEmpty
     AutoCompleteTextView patientNames;
     Validator validator;
-    @NotEmpty
     private EditText comment;
     @NotEmpty
     private EditText enrollment_date;

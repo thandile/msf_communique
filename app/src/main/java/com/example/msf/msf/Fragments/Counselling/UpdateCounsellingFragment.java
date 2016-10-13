@@ -54,7 +54,6 @@ public class UpdateCounsellingFragment extends Fragment implements Validator.Val
     ProgressDialog prgDialog;
     @NotEmpty
     AutoCompleteTextView patientNames;
-    @NotEmpty
     EditText notesET;
     @Select(message = "Select a session type")
     Spinner sessionType;
