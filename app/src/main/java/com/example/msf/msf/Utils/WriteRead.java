@@ -19,6 +19,21 @@ import static java.security.AccessController.getContext;
 public class WriteRead {
 
 
+    public static void createDir(String dirName, String fileName, String text, Context ctx){
+        if (fileExistance(fileName,ctx)){
+            //Log.d()
+        }
+        File mydir = ctx.getDir(dirName, Context.MODE_PRIVATE); //Creating an internal dir;
+        File fileWithinMyDir = new File(mydir, fileName); //Getting a file within the dir.
+        try {
+            FileOutputStream out = new FileOutputStream(fileWithinMyDir); //Use the stream as usual to write into the file.
+            out.write(text.getBytes());
+        }
+        catch (IOException e){
+            e.printStackTrace();
+        }
+
+    }
     private final String TAG = this.getClass().getSimpleName();
     public static void write(String fileName, String text, Context ctx) {
         //String PATIENTFILE = "my_file";

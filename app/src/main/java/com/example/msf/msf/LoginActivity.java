@@ -23,6 +23,7 @@ import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.API.PatientsDeserialiser;
 import com.example.msf.msf.API.ServerEvent;
+import com.example.msf.msf.Fragments.Notfications.NotificationFragment;
 import com.example.msf.msf.Fragments.Outcomes.CreateOutcomeFragment;
 import com.squareup.otto.Subscribe;
 
@@ -34,7 +35,7 @@ import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity implements  NotificationFragment.OnFragmentInteractionListener{
     // Progress Dialog Object
     ProgressDialog prgDialog;
     // Error Msg TextView Object
@@ -53,12 +54,14 @@ public class LoginActivity extends AppCompatActivity {
     public static String Username = "usernameKey";
     public static String Password = "passwordKey";
     SharedPreferences sharedpreferences;
+    String menuFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
+        menuFragment = getIntent().getStringExtra("menuFragment");
+        Log.d(TAG,"menuFragment "+ menuFragment);
         // Find Error Msg Text View control by ID
         errorMsg = (TextView)findViewById(R.id.login_error);
         // Find Email Edit View control by ID
@@ -97,9 +100,11 @@ public class LoginActivity extends AppCompatActivity {
                     if (pass.equals(password) && uname.equals(username)){
                       //  Toast.makeText(LoginActivity.this, "correct",
                         //        Toast.LENGTH_SHORT).show();
-                        navigateToHomeActivity();
+
+                            navigateToHomeActivity();
                     }
                     else {
+                        prgDialog.hide();
                         Toast.makeText(LoginActivity.this, "Incorrect username/password.",
                                 Toast.LENGTH_SHORT).show();
                     }
@@ -150,6 +155,9 @@ public class LoginActivity extends AppCompatActivity {
     public void navigateToHomeActivity(){
         Intent homeIntent = new Intent(getApplicationContext(),HomeActivity.class);
         homeIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        if (menuFragment != null){
+            homeIntent.putExtra("menuFragment", menuFragment);
+        }
         startActivity(homeIntent);
     }
 
@@ -200,6 +208,10 @@ public class LoginActivity extends AppCompatActivity {
         prgDialog.hide();
         Toast.makeText(LoginActivity.this, "error   " +
                 errorEvent.getErrorMsg(), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onFragmentInteraction(String data) {
     }
 
 }

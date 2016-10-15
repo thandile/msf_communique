@@ -171,12 +171,12 @@ public class UpdateEventFragment extends Fragment implements Validator.Validatio
 
         String notes = description.getText().toString();
         String date = dateET.getText().toString();
-        String appointmentType = eventTitle.getText().toString();
+        String eventTitle = this.eventTitle.getText().toString();
         String endTime = endTimeET.getText().toString();
         String startTime = startTimeET.getText().toString();
         // Log.d(TAG,  counsellingSession +" "+patientId);
         if (AppStatus.getInstance(UpdateEventFragment.this.getActivity()).isOnline()) {
-            communicator.eventUpdate(Long.parseLong(input[5]),appointmentType, notes, date, startTime,
+            communicator.eventUpdate(Long.parseLong(input[5]),eventTitle, notes, date, startTime,
                     endTime);
         }
         else {
@@ -184,7 +184,8 @@ public class UpdateEventFragment extends Fragment implements Validator.Validatio
             Toast.makeText(UpdateEventFragment.this.getActivity(),"You are not online." +
                             " Data will be uploaded when you have an internet connection",
                     Toast.LENGTH_LONG).show();
-            WriteRead.write("eventUpdate",appointmentType+"!"+notes+"!"+ date+"!"+ startTime+"!"+endTime+"!"+Long.parseLong(input[5]),
+            WriteRead.createDir("eventUpdate",startTime+date+eventTitle+"eventUpdate",
+                    eventTitle+"!"+notes+"!"+ date+"!"+ startTime+"!"+endTime+"!"+Long.parseLong(input[5]),
                     UpdateEventFragment.this.getActivity() );
             Log.v("Home", "############################You are not online!!!!");
             FragmentManager manager = getActivity().getSupportFragmentManager();

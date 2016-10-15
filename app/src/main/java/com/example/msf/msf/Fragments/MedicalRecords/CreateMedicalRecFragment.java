@@ -203,7 +203,8 @@ public class CreateMedicalRecFragment extends Fragment implements ValidationList
             Toast.makeText(CreateMedicalRecFragment.this.getActivity(),"You are not online." +
                             " Data will be uploaded when you have an internet connection",
                     Toast.LENGTH_LONG).show();
-            WriteRead.write("reportPost",titleText+"!"+ record[0]+"!"+ patientId[0]+"!"+ notes,
+            WriteRead.createDir("reportPost",patientId[0]+"reportPost", titleText+"!"+
+                    record[0]+"!"+ patientId[0]+"!"+ notes,
                     CreateMedicalRecFragment.this.getActivity() );
             Log.v("Home", "############################You are not online!!!!");
             FragmentManager manager = getActivity().getSupportFragmentManager();

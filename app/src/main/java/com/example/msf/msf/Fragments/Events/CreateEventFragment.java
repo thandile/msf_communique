@@ -128,12 +128,12 @@ public class CreateEventFragment extends Fragment implements Validator.Validatio
 
         String notes = description.getText().toString();
         String date = dateET.getText().toString();
-        String appointmentType = eventTitle.getText().toString();
+        String eventTitle = this.eventTitle.getText().toString();
         String endTime = endTimeET.getText().toString();
         String startTime = startTimeET.getText().toString();
         // Log.d(TAG,  counsellingSession +" "+patientId);
         if (AppStatus.getInstance(CreateEventFragment.this.getActivity()).isOnline()) {
-            communicator.eventPost(appointmentType, notes, date, startTime,
+            communicator.eventPost(eventTitle, notes, date, startTime,
                     endTime);
         }
         else {
@@ -141,7 +141,7 @@ public class CreateEventFragment extends Fragment implements Validator.Validatio
             Toast.makeText(CreateEventFragment.this.getActivity(),"You are not online." +
                             " Data will be uploaded when you have an internet connection",
                     Toast.LENGTH_LONG).show();
-            WriteRead.write("eventPost",appointmentType+"!"+notes+"!"+ date+"!"+ startTime+"!"+endTime,
+            WriteRead.createDir("eventPost", startTime+date+eventTitle+"eventPost",eventTitle+"!"+notes+"!"+ date+"!"+ startTime+"!"+endTime,
                     CreateEventFragment.this.getActivity() );
             Log.v("Home", "############################You are not online!!!!");
             FragmentManager manager = getActivity().getSupportFragmentManager();

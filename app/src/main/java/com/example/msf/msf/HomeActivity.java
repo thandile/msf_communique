@@ -62,6 +62,7 @@ import com.example.msf.msf.Fragments.MedicalRecords.MedicalInfoFragment;
 import com.example.msf.msf.Fragments.MedicalRecords.MedicalRecordFragment;
 import com.example.msf.msf.Fragments.MedicalRecords.UpdateMedicalRecFragment;
 import com.example.msf.msf.Fragments.Notfications.NotificationFragment;
+import com.example.msf.msf.Fragments.Notfications.NotificationSettingsFragment;
 import com.example.msf.msf.Fragments.Outcomes.CreateOutcomeFragment;
 import com.example.msf.msf.Fragments.Outcomes.OutcomeFragment;
 import com.example.msf.msf.Fragments.Outcomes.OutcomeInfoFragment;
@@ -131,7 +132,8 @@ public class HomeActivity extends AppCompatActivity
         CreateOutcomeFragment.OnFragmentInteractionListener,
         OutcomeInfoFragment.OnFragmentInteractionListener,
         UpdateOutcomeFragment.OnFragmentInteractionListener,
-        OutcomeTab.OnFragmentInteractionListener{
+        OutcomeTab.OnFragmentInteractionListener,
+        NotificationFragment.OnFragmentInteractionListener{
 
     // flag to load home fragment when user presses back key
     private boolean shouldLoadHomeFragOnBackPress = false;
@@ -152,6 +154,7 @@ public class HomeActivity extends AppCompatActivity
     public static String MEDICALRECORDFILE = "MedicalRecords";
     public static String OUTCOMEFILE = "Outcomes";
     public static final String MyPREFERENCES = "MyLogin";
+    String menuFragment;
 
 
 
@@ -162,6 +165,8 @@ public class HomeActivity extends AppCompatActivity
         setContentView(R.layout.activity_home);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        menuFragment = getIntent().getStringExtra("menuFragment");
+        //Log.d(TAG,"menuFragment "+ menuFragment);
         communicator = new Communicator();
         FirebaseMessaging.getInstance().subscribeToTopic("test");
         //String token =
@@ -175,13 +180,19 @@ public class HomeActivity extends AppCompatActivity
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-        navigationView.getMenu().getItem(1).setActionView(R.layout.menu_dot);
-
-
-        if (savedInstanceState == null) {
+        if (menuFragment != null){
+            Log.d(TAG, "menuFragment "+  menuFragment);
+            navItemIndex = 1;
+            NotificationFragment notificationFragment = new NotificationFragment().newInstance(menuFragment);
+            FragmentManager manager = getSupportFragmentManager();
+            manager.beginTransaction().replace(R.id.rel_layout_for_frag,
+                    notificationFragment,
+                    notificationFragment.getTag())
+                    .addToBackStack(null)
+                    .commit();
+            setToolbarTitle();
+        }
+        else if (savedInstanceState == null) {
             navItemIndex = 0;
             HomeFragment home = new HomeFragment();
             FragmentManager manager = getSupportFragmentManager();
@@ -192,6 +203,10 @@ public class HomeActivity extends AppCompatActivity
                     .commit();
             setToolbarTitle();
         }
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+        navigationView.getMenu().getItem(1).setActionView(R.layout.menu_dot);
+
     }
 
 
@@ -232,8 +247,11 @@ public class HomeActivity extends AppCompatActivity
         // show menu only when home fragment is selected
 
         getMenuInflater().inflate(R.menu.refresh, menu);
-
+        if (navItemIndex == 1) {
+            getMenuInflater().inflate(R.menu.notification_settings, menu);
+        }
         getMenuInflater().inflate(R.menu.home, menu);
+
 
         return true;
     }
@@ -267,6 +285,15 @@ public class HomeActivity extends AppCompatActivity
         }
         if (id == R.id.menuRefresh){
             refresh();
+        }
+        if (id == R.id.menuSettings){
+            NotificationSettingsFragment notificationSettingsFragment = new NotificationSettingsFragment();
+            FragmentManager manager = getSupportFragmentManager();
+            manager.beginTransaction().replace(R.id.rel_layout_for_frag,
+                    notificationSettingsFragment,
+                    notificationSettingsFragment.getTag())
+                    .addToBackStack(null)
+                    .commit();
         }
 
         return super.onOptionsItemSelected(item);
@@ -498,20 +525,8 @@ public class HomeActivity extends AppCompatActivity
                     .commit();
             setToolbarTitle();
         }
-        else if (id == R.id.nav_patients) {
-            // Handle the camera action
-            navItemIndex = 1;
-            PatientFragment patientFragment = new PatientFragment();
-            FragmentManager manager = getSupportFragmentManager();
-            manager.beginTransaction().replace(R.id.rel_layout_for_frag,
-                    patientFragment,
-                    patientFragment.getTag())
-                    .addToBackStack(null)
-                    .commit();
-            setToolbarTitle();
-        }
         else if (id == R.id.nav_notifications){
-            navItemIndex = 2;
+            navItemIndex = 1;
             NotificationFragment notificationFragment = new NotificationFragment();
             FragmentManager manager = getSupportFragmentManager();
             manager.beginTransaction().replace(R.id.rel_layout_for_frag,
@@ -521,6 +536,19 @@ public class HomeActivity extends AppCompatActivity
                     .commit();
             setToolbarTitle();
         }
+        else if (id == R.id.nav_patients) {
+            // Handle the camera action
+            navItemIndex = 2;
+            PatientFragment patientFragment = new PatientFragment();
+            FragmentManager manager = getSupportFragmentManager();
+            manager.beginTransaction().replace(R.id.rel_layout_for_frag,
+                    patientFragment,
+                    patientFragment.getTag())
+                    .addToBackStack(null)
+                    .commit();
+            setToolbarTitle();
+        }
+
         else if (id == R.id.nav_gallery) {
             navItemIndex = 3;
             AppointmentFragment appointmentFragment = new AppointmentFragment();

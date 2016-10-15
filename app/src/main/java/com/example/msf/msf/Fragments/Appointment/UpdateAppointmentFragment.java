@@ -228,7 +228,7 @@ public class UpdateAppointmentFragment extends Fragment implements Validator.Val
             Toast.makeText(UpdateAppointmentFragment.this.getActivity(),"You are not online." +
                             " Data will be uploaded when you have an internet connection",
                     Toast.LENGTH_LONG).show();
-            WriteRead.write("appointmentUpdate",appointmentType+"!"+owner+"!"+ patient+"!"+ date+"!"+
+            WriteRead.createDir("appointmentUpdate", patient+"appointmentUpdate" ,appointmentType+"!"+owner+"!"+ patient+"!"+ date+"!"+
                             startTime+"!"+endTime+"!"+notes+"!"+mParam1[0],
                     UpdateAppointmentFragment.this.getActivity() );
             Log.v("Home", "############################You are not online!!!!");

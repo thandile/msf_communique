@@ -221,7 +221,8 @@ public class UpdateAdverseEventFragment extends Fragment implements Validator.Va
             Toast.makeText(UpdateAdverseEventFragment.this.getActivity(),"You are not online." +
                             " Data will be uploaded when you have an internet connection",
                     Toast.LENGTH_LONG).show();
-            WriteRead.write("adverseEventUpdate",patientId[0]+"!"+ adverse[0]+"!"+  date+"!"+  note+"!"+input[4],
+            WriteRead.createDir("adverseEventUpdate", patientId[0]+"adverseEventUpdate",
+                    patientId[0]+"!"+ adverse[0]+"!"+  date+"!"+  note+"!"+input[4],
                     UpdateAdverseEventFragment.this.getActivity() );
             Log.v("Home", "############################You are not online!!!!");
             FragmentManager manager = getActivity().getSupportFragmentManager();

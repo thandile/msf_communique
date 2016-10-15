@@ -266,7 +266,7 @@ public class CreateAppointmentFragment extends Fragment implements ValidationLis
             Toast.makeText(CreateAppointmentFragment.this.getActivity(),"You are not online." +
                             " Data will be uploaded when you have an internet connection",
                     Toast.LENGTH_LONG).show();
-            WriteRead.write("appointmentPost",patientId[0]+"!"+owner[0]+"!"+ notes+"!"+ date+"!"+ appointmentType+"!"+
+            WriteRead.createDir("appointmentPost",patientId[0]+"appointmentPost", patientId[0]+"!"+owner[0]+"!"+ notes+"!"+ date+"!"+ appointmentType+"!"+
                     endTime+"!"+startTime,
                     CreateAppointmentFragment.this.getActivity() );
             Log.v("Home", "############################You are not online!!!!");
