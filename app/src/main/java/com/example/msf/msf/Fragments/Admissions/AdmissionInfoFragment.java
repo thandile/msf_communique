@@ -112,8 +112,7 @@ public class AdmissionInfoFragment extends Fragment {
         onButtonPressed(id);
         admissionGet(Long.parseLong(id));
         edit = (Button) view.findViewById(R.id.editButton);
-        delete = (Button) view.findViewById(R.id.delBtn);
-        deleteListener();
+
         editListener();
         return view;
     }
@@ -182,17 +181,7 @@ public class AdmissionInfoFragment extends Fragment {
     }
 
 
-    public void deleteListener() {
-        delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                prgDialog.show();
-                Log.d(TAG, "admission id: "+ id);
-                communicator.admissionDelete(Long.parseLong(id));
 
-            }
-        });
-    }
 
     public void editListener() {
         edit.setOnClickListener(new View.OnClickListener() {

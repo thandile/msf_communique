@@ -49,7 +49,9 @@ public class LoginActivity extends AppCompatActivity implements  NotificationFra
     public static String password = null;
     Context context = this;
     private final String TAG = this.getClass().getSimpleName();
-    public static final String SERVER_URL =  "https://drtbdemo.herokuapp.com/api/";
+    public static final String SERVER_URL =  "https://agile-beach-31802.herokuapp.com/api/";
+    public static final String NOTIFICATION_URL =  "https://agile-beach-31802.herokuapp.com/";
+
     public static final String MyPREFERENCES = "MyLogin" ;
     public static String Username = "usernameKey";
     public static String Password = "passwordKey";

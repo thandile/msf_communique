@@ -166,7 +166,7 @@ public class EnrollmentInfoFragment extends Fragment {
                         JSONObject jsonobject = new JSONObject(resp);
                         int id = Integer.parseInt(jsonobject.getString("id"));
                         pilotGet(Long.parseLong(jsonobject.getString("program")));
-                        patientGet(jsonobject.getString("patient"));
+                        patientTV.setText(patientGet(jsonobject.getString("patient")));
                         dateTV.setText(jsonobject.getString("date_enrolled"));
                         commentTV.setText(jsonobject.getString("comment"));
                 }
@@ -190,7 +190,7 @@ public class EnrollmentInfoFragment extends Fragment {
     public String patientGet(String patientID){
         String patients = WriteRead.read(PATIENTINFOFILE, getContext());
         String fullName ="";
-        Log.d(TAG, "pName "+patients);
+
         try{
             JSONArray jsonarray = new JSONArray(patients);
 
@@ -202,6 +202,7 @@ public class EnrollmentInfoFragment extends Fragment {
                 if (patientID.equals(id)) {
                     fullName = id+": "+jsonobject.getString("other_names") + " " +
                             jsonobject.getString("last_name");
+                    Log.d(TAG, "pATIENTName "+fullName);
                 }
             }
 

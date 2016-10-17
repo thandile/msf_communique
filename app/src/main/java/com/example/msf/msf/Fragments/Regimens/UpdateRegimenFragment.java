@@ -163,11 +163,12 @@ public class UpdateRegimenFragment extends Fragment implements Validator.Validat
         prgDialog.show();
         String[] patientId = patientNames.getText().toString().split(":");
         List<String> drugs = drugsSpinner.getSelectedStrings();//.split(":");
-        Log.d(TAG, "selected drugs "+drugs.toString());
-        long[] drugIDs = new long[drugs.size()];
+
+        String[] drugIDs = new String[drugs.size()];
         List<String> drug = new ArrayList<String>();
         for (int i=0; i<drugs.size(); i++) {
-            drugIDs[i] = Long.parseLong(drugs.get(i).split(":")[0]);
+            drugIDs[i] = drugs.get(i).split(":")[0];
+            Log.d(TAG, "selected drugs "+(drugs.get(i).split(":")[0]).getClass().getName());
         }
 
         for (int i=0; i<drugs.size(); i++) {
@@ -178,7 +179,8 @@ public class UpdateRegimenFragment extends Fragment implements Validator.Validat
         String endDate = endDateET.getText().toString();
         Log.d(TAG,  "regimen" +" "+drugIDs);
         if (AppStatus.getInstance(UpdateRegimenFragment.this.getActivity()).isOnline()) {
-            communicator.regimenUpdate(Long.parseLong(input[5]), patientId[0], notes, drugIDs, startdate,
+            communicator.regimenDelete(Long.parseLong(input[5]));
+            communicator.regimenPost(patientId[0], notes, drugIDs, startdate,
                     endDate);//, counsellingSession, notes);
         }
         else {

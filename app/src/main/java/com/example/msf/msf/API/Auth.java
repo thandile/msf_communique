@@ -35,4 +35,27 @@ public class Auth {
         Interface communicatorInterface = adapter.create(Interface.class);
         return communicatorInterface;
     }
+
+    public static Interface getNotificationInterface(String username, String password) {
+        String credentials = username+":"+password;
+        RestAdapter.Builder builder = new RestAdapter.Builder()
+                .setEndpoint(LoginActivity.NOTIFICATION_URL)
+                .setLogLevel(RestAdapter.LogLevel.FULL)
+                .setClient(new OkClient(new OkHttpClient()));
+
+        // create Base64 encode string
+        final String basic =
+                "Basic " + Base64.encodeToString(credentials.getBytes(), Base64.NO_WRAP);
+
+        builder.setRequestInterceptor(new RequestInterceptor() {
+            @Override
+            public void intercept(RequestInterceptor.RequestFacade request) {
+                request.addHeader("Authorization", basic);
+                request.addHeader("Accept", "application/json");
+            }
+        });
+        RestAdapter adapter = builder.build();
+        Interface communicatorInterface = adapter.create(Interface.class);
+        return communicatorInterface;
+    }
 }

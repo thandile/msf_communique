@@ -71,7 +71,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      * @param messageBody FCM message body received.
      */
     private void sendNotification( String messageBody) {
-        Intent intent = new Intent(this, LoginActivity.class);
+
+        Intent intent = new Intent(this, HomeActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtra("menuFragment",""+ messageBody);
         TaskStackBuilder taskStackBuilder = TaskStackBuilder.create(getApplicationContext());
@@ -82,8 +83,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.ic_launcher)
-                .setContentTitle("FCM Data message")
-                .setContentText(""+messageBody)
+                .setContentTitle("MSF Communique")
+                .setContentText(""+messageBody.split("=")[1].replace("}", ""))
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
                 .setContentIntent(pendingIntent);

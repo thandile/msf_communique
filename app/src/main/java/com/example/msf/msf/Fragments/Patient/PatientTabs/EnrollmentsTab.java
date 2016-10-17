@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.amigold.fundapter.BindDictionary;
 import com.amigold.fundapter.FunDapter;
@@ -46,7 +45,7 @@ public class EnrollmentsTab extends Fragment {
     private String id;
     private static final String ARG_PARAM1 = "param1";
     private PatientInfoTab.OnFragmentInteractionListener mListener;
-    public static String FILENAME = "Patients";
+    public static String PATIENTFILE = "Patients";
     public static String PILOTINFOFILE = "Pilots";
     TextView text;
     private final String TAG = this.getClass().getSimpleName();
@@ -137,13 +136,35 @@ public class EnrollmentsTab extends Fragment {
         mListener = null;
     }
 
+    public String getPatientInfo(Long pid) {
+        String patients = WriteRead.read(PATIENTFILE, getContext());
+        String full_name = "";
+        try {
+            JSONArray jsonarray = new JSONArray(patients);
+            for (int i = 0; i < jsonarray.length(); i++) {
+                JSONObject jsonobject = jsonarray.getJSONObject(i);
+                Log.d(TAG, "ID: " + jsonobject.getString("id"));
+                if (jsonobject.getString("id").equals(""+pid)) {
+                    //String id = jsonobject.getString("id");
+                    final String first_name = jsonobject.getString("other_names");
+                    String last_name = jsonobject.getString("last_name");
+                    full_name = first_name + " " + last_name;
+                    break;
+                }
+            }
+        } catch (JSONException e) {
+            System.out.print("unsuccessful");
+        }
+        return full_name;
+    }
+
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(String data);
     }
 
     public long[] getPatientInfo(){
-        String patients = WriteRead.read(FILENAME, getContext());
+        String patients = WriteRead.read(PATIENTFILE, getContext());
         long[] enrollments = {};
         String enrolls = "";
         try{
@@ -202,7 +223,7 @@ public class EnrollmentsTab extends Fragment {
                                     program = loadPilots(Long.parseLong(jsonobject.getString("program")));
                                     Log.d(TAG, "read from storage");
                                     //Log.d(TAG, "program " + program);
-                                    String patient = "" + id; //getPatientInfo(Long.parseLong(jsonobject.getString("patient")));
+                                    String patient = getPatientInfo(Long.parseLong(jsonobject.getString("patient")));
                                     //Log.d(TAG, "patient " + patient);
                                     String date = jsonobject.getString("date_enrolled");
                                     String comment = jsonobject.getString("comment");

@@ -26,7 +26,7 @@ public class UpdateReceiver extends BroadcastReceiver {
         NetworkInfo activeNetInfo = connectivityManager.getActiveNetworkInfo();
         boolean isConnected = activeNetInfo != null && activeNetInfo.isConnectedOrConnecting();
         if (isConnected) {
-            OfflineUploads.regimen(context);
+            /**OfflineUploads.regimen(context);
             OfflineUploads.admission(context);
             OfflineUploads.appointment(context);
             OfflineUploads.enrollment(context);
@@ -43,7 +43,7 @@ public class UpdateReceiver extends BroadcastReceiver {
             OfflineUploads.counsellingUpdate(context);
             OfflineUploads.eventUpdate(context);
             OfflineUploads.adverseEventUpdate(context);
-            OfflineUploads.enrollmentUpdate(context);
+            OfflineUploads.enrollmentUpdate(context);**/
             Log.i("NET", "connected" + isConnected);
         }
         else  Log.i("NET", "not connected " +isConnected);

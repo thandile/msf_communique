@@ -24,6 +24,35 @@ public class ServerEvent {
     private EmergencyContact EmergencyContact;
     private Outcome Outcome;
 
+    public ServerEvent(com.example.msf.msf.API.Deserializers.NotificationRegistration notificationRegistration) {
+        NotificationRegistration = notificationRegistration;
+    }
+
+    private Notifications Notifications;
+
+    public com.example.msf.msf.API.Deserializers.NotificationRegistration getNotificationRegistration() {
+        return NotificationRegistration;
+    }
+
+    public void setNotificationRegistration(com.example.msf.msf.API.Deserializers.NotificationRegistration notificationRegistration) {
+        NotificationRegistration = notificationRegistration;
+    }
+
+    private NotificationRegistration NotificationRegistration;
+
+
+    /*************/
+    public ServerEvent(Notifications notifications) {
+        Notifications = notifications;
+    }
+
+    public Notifications getNotifications() {
+        return Notifications;
+    }
+
+    public void setNotifications(Notifications notifications) {
+        Notifications = notifications;
+    }
 
     /*************/
     public ServerEvent(Outcome outcome) {

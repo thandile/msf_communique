@@ -61,6 +61,7 @@ public class CreateAppointmentFragment extends Fragment implements ValidationLis
     EditText dateET;
     @NotEmpty
     EditText startTimeET;
+    @NotEmpty
     EditText endTimeET;
     public static String USERINFOFILE = "Users";
     private final String TAG = this.getClass().getSimpleName();

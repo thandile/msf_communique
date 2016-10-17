@@ -20,10 +20,7 @@ import com.amigold.fundapter.FunDapter;
 import com.amigold.fundapter.extractors.StringExtractor;
 import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.Deserializers.AdverseEvent;
-import com.example.msf.msf.API.Deserializers.Appointment;
 import com.example.msf.msf.API.Interface;
-import com.example.msf.msf.Fragments.Admissions.AdmissionFragment;
-import com.example.msf.msf.Fragments.Appointment.AppointmentFragment;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.AppStatus;
@@ -33,7 +30,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -116,18 +112,19 @@ public class AdverseEventFragment extends Fragment {
     }
 
 
-    public String getPatientInfo(Long eventID) {
+    public String eventTypeGet(Long eventID) {
         String events = WriteRead.read(ADVERSEINFOFILE, getContext());
         String eventType = "";
         try {
             JSONArray jsonarray = new JSONArray(events);
             for (int i = 0; i < jsonarray.length(); i++) {
                 JSONObject jsonobject = jsonarray.getJSONObject(i);
-                Log.d(TAG, "ID: " + jsonobject.getString("id"));
+
                 if (jsonobject.getString("id").equals(""+eventID)) {
                     //String id = jsonobject.getString("id");
                     final String name = jsonobject.getString("name");
                     eventType = name;
+                    Log.d(TAG, "ID: " + jsonobject.getString("id"));
                     break;
                 }
             }
@@ -137,7 +134,7 @@ public class AdverseEventFragment extends Fragment {
         return eventType;
     }
 
-    public String eventTypeGet(String eventID){
+    public String patientsGet(String patientID){
         String patients = WriteRead.read(PATIENTINFOFILE, getContext());
         String fullName ="";
         Log.d(TAG, "pName "+patients);
@@ -149,7 +146,7 @@ public class AdverseEventFragment extends Fragment {
                 JSONObject jsonobject = jsonarray.getJSONObject(i);
                 String id = jsonobject.getString("id");
 
-                if (eventID.equals(id)) {
+                if (patientID.equals(id)) {
                     fullName = jsonobject.getString("other_names") + " " +
                             jsonobject.getString("last_name");
                 }
@@ -180,12 +177,12 @@ public class AdverseEventFragment extends Fragment {
                             JSONObject jsonobject = jsonarray.getJSONObject(i);
                             int id = Integer.parseInt(jsonobject.getString("id"));
                             String date = jsonobject.getString("event_date");
-                            String patient = getPatientInfo(Long.parseLong(jsonobject.getString("patient")));
-                            String adverseEvent = eventTypeGet(jsonobject.getString("adverse_event_type"));
+                            String patient = patientsGet(jsonobject.getString("patient"));
+                            String adverseEvent = eventTypeGet(Long.parseLong(jsonobject.getString("adverse_event_type")));
 
                             String notes = jsonobject.getString("notes");
 
-                            AdverseEvent appointment = new AdverseEvent(id, adverseEvent, patient, date,
+                            AdverseEvent appointment = new AdverseEvent(id, patient,adverseEvent, date,
                                     notes);
                             //userGet(adverseEvent);
                             adverseEventArrayList.add(appointment);

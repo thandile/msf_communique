@@ -129,7 +129,6 @@ public class CreateRegimenFragment extends Fragment implements Validator.Validat
         for (int i=0; i<drugs.size(); i++) {
             drugIDs[i] = drugs.get(i).split(":")[0];
         }
-
         for (int i=0; i<drugs.size(); i++) {
             drug.add(drugs.get(i).split(":")[0]);
         }

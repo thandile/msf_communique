@@ -45,10 +45,5 @@
             android:layout_weight="1" />
     </LinearLayout>
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/btnFloatingAction"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|right"
-        android:src="@android:drawable/ic_input_add" />
+
 </FrameLayout>

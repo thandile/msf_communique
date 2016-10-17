@@ -14,6 +14,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -34,6 +35,7 @@ public class Communicator {
 
     public void registrationPost(String regID){
         String type = "android";
+        String name = LoginActivity.username;
         Callback<Events> callback = new Callback<Events>() {
 
             @Override
@@ -55,8 +57,33 @@ public class Communicator {
                 BusProvider.getInstance().post(produceErrorEvent(-200,error.getMessage()));
             }
         };
-        communicatorInterface.postRegistration(regID, type, callback);
+        communicatorInterface.postRegistration(regID, type, name, callback);
     }
+
+    public void notificationRegPost(String service, String user){
+        Callback<NotificationRegistration> callback = new Callback<NotificationRegistration>() {
+            @Override
+            public void success(NotificationRegistration serverResponse, Response response2) {
+                if(serverResponse.getResponseCode() == 0){
+                    BusProvider.getInstance().post(produceNotificationRegServerResponse(serverResponse));
+                }else{
+                    BusProvider.getInstance().post(produceErrorEvent(serverResponse.getResponseCode(),
+                            serverResponse.getMessage()));
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                if(error != null ){
+                    Log.e(TAG, error.getMessage());
+                    error.printStackTrace();
+                }
+                BusProvider.getInstance().post(produceErrorEvent(-200,error.getMessage()));
+            }
+        };
+        communicatorInterface.postNotificationReg(service, user, callback);
+    }
+
 
 
     public void patientPost(String firstName, String lastName, String facility, String dob, String sex){
@@ -459,6 +486,32 @@ public class Communicator {
         communicatorInterface.updateMedicalReport(reportID, title, reportType, patient, notes, callback);
     }
 
+    public void notificationUpdate(long notificationID, String recipient, String verb, String actor){
+        String unread = "false";
+        Callback<Notifications> callback = new Callback<Notifications>() {
+
+            @Override
+            public void success(Notifications serverResponse, Response response2) {
+                if(serverResponse.getResponseCode() == 0){
+                    BusProvider.getInstance().post(produceNotificationServerEvent(serverResponse));
+                }else{
+                    BusProvider.getInstance().post(produceErrorEvent(serverResponse.getResponseCode(),
+                            serverResponse.getMessage()));
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                if(error != null ){
+                    Log.e(TAG, error.getMessage());
+                    error.printStackTrace();
+                }
+                BusProvider.getInstance().post(produceErrorEvent(-200,error.getMessage()));
+            }
+        };
+        communicatorInterface.updateNotification(notificationID, recipient, verb, unread, actor, callback);
+    }
+
 
     public void eventUpdate(long eventID, String name, String description, String date, String startTime, String endTime){
         Callback<Events> callback = new Callback<Events>() {
@@ -723,10 +776,6 @@ public class Communicator {
             public void success(Enrollment serverResponse, Response response2) {
                 //if(serverResponse.getResponseCode() == 0){
                 BusProvider.getInstance().post(produceEnrollmentServerEvent(serverResponse));
-                // }else{
-                //  BusProvider.getInstance().post(produceErrorEvent(serverResponse.getResponseCode(),
-                // serverResponse.getMessage()));
-                // }**/
                 Log.d(TAG,"Success, enrollment deleted "+ enrollmentID);
             }
 
@@ -852,10 +901,6 @@ public class Communicator {
             public void success(Events serverResponse, Response response2) {
                // if(serverResponse.getResponseCode() == 0){
                     BusProvider.getInstance().post(produceEventServerResponse(serverResponse));
-                /**}else{
-                    BusProvider.getInstance().post(produceErrorEvent(serverResponse.getResponseCode(),
-                            serverResponse.getMessage()));
-                }**/
             }
 
             @Override
@@ -914,16 +959,16 @@ public class Communicator {
         communicatorInterface.deleteAdverseEvent(id, callback);
     }
 
-    public void emergencyContactDelete(long id){
-        Callback<EmergencyContact> callback = new Callback<EmergencyContact>() {
+    public void notificationRegDelete(long id){
+        Callback<NotificationRegistration> callback = new Callback<NotificationRegistration>() {
             @Override
-            public void success(EmergencyContact serverResponse, Response response2) {
-                if(serverResponse.getResponseCode() == 0){
-                    BusProvider.getInstance().post(produceEmergencyContactServerResponse(serverResponse));
-                }else{
-                    BusProvider.getInstance().post(produceErrorEvent(serverResponse.getResponseCode(),
-                            serverResponse.getMessage()));
-                }
+            public void success(NotificationRegistration serverResponse, Response response2) {
+               // if(serverResponse.getResponseCode() == 0){
+                BusProvider.getInstance().post(produceNotificationRegServerResponse(serverResponse));
+                //}else{
+                  //  BusProvider.getInstance().post(produceErrorEvent(serverResponse.getResponseCode(),
+                     //       serverResponse.getMessage()));
+               // }
             }
 
             @Override
@@ -935,7 +980,7 @@ public class Communicator {
                 BusProvider.getInstance().post(produceErrorEvent(-200,error.getMessage()));
             }
         };
-        communicatorInterface.deleteEmergencyContact(id, callback);
+        communicatorInterface.deleteNotificationReg(id, callback);
     }
 
 
@@ -959,7 +1004,7 @@ public class Communicator {
         communicatorInterface.deleteRegimen(regimenID, callback);
     }
 
-    public void regimenUpdate(long regimenID, String  patient, String notes, long[] drugs, String dateStarted,
+    public void regimenUpdate(long regimenID, String  patient, String notes, String[] drugs, String dateStarted,
                               String dateEnded){
         Callback<Regimen> callback = new Callback<Regimen>() {
 
@@ -1013,6 +1058,11 @@ public class Communicator {
     }
 
     @Produce
+    public ServerEvent produceNotificationServerEvent(Notifications Notifications) {
+        return new ServerEvent(Notifications);
+    }
+
+    @Produce
     public ServerEvent produceAppointmentServerEvent(Appointment Appointment) {
         return new ServerEvent(Appointment);
     }
@@ -1051,6 +1101,11 @@ public class Communicator {
     @Produce
     public ServerEvent produceOutcomeServerResponse(Outcome Outcome){
         return new ServerEvent(Outcome);
+    }
+
+    @Produce
+    public ServerEvent produceNotificationRegServerResponse(NotificationRegistration NotificationRegistration){
+        return new ServerEvent(NotificationRegistration);
     }
 }
 

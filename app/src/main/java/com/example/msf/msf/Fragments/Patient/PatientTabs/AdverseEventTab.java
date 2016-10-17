@@ -1,7 +1,6 @@
 package com.example.msf.msf.Fragments.Patient.PatientTabs;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -13,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.amigold.fundapter.BindDictionary;
 import com.amigold.fundapter.FunDapter;
@@ -21,7 +19,6 @@ import com.amigold.fundapter.extractors.StringExtractor;
 import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.Deserializers.AdverseEvent;
 import com.example.msf.msf.API.Interface;
-import com.example.msf.msf.Fragments.AdverseEvents.AdverseEventFragment;
 import com.example.msf.msf.Fragments.AdverseEvents.AdverseEventInfoFragment;
 import com.example.msf.msf.Fragments.AdverseEvents.CreateAdverseEventFragment;
 import com.example.msf.msf.LoginActivity;
@@ -127,7 +124,7 @@ public class AdverseEventTab extends Fragment {
         return view;
     }
 
-    public String getPatientInfo(Long eventID) {
+    public String adverseType(Long eventID) {
         String events = WriteRead.read(ADVERSEINFOFILE, getContext());
         String eventType = "";
         try {
@@ -148,7 +145,7 @@ public class AdverseEventTab extends Fragment {
         return eventType;
     }
 
-    public String eventTypeGet(String eventID){
+    public String patientGet(String eventID){
         String patients = WriteRead.read(PATIENTINFOFILE, getContext());
         String fullName ="";
         Log.d(TAG, "pName "+patients);
@@ -192,12 +189,12 @@ public class AdverseEventTab extends Fragment {
                             if(jsonobject.getString("patient").equals(id)) {
                                 int id = Integer.parseInt(jsonobject.getString("id"));
                                 String date = jsonobject.getString("event_date");
-                                String patient = getPatientInfo(Long.parseLong(jsonobject.getString("patient")));
-                                String adverseEvent = eventTypeGet(jsonobject.getString("adverse_event_type"));
+                                String patient = patientGet(jsonobject.getString("patient"));
+                                String adverseEvent = adverseType(Long.parseLong(jsonobject.getString("adverse_event_type")));
 
                                 String notes = jsonobject.getString("notes");
 
-                                AdverseEvent appointment = new AdverseEvent(id, adverseEvent, patient, date,
+                                AdverseEvent appointment = new AdverseEvent(id, patient, adverseEvent, date,
                                         notes);
                                 //userGet(adverseEvent);
                                 adverseEventArrayList.add(appointment);

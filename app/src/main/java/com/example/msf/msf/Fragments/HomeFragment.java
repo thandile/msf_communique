@@ -54,7 +54,7 @@ import retrofit.mime.TypedByteArray;
  *
  */
 public class HomeFragment extends Fragment {
-    FloatingActionButton fab;
+    //FloatingActionButton fab;
     private final String TAG = this.getClass().getSimpleName();
     public static String PATIENTINFOFILE = "Patients";
     public static String USERINFOFILE = "Users";
@@ -103,7 +103,7 @@ public class HomeFragment extends Fragment {
         else {
             text.setText("You are currently offline, therefore your upcoming appointments cannot be loaded");
         }
-        fab = (FloatingActionButton) view.findViewById(R.id.btnFloatingAction);
+        /**fab = (FloatingActionButton) view.findViewById(R.id.btnFloatingAction);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -115,7 +115,7 @@ public class HomeFragment extends Fragment {
                         .addToBackStack(null)
                         .commit();
             }
-        });
+        });**/
         return view;
     }
 

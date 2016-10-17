@@ -66,6 +66,7 @@ public class UpdateAppointmentFragment extends Fragment implements Validator.Val
     EditText dateET;
     @NotEmpty
     EditText startTimeET;
+    @NotEmpty
     EditText endTimeET;
     String notes, appointmentType, date, startTime, endTime, patient, owner;
     @NotEmpty

@@ -48,16 +48,16 @@ public class OfflineUploads {
             String file = WriteRead.read("regimenUpdate", context);
             Log.i("NET", "file text " + file);
             String[] input = file.split("!");
-            long[] drugIDs = new long[input[2].length()];
+            String[] drugIDs = new String[input[2].length()];
             String drugsReplace = input[2].replace("[", "").replace("]", "");
             if (drugsReplace.length() > 1) {
                 String[] drugsSplit = input[2].replace("[", "").replace("]", "").split(", ");
                 for (int i = 0; i < drugsSplit.length; i++) {
-                    drugIDs[i] = Long.parseLong(drugsSplit[i].split(":")[0]);
+                    drugIDs[i] = drugsSplit[i].split(":")[0];
                 }
             } else {
                 Log.i("NET", "drugsReplace with 1 " + drugsReplace);
-                drugIDs[0] = Long.parseLong(drugsReplace);
+                drugIDs[0] = drugsReplace;
             }
             //Log.i("NET", drugIDs[0] + " " + drugIDs[1]);
             communicator.regimenUpdate(Long.parseLong(input[5]), input[0], input[1], drugIDs, input[3], input[4]);

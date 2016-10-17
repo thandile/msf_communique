@@ -12,6 +12,8 @@ import com.example.msf.msf.API.Deserializers.Appointment;
 import com.example.msf.msf.API.Deserializers.Events;
 import com.example.msf.msf.API.Deserializers.MedicalRecord;
 import com.example.msf.msf.API.Deserializers.MedicalRecordType;
+import com.example.msf.msf.API.Deserializers.NotificationRegistration;
+import com.example.msf.msf.API.Deserializers.Notifications;
 import com.example.msf.msf.API.Deserializers.Outcome;
 import com.example.msf.msf.API.Deserializers.OutcomeType;
 import com.example.msf.msf.API.Deserializers.Regimen;
@@ -38,6 +40,12 @@ public interface Interface {
 
     @GET("/programs/")
     void getPilots(Callback<List<PilotsDeserializer>> serverResponseCallback);
+
+    @GET("/notifications/")
+    void getNotifications(Callback<List<Notifications>> serverResponseCallback);
+
+    @GET("/notificationRegistration/")
+    void getNotificationReg(Callback<List<NotificationRegistration>> serverResponseCallback);
 
     @GET("/programs/{id}/")
     void getPilot(@Path("id") long pilotID,
@@ -152,6 +160,12 @@ public interface Interface {
             Callback<OutcomeType> serverResponseCallback);
 
     @FormUrlEncoded
+    @POST("/notificationRegistration/")
+    void postNotificationReg(@Field("service") String service,
+                             @Field("user") String user,
+            Callback<NotificationRegistration> serverResponseCallback);
+
+    @FormUrlEncoded
     @POST("/programs/")
     void postPilots(@Field("name") String program,
                     @Field("description") String description,
@@ -180,6 +194,7 @@ public interface Interface {
                   @Field("reference_health_centre") String facility,
                   @Field("sex") String sex,
                   Callback<Users> serverResponseCallback);
+
 
     @FormUrlEncoded
     @POST("/appointments/")
@@ -230,6 +245,7 @@ public interface Interface {
     @POST("/devices/")
     void postRegistration(@Field("registration_id") String regID,
                    @Field("type") String type,
+                          @Field("name") String name,
                    Callback<Events> serverResponseCallback);
 
     @FormUrlEncoded
@@ -267,10 +283,26 @@ public interface Interface {
     void updateRegimen(@Path("id") long regimenId,
                        @Part("patient") String patientId,
                        @Part("notes") String notes,
-                       @Part("drugs") long[] drugs,
+                       @Part("drugs") String[] drugs,
                        @Part("date_started") String startDate,
                        @Part("date_ended") String endDate,
                        Callback<Regimen> serverResponseCallback);
+
+    @Multipart
+    @PUT("/notifications/{id}/")
+    void updateNotification(@Path("id") long notificationID,
+                       @Part("recipient") String recipientID,
+                       @Part("verb") String verb,
+                       @Part("unread") String unread,
+                        @Part("actor_object_id") String actor,
+                       Callback<Notifications> serverResponseCallback);
+
+    @Multipart
+    @PUT("/notificationRegistration/{id}/")
+    void updateNotificationReg(@Path("id") long regID,
+            @Part("service") String service,
+                             @Part("user") String user,
+                             Callback<NotificationRegistration> serverResponseCallback);
 
     @Multipart
     @PUT("/outcome/{id}/")
@@ -390,6 +422,10 @@ public interface Interface {
     @DELETE("/patients/{id}/")
     void deletePatient(@Path("id") long patientID,
                        Callback<Users> callback);
+
+    @DELETE("/notificationRegistration/{id}/")
+    void deleteNotificationReg(@Path("id") long regID,
+            Callback<NotificationRegistration> serverResponseCallback);
 
     @DELETE("/appointments/{id}/")
     void deleteAppointment(@Path("id") long appointmentID,
