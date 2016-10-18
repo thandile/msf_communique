@@ -20,6 +20,8 @@ import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.ServerEvent;
 import com.example.msf.msf.Dialogs.DateDialog;
 import com.example.msf.msf.Dialogs.TimeDialog;
+import com.example.msf.msf.Fragments.Appointment.CreateAppointmentFragment;
+import com.example.msf.msf.Fragments.Appointment.UpdateAppointmentFragment;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.AppStatus;
 import com.example.msf.msf.Utils.WriteRead;
@@ -115,7 +117,15 @@ public class CreateEventFragment extends Fragment implements Validator.Validatio
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                validator.validate();
+                String endTime = endTimeET.getText().toString();
+                String startTime = startTimeET.getText().toString();
+                if (startTime.compareTo(endTime)<=0) {
+                    validator.validate();
+                }
+                else {
+                    Toast.makeText(CreateEventFragment.this.getActivity(),
+                            "The end time must be after start time", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }

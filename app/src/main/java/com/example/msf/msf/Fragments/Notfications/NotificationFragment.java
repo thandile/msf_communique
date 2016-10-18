@@ -8,9 +8,14 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -96,6 +101,9 @@ public class NotificationFragment extends Fragment {
     String ENROLLMENTS = "EN";
     String REGIMENS = "RE";
 
+    ArrayList<Notifications> notification_items = new ArrayList<Notifications>();
+    int count = 0;
+
     //TextView text;
     // TODO: Rename and change types of parameters
     private String messageBody;
@@ -142,7 +150,8 @@ public class NotificationFragment extends Fragment {
         notificationsLv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener(){
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                TextView idTV = (TextView) view.findViewById(R.id.idTV);
+               view.setSelected(true);
+                /**TextView idTV = (TextView) view.findViewById(R.id.idTV);
                 final String id = idTV.getText().toString().split(": ")[1];
                 TextView titleTV = (TextView) view.findViewById(R.id.titleTV);
                 String[] titleSplit = titleTV.getText().toString().split(" ");
@@ -158,11 +167,6 @@ public class NotificationFragment extends Fragment {
 
                         communicator.notificationUpdate(Long.parseLong(id), userID ,verb, actor);
                         Toast.makeText(NotificationFragment.this.getActivity(), "Marked as read", Toast.LENGTH_SHORT).show();
-                        /** Fragment currentFragment = getFragmentManager().findFragmentByTag(TAG);
-                         FragmentTransaction fragTransaction = getFragmentManager().beginTransaction();
-                         fragTransaction.detach(currentFragment);
-                         fragTransaction.attach(currentFragment);
-                         fragTransaction.commit();**/
                         NotificationFragment home = new NotificationFragment();
                         FragmentManager manager = getActivity().getSupportFragmentManager();
                         manager.beginTransaction().replace(R.id.rel_layout_for_frag,
@@ -174,7 +178,7 @@ public class NotificationFragment extends Fragment {
                 });
                 builder.setNegativeButton("No", null);
                 AlertDialog alertDialog = builder.create();
-                alertDialog.show();
+                alertDialog.show();**/
 
                 return true;
             }
@@ -411,10 +415,85 @@ public class NotificationFragment extends Fragment {
                                 return "ID: "+admission.getId();
                             }
                         });
-                        FunDapter adapter = new FunDapter(NotificationFragment.this.getActivity(),
+                        final FunDapter adapter = new FunDapter(NotificationFragment.this.getActivity(),
                                 notificationList,
                                 R.layout.appointment_list_layout, dictionary);
                         notificationsLv.setAdapter(adapter);
+                        notificationsLv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                                                                       @Override
+                                                                       public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                                                                           view.setSelected(true);
+                                                                           return true;
+                                                                       }
+                                                                   });
+                        notificationsLv.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+                        notificationsLv.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
+                            @Override
+                            public void onItemCheckedStateChanged(ActionMode mode, int position,
+                                                                  long id, boolean checked) {
+                                if (!notification_items.contains(notificationList.get(position))) {
+                                    count = count + 1;
+                                    mode.setTitle(count + " items selected");
+                                    notification_items.add(notificationList.get(position));
+                                }
+                            }
+
+                            @Override
+                            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                                MenuInflater inflater = mode.getMenuInflater();
+                                inflater.inflate(R.menu.context_menu, menu);
+                                return true;
+                            }
+
+                            @Override
+                            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                                return false;
+                            }
+
+                            @Override
+                            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                                switch (item.getItemId()) {
+                                    case R.id.mark_as_read:
+                                        AlertDialog.Builder builder = new AlertDialog.Builder(NotificationFragment.this.getActivity());
+                                        builder.setTitle("Mark as read");
+                                        builder.setMessage("Are you sure you want to mark these notifications as read?");
+                                        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                for (int i = 0; i < notification_items.size(); i ++) {
+                                                    communicator.notificationUpdate(
+                                                            Long.parseLong(notification_items.get(i).getId()),
+                                                            getUserID(LoginActivity.username),
+                                                            notification_items.get(i).getVerb(),
+                                                            notification_items.get(i).getActorID());
+                                                }
+                                                Toast.makeText(NotificationFragment.this.getActivity(), "Marked as read", Toast.LENGTH_SHORT).show();
+                                                NotificationFragment home = new NotificationFragment();
+                                                FragmentManager manager = getActivity().getSupportFragmentManager();
+                                                manager.beginTransaction().replace(R.id.rel_layout_for_frag,
+                                                        home,
+                                                        home.getTag())
+                                                        .addToBackStack(null)
+                                                        .commit();
+                                            }
+                                        });
+                                        builder.setNegativeButton("No", null);
+                                        AlertDialog alertDialog = builder.create();
+                                        alertDialog.show();
+                                        count = 0;
+                                        mode.finish();
+                                        return true;
+                                    default:
+                                        return false;
+                                }
+                            }
+
+                            @Override
+                            public void onDestroyActionMode(ActionMode mode) {
+                                count = 0;
+                                mode.finish();
+                            }
+                        });
                     }
                 else{
 

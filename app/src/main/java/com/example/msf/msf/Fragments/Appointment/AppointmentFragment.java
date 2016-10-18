@@ -309,5 +309,4 @@ public class AppointmentFragment extends Fragment {
             return o1.getDate().compareTo(o2.getDate());
         }
     }
-
 }

@@ -13,6 +13,8 @@ import com.example.msf.msf.Fragments.Outcomes.CreateOutcomeFragment;
 import com.example.msf.msf.Utils.WriteRead;
 import com.squareup.otto.Subscribe;
 
+import java.io.File;
+
 /**
  * Created by Thandile on 2016/10/09.
  */
@@ -93,6 +95,14 @@ public class OfflineUploads {
 
     public static void appointment(Context context) {
         Communicator communicator = new Communicator();
+        File mydir = context.getDir("app_appointmentPost", Context.MODE_PRIVATE);
+        String[] filesForUpload = mydir.list();
+        for (int i = 0; i < filesForUpload.length; i++){
+            String file = WriteRead.read(filesForUpload[i], context);
+            String[] input = file.split("!");
+            communicator.appointmentPost(input[0], input[1], input[2], input[3], input[4],
+                    input[5], input[6]);
+        }
         if (WriteRead.fileExistance("appointmentPost", context)) {
             String file = WriteRead.read("appointmentPost", context);
             Log.i("NET", "file text " + file);
@@ -276,7 +286,7 @@ public class OfflineUploads {
 
     @Subscribe
     public void onServerEvent(ServerEvent serverEvent){
-
+        
     }
 
     @Subscribe

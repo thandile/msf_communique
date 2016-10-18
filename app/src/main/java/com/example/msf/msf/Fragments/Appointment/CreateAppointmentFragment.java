@@ -29,6 +29,7 @@ import com.example.msf.msf.Utils.WriteRead;
 import com.mobsandgeeks.saripaar.ValidationError;
 import com.mobsandgeeks.saripaar.Validator;
 import com.mobsandgeeks.saripaar.annotation.Future;
+import com.mobsandgeeks.saripaar.annotation.Max;
 import com.mobsandgeeks.saripaar.annotation.NotEmpty;
 import com.mobsandgeeks.saripaar.annotation.Select;
 import com.squareup.otto.Subscribe;
@@ -38,6 +39,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import static com.mobsandgeeks.saripaar.Validator.*;
@@ -193,6 +195,13 @@ public class CreateAppointmentFragment extends Fragment implements ValidationLis
         users.setAdapter(sessionSpinnerAdapter);
     }
 
+    public class TimeComparator implements Comparator<String>
+    {
+        public int compare(String o1, String o2)
+        {
+            return o1.compareTo(o2);
+        }
+    }
 
     // get the selected dropdown list value
     public void addListenerOnButton() {
@@ -200,7 +209,15 @@ public class CreateAppointmentFragment extends Fragment implements ValidationLis
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                validator.validate();
+                String endTime = endTimeET.getText().toString();
+                String startTime = startTimeET.getText().toString();
+                if (startTime.compareTo(endTime)<=0) {
+                    validator.validate();
+                }
+                else {
+                    Toast.makeText(CreateAppointmentFragment.this.getActivity(),
+                            "The end time must be after start time", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
@@ -233,11 +250,6 @@ public class CreateAppointmentFragment extends Fragment implements ValidationLis
         //AppointmentFragment appointmentFragment = new AppointmentFragment();
         FragmentManager manager = getActivity().getSupportFragmentManager();
         manager.popBackStack();
-        /**manager.beginTransaction()
-                .replace(R.id.rel_layout_for_frag, appointmentFragment,
-                        appointmentFragment.getTag())
-                .addToBackStack(null)
-                .commit();**/
     }
 
     @Subscribe
@@ -264,10 +276,12 @@ public class CreateAppointmentFragment extends Fragment implements ValidationLis
         }
         else {
             prgDialog.hide();
+            String [] appointmentWord = appointmentType.split(" ");
             Toast.makeText(CreateAppointmentFragment.this.getActivity(),"You are not online." +
                             " Data will be uploaded when you have an internet connection",
                     Toast.LENGTH_LONG).show();
-            WriteRead.createDir("appointmentPost",patientId[0]+"appointmentPost", patientId[0]+"!"+owner[0]+"!"+ notes+"!"+ date+"!"+ appointmentType+"!"+
+            WriteRead.createDir("appointmentPost",patientId[0]+appointmentWord[0]+"appointmentPost",
+                    patientId[0]+"!"+owner[0]+"!"+ notes+"!"+ date+"!"+ appointmentType+"!"+
                     endTime+"!"+startTime,
                     CreateAppointmentFragment.this.getActivity() );
             Log.v("Home", "############################You are not online!!!!");

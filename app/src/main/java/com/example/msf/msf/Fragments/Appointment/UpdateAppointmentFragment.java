@@ -40,6 +40,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -204,6 +205,14 @@ public class UpdateAppointmentFragment extends Fragment implements Validator.Val
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    public class TimeComparator implements Comparator<String>
+    {
+        public int compare(String o1, String o2)
+        {
+            return o1.compareTo(o2);
+        }
     }
 
     @Override
