@@ -94,39 +94,66 @@ public class OfflineUploads {
     }
 
     public static void appointment(Context context) {
-        Communicator communicator = new Communicator();
-        File mydir = context.getDir("app_appointmentPost", Context.MODE_PRIVATE);
+        File mydir = context.getFilesDir();
+        //context.getDir("/data/data/com.example.msf.msf/", Context.MODE_PRIVATE);
+        Log.i("NET", mydir.toString());
         String[] filesForUpload = mydir.list();
-        for (int i = 0; i < filesForUpload.length; i++){
-            String file = WriteRead.read(filesForUpload[i], context);
-            String[] input = file.split("!");
-            communicator.appointmentPost(input[0], input[1], input[2], input[3], input[4],
-                    input[5], input[6]);
-        }
-        if (WriteRead.fileExistance("appointmentPost", context)) {
-            String file = WriteRead.read("appointmentPost", context);
-            Log.i("NET", "file text " + file);
-            String[] input = file.split("!");
+        Communicator communicator = new Communicator();
+        for (int i = 0; i< filesForUpload.length; i++){
+            if (filesForUpload[i].contains("appointmentPost")) {
+                String file = WriteRead.read(filesForUpload[i], context);
+                Log.i("NET", filesForUpload[i] + " " + file);
+                String[] input = file.split("!");
+                Log.i("NET", "" + input.length);
+                if (input.length == 7) {
+                    communicator.appointmentPost(input[0], input[1], input[2], input[3], input[4],
+                            input[5], input[6]);
+                } else if (input.length == 6) {
+                    communicator.appointmentPost(input[0], input[1], input[2], input[3], input[4],
+                            input[5], "");
+                } else {
+                    communicator.appointmentPost(input[0], input[1], input[2], input[3], input[4],
+                            "", "");
+                }
+            }
+            context.deleteFile(filesForUpload[i]);
+       /** if (WriteRead.fileExistance("appointmentPost", context)) {
+         String file = WriteRead.read("appointmentPost", context);
+         Log.i("NET", "file text " + file);
+         String[] input = file.split("!");
 
-            //Log.i("NET", drugIDs[0] + " " + drugIDs[1]);
-            communicator.appointmentPost(input[0], input[1], input[2], input[3], input[4],
-                    input[5], input[6]);
-        }
-        context.deleteFile("appointmentPost");
+         //Log.i("NET", drugIDs[0] + " " + drugIDs[1]);
+         communicator.appointmentPost(input[0], input[1], input[2], input[3], input[4],
+         input[5], input[6]);**/
+         }
     }
 
     public static void appointmentUpdate(Context context) {
-        Communicator communicator = new Communicator();
-        if (WriteRead.fileExistance("appointmentUpdate", context)) {
-            String file = WriteRead.read("appointmentUpdate", context);
-            Log.i("NET", "file text " + file);
-            String[] input = file.split("!");
 
-            //Log.i("NET", drugIDs[0] + " " + drugIDs[1]);
-            communicator.appointmentUpdate(Long.parseLong(input[7]), input[0], input[1], input[2], input[3], input[4],
-                    input[5], input[6]);
+        File mydir = context.getFilesDir();
+        //context.getDir("/data/data/com.example.msf.msf/", Context.MODE_PRIVATE);
+        Log.i("NET", mydir.toString());
+        String[] filesForUpload = mydir.list();
+        Communicator communicator = new Communicator();
+        for (int i = 0; i< filesForUpload.length; i++) {
+            if (filesForUpload[i].contains("appointmentUpdate")) {
+                String file = WriteRead.read(filesForUpload[i], context);
+                Log.i("NET", filesForUpload[i] + " " + file);
+                String[] input = file.split("!");
+                Log.i("NET", "" + input.length);
+                if (input.length == 7) {
+                    communicator.appointmentUpdate(Long.parseLong(input[7]), input[0], input[1], input[2], input[3], input[4],
+                            input[5], input[6]);
+                } else if (input.length == 6) {
+                    communicator.appointmentUpdate(Long.parseLong(input[7]), input[0], input[1], input[2], input[3], input[4],
+                            input[5], "");
+                } else {
+                    communicator.appointmentUpdate(Long.parseLong(input[7]), input[0], input[1], input[2], input[3], input[4],
+                            "", "");
+                }
+            }
+            context.deleteFile(filesForUpload[i]);
         }
-        context.deleteFile("appointmentUpdate");
     }
 
     public static void enrollment(Context context) {

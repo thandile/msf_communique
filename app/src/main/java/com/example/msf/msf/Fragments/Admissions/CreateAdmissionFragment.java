@@ -165,7 +165,7 @@ public class CreateAdmissionFragment extends Fragment implements Validator.Valid
             Toast.makeText(CreateAdmissionFragment.this.getActivity(),"You are not online." +
                             " Data will be uploaded when you have an internet connection",
                     Toast.LENGTH_LONG).show();
-            WriteRead.createDir("admissionPost", patientId[0]+"admissionPost", patientId[0]+"!"+
+            WriteRead.write(patientId[0]+"admissionPost", patientId[0]+"!"+
                     admissionDate+"!"+ dischargeDate+"!"+ healthCen +"!"+notesText,
                     CreateAdmissionFragment.this.getActivity());
            /**WriteRead.write("admissionPost",patientId[0]+"!"+ admissionDate+"!"+ dischargeDate+"!"+

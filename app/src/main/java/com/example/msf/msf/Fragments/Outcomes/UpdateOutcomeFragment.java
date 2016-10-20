@@ -225,7 +225,7 @@ public class UpdateOutcomeFragment extends Fragment implements Validator.Validat
             Toast.makeText(UpdateOutcomeFragment.this.getActivity(),"You are not online." +
                             " Data will be uploaded when you have an internet connection",
                     Toast.LENGTH_LONG).show();
-            WriteRead.createDir("OutcomeUpdate",patientId[0]+"OutcomeUpdate",
+            WriteRead.write(patientId[0]+"OutcomeUpdate",
                     patientId[0]+"!"+ outcome[0]+"!"+ date+"!"+ notes+ "!"+Long.parseLong(input[4]),
                     UpdateOutcomeFragment.this.getActivity() );
             Log.v("Home", "############################You are not online!!!!");

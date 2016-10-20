@@ -151,7 +151,7 @@ public class CreateEventFragment extends Fragment implements Validator.Validatio
             Toast.makeText(CreateEventFragment.this.getActivity(),"You are not online." +
                             " Data will be uploaded when you have an internet connection",
                     Toast.LENGTH_LONG).show();
-            WriteRead.createDir("eventPost", startTime+date+eventTitle+"eventPost",eventTitle+"!"+notes+"!"+ date+"!"+ startTime+"!"+endTime,
+            WriteRead.write(startTime+date+eventTitle+"eventPost",eventTitle+"!"+notes+"!"+ date+"!"+ startTime+"!"+endTime,
                     CreateEventFragment.this.getActivity() );
             Log.v("Home", "############################You are not online!!!!");
             FragmentManager manager = getActivity().getSupportFragmentManager();

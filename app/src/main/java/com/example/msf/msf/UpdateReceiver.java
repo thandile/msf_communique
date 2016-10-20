@@ -27,9 +27,10 @@ public class UpdateReceiver extends BroadcastReceiver {
         boolean isConnected = activeNetInfo != null && activeNetInfo.isConnectedOrConnecting();
         if (isConnected) {
             /**OfflineUploads.regimen(context);
-            OfflineUploads.admission(context);
+            OfflineUploads.admission(context);**/
             OfflineUploads.appointment(context);
-            OfflineUploads.enrollment(context);
+            OfflineUploads.appointmentUpdate(context);
+            /**OfflineUploads.enrollment(context);
             OfflineUploads.event(context);
             OfflineUploads.counselling(context);
             OfflineUploads.medicalReport(context);
@@ -39,7 +40,6 @@ public class UpdateReceiver extends BroadcastReceiver {
             OfflineUploads.medicalReportUpdate(context);
             OfflineUploads.regimenUpdate(context);
             OfflineUploads.admissionUpdate(context);
-            OfflineUploads.appointmentUpdate(context);
             OfflineUploads.counsellingUpdate(context);
             OfflineUploads.eventUpdate(context);
             OfflineUploads.adverseEventUpdate(context);

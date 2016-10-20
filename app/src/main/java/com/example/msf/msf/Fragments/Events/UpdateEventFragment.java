@@ -159,7 +159,15 @@ public class UpdateEventFragment extends Fragment implements Validator.Validatio
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                validator.validate();
+                String endTime = endTimeET.getText().toString();
+                String startTime = startTimeET.getText().toString();
+                if (startTime.compareTo(endTime)<=0) {
+                    validator.validate();
+                }
+                else {
+                    Toast.makeText(UpdateEventFragment.this.getActivity(),
+                            "The end time must be after start time", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
@@ -184,7 +192,7 @@ public class UpdateEventFragment extends Fragment implements Validator.Validatio
             Toast.makeText(UpdateEventFragment.this.getActivity(),"You are not online." +
                             " Data will be uploaded when you have an internet connection",
                     Toast.LENGTH_LONG).show();
-            WriteRead.createDir("eventUpdate",startTime+date+eventTitle+"eventUpdate",
+            WriteRead.write(startTime+date+eventTitle+"eventUpdate",
                     eventTitle+"!"+notes+"!"+ date+"!"+ startTime+"!"+endTime+"!"+Long.parseLong(input[5]),
                     UpdateEventFragment.this.getActivity() );
             Log.v("Home", "############################You are not online!!!!");

@@ -171,7 +171,7 @@ public class UpdateCounsellingFragment extends Fragment implements Validator.Val
             Toast.makeText(UpdateCounsellingFragment.this.getActivity(),"You are not online." +
                             " Data will be uploaded when you have an internet connection",
                     Toast.LENGTH_LONG).show();
-            WriteRead.write("counsellingUpdate",patientId[0]+"!"+counsellingSession[0]+"!"+notes+"!"+counsellingInfo[3],
+            WriteRead.write(patientId[0]+"counsellingUpdate",patientId[0]+"!"+counsellingSession[0]+"!"+notes+"!"+counsellingInfo[3],
                     UpdateCounsellingFragment.this.getActivity() );
             Log.v("Home", "############################You are not online!!!!");
             FragmentManager manager = getActivity().getSupportFragmentManager();

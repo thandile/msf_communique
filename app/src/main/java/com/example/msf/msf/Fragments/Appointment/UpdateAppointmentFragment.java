@@ -173,14 +173,26 @@ public class UpdateAppointmentFragment extends Fragment implements Validator.Val
         notesET.setText(mParam1[6], TextView.BufferType.EDITABLE);
 
         submit = (Button) view.findViewById(R.id.appointment_submit);
+        buttonListener();
+        return view;
+    }
+
+    private void buttonListener() {
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                validator.validate();
+                String endTime = endTimeET.getText().toString();
+                String startTime = startTimeET.getText().toString();
+                if (startTime.compareTo(endTime)<=0) {
+                    validator.validate();
+                }
+                else {
+                    Toast.makeText(UpdateAppointmentFragment.this.getActivity(),
+                            "The end time must be after start time", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
-        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event

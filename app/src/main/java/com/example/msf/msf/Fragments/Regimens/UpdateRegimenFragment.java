@@ -188,7 +188,7 @@ public class UpdateRegimenFragment extends Fragment implements Validator.Validat
             Toast.makeText(UpdateRegimenFragment.this.getActivity(),"You are not online." +
                             " Data will be uploaded when you have an internet connection",
                     Toast.LENGTH_LONG).show();
-            WriteRead.createDir("regimenUpdate",patientId[0]+"regimenUpdate",
+            WriteRead.write(patientId[0]+"regimenUpdate",
                     Long.parseLong(input[5])+"!"+patientId[0]+"!"+notes+"!"+drug+"!"+startdate+"!"+
                             endDate+"!"+input[5],
                     UpdateRegimenFragment.this.getActivity() );

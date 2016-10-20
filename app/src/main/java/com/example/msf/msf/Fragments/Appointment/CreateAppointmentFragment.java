@@ -240,13 +240,6 @@ public class CreateAppointmentFragment extends Fragment implements ValidationLis
         Toast.makeText(CreateAppointmentFragment.this.getActivity(),
                 "You have successfully added a created a new appointment",
                 Toast.LENGTH_LONG).show();
-        patientNames.setText("");
-        String[] owner = String.valueOf(users.getSelectedItem()).split(":");
-        notesET.setText("");
-        dateET.setText("");
-        appointmentTypeET.setText("");
-        endTimeET.setText("");
-        startTimeET.setText("");
         //AppointmentFragment appointmentFragment = new AppointmentFragment();
         FragmentManager manager = getActivity().getSupportFragmentManager();
         manager.popBackStack();
@@ -255,7 +248,7 @@ public class CreateAppointmentFragment extends Fragment implements ValidationLis
     @Subscribe
     public void onErrorEvent(ErrorEvent errorEvent){
         prgDialog.hide();
-        Toast.makeText(CreateAppointmentFragment.this.getActivity(), "error1   " +
+        Toast.makeText(CreateAppointmentFragment.this.getActivity(), " " +
                 errorEvent.getErrorMsg(), Toast.LENGTH_SHORT).show();
     }
 
@@ -280,7 +273,7 @@ public class CreateAppointmentFragment extends Fragment implements ValidationLis
             Toast.makeText(CreateAppointmentFragment.this.getActivity(),"You are not online." +
                             " Data will be uploaded when you have an internet connection",
                     Toast.LENGTH_LONG).show();
-            WriteRead.createDir("appointmentPost",patientId[0]+appointmentWord[0]+"appointmentPost",
+            WriteRead.write(patientId[0]+appointmentWord[0]+"appointmentPost",
                     patientId[0]+"!"+owner[0]+"!"+ notes+"!"+ date+"!"+ appointmentType+"!"+
                     endTime+"!"+startTime,
                     CreateAppointmentFragment.this.getActivity() );
