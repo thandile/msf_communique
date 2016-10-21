@@ -25,6 +25,7 @@ import com.example.msf.msf.API.ServerEvent;
 import com.example.msf.msf.Dialogs.DateDialog;
 import com.example.msf.msf.Fragments.Admissions.CreateAdmissionFragment;
 import com.example.msf.msf.Fragments.Counselling.CreateCounsellingFragment;
+import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.AppStatus;
 import com.example.msf.msf.Utils.WriteRead;
@@ -54,16 +55,33 @@ public class CreateAdverseEventFragment extends Fragment implements Validator.Va
     AutoCompleteTextView patientNames;
     @NotEmpty
     EditText eventDate;
-    @Select
-    Spinner adverseEvent;
+    @NotEmpty
+    AutoCompleteTextView adverseEvent;
     EditText notes;
     private OnFragmentInteractionListener mListener;
+    private static final String ARG_PARAM1 = "param1";
+    private String id;
 
     public CreateAdverseEventFragment() {
         // Required empty public constructor
     }
 
 
+    public static CreateAdverseEventFragment newInstance(String param1) {
+        CreateAdverseEventFragment fragment = new CreateAdverseEventFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_PARAM1, param1);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            id = getArguments().getString(ARG_PARAM1);
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -84,8 +102,9 @@ public class CreateAdverseEventFragment extends Fragment implements Validator.Va
         prgDialog.setCancelable(false);
         // Get a reference to the AutoCompleteTextView in the layout
         patientNames = (AutoCompleteTextView) view.findViewById(R.id.autocomplete_patients);
+        patientNames.setText(id);
         eventDate = (EditText) view.findViewById(R.id.eventDateET);
-        adverseEvent = (Spinner) view.findViewById(R.id.AdverseEventspinner);
+        adverseEvent = (AutoCompleteTextView) view.findViewById(R.id.autocomplete_adverseEvent);
         notes = (EditText) view.findViewById(R.id.noteET);
         submit = (Button) view.findViewById(R.id.adverse_submit);
         eventDate.setOnFocusChangeListener(new View.OnFocusChangeListener(){
@@ -157,12 +176,10 @@ public class CreateAdverseEventFragment extends Fragment implements Validator.Va
 
     // add items into spinner dynamically
     public void addItemsOnSessionSpinner(List<String> sessions) {
-        //adding to the pilot name spinner
-        ArrayAdapter<String> sessionSpinnerAdapter = new ArrayAdapter<String>(
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
                 CreateAdverseEventFragment.this.getActivity(),
-                android.R.layout.simple_spinner_item, sessions);
-        sessionSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        adverseEvent.setAdapter(sessionSpinnerAdapter);
+                android.R.layout.simple_dropdown_item_1line, sessions);
+        adverseEvent.setAdapter(adapter);
     }
 
 
@@ -170,7 +187,7 @@ public class CreateAdverseEventFragment extends Fragment implements Validator.Va
     public void onValidationSucceeded() {
         prgDialog.show();
         String[] patientId = patientNames.getText().toString().split(":");
-        String[] adverse = String.valueOf(adverseEvent.getSelectedItem()).split(":");
+        String[] adverse = adverseEvent.getText().toString().split(":");
         String note = notes.getText().toString();
         String date = eventDate.getText().toString();
         Log.d(TAG,  adverseEvent +" "+patientId);

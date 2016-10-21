@@ -46,15 +46,35 @@ public class CreateCounsellingFragment extends Fragment implements Validator.Val
     @NotEmpty
     AutoCompleteTextView patientNames;
     EditText notesET;
-    @Select(message = "Select a session type")
-    Spinner sessionType;
+    @NotEmpty
+    AutoCompleteTextView sessionType;
     Button submit;
 
     public static String PATIENTINFOFILE = "Patients";
     public static String SESSIONTYPEFILE = "SessionType";
     private final String TAG = this.getClass().getSimpleName();
+    private static final String ARG_PARAM1 = "param1";
+    private String id;
+
+
     public CreateCounsellingFragment() {
         // Required empty public constructor
+    }
+
+    public static CreateCounsellingFragment newInstance(String param1) {
+        CreateCounsellingFragment fragment = new CreateCounsellingFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_PARAM1, param1);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            id = getArguments().getString(ARG_PARAM1);
+        }
     }
 
 
@@ -76,7 +96,8 @@ public class CreateCounsellingFragment extends Fragment implements Validator.Val
         validator.setValidationListener(this);
         // Get a reference to the AutoCompleteTextView in the layout
         patientNames = (AutoCompleteTextView) view.findViewById(R.id.autocomplete_patients);
-        sessionType = (Spinner) view.findViewById(R.id.session_spinner);
+        patientNames.setText(id);
+        sessionType = (AutoCompleteTextView) view.findViewById(R.id.autocomplete_session);
         notesET = (EditText) view.findViewById(R.id.notesET);
         //sessionType = (Spinner) view.findViewById(R.id.session_spinner);
         submit = (Button) view.findViewById(R.id.session_submit);
@@ -137,12 +158,10 @@ public class CreateCounsellingFragment extends Fragment implements Validator.Val
 
     // add items into spinner dynamically
     public void addItemsOnSessionSpinner(List<String> sessions) {
-        //adding to the pilot name spinner
-        ArrayAdapter<String> sessionSpinnerAdapter = new ArrayAdapter<String>(
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
                 CreateCounsellingFragment.this.getActivity(),
-                android.R.layout.simple_spinner_item, sessions);
-        sessionSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        sessionType.setAdapter(sessionSpinnerAdapter);
+                android.R.layout.simple_dropdown_item_1line, sessions);
+        sessionType.setAdapter(adapter);
     }
 
     @Override
@@ -186,7 +205,7 @@ public class CreateCounsellingFragment extends Fragment implements Validator.Val
     public void onValidationSucceeded() {
         prgDialog.show();
         String[] patientId = patientNames.getText().toString().split(":");
-        String[] counsellingSession = String.valueOf(sessionType.getSelectedItem()).split(":");
+        String[] counsellingSession = sessionType.getText().toString().split(":");
         String notes = notesET.getText().toString();
         Log.d(TAG,  counsellingSession +" "+patientId);
         if (AppStatus.getInstance(CreateCounsellingFragment.this.getActivity()).isOnline()) {

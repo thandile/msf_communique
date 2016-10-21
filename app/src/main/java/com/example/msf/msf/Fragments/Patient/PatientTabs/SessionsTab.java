@@ -81,6 +81,29 @@ public class SessionsTab extends Fragment {
         counsellingGet();
         text = (TextView) view.findViewById(R.id.defaultText);
         counsellingLV = (ListView) view.findViewById(R.id.counsellingLV);
+        counsellingLVOnCLick();
+        fab = (FloatingActionButton) view.findViewById(R.id.btnFloatingAction);
+        fabOnclick();
+        return view;
+    }
+
+    private void fabOnclick() {
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CreateCounsellingFragment createCounsellingFragment = new CreateCounsellingFragment()
+                        .newInstance(id+": "+getPatientInfo(Long.parseLong(id)));
+                FragmentManager manager = getActivity().getSupportFragmentManager();
+                manager.beginTransaction()
+                        .replace(R.id.rel_layout_for_frag, createCounsellingFragment,
+                                createCounsellingFragment.getTag())
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
+    }
+
+    private void counsellingLVOnCLick() {
         counsellingLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -97,20 +120,6 @@ public class SessionsTab extends Fragment {
                         .commit();
             }
         });
-        fab = (FloatingActionButton) view.findViewById(R.id.btnFloatingAction);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                CreateCounsellingFragment createCounsellingFragment = new CreateCounsellingFragment();
-                FragmentManager manager = getActivity().getSupportFragmentManager();
-                manager.beginTransaction()
-                        .replace(R.id.rel_layout_for_frag, createCounsellingFragment,
-                                createCounsellingFragment.getTag())
-                        .addToBackStack(null)
-                        .commit();
-            }
-        });
-        return view;
     }
 
     public void onButtonPressed(String data) {

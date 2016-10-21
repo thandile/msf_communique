@@ -90,6 +90,13 @@ public class MedicalRecordTab extends Fragment {
         appointmentsGet();
         text = (TextView) view.findViewById(R.id.defaultText);
         recordsLV = (ListView) view.findViewById(R.id.recordsLV);
+        recordsLVOnClick();
+        fab = (FloatingActionButton) view.findViewById(R.id.btnFloatingAction);
+        fabOnclick();
+        return view;
+    }
+
+    private void recordsLVOnClick() {
         recordsLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -108,11 +115,14 @@ public class MedicalRecordTab extends Fragment {
                 //startActivity(intent);
             }
         });
-        fab = (FloatingActionButton) view.findViewById(R.id.btnFloatingAction);
+    }
+
+    private void fabOnclick() {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CreateMedicalRecFragment createMedicalRecFragment = new CreateMedicalRecFragment();
+                CreateMedicalRecFragment createMedicalRecFragment = new CreateMedicalRecFragment()
+                        .newInstance(id+": "+getPatientInfo(Long.parseLong(id)));
                 FragmentManager manager = getActivity().getSupportFragmentManager();
                 manager.beginTransaction()
                         .replace(R.id.rel_layout_for_frag, createMedicalRecFragment,
@@ -121,7 +131,6 @@ public class MedicalRecordTab extends Fragment {
                         .commit();
             }
         });
-        return view;
     }
 
     public void appointmentsGet(){

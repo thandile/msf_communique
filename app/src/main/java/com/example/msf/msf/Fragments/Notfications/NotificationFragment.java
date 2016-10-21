@@ -41,6 +41,7 @@ import com.example.msf.msf.Fragments.MedicalRecords.MedicalInfoFragment;
 import com.example.msf.msf.Fragments.Outcomes.OutcomeInfoFragment;
 import com.example.msf.msf.Fragments.Patient.PatientTabs.PatientInfoTab;
 import com.example.msf.msf.Fragments.Regimens.RegimenInfoFragment;
+import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.WriteRead;
@@ -135,6 +136,7 @@ public class NotificationFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        HomeActivity.navItemIndex = 1;
         View view = inflater.inflate(R.layout.fragment_notification, container, false);
         communicator = new Communicator();
         text = (TextView) view.findViewById(R.id.text);

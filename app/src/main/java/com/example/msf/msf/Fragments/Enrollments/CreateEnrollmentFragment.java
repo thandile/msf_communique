@@ -56,8 +56,8 @@ public class CreateEnrollmentFragment extends Fragment implements Validator.Vali
     private final String TAG = this.getClass().getSimpleName();
     private Communicator communicator;
     ProgressDialog prgDialog;
-    @Select(message = "Select a pilot")
-    Spinner pilotPrograms;
+    @NotEmpty
+    AutoCompleteTextView pilotPrograms;
     @NotEmpty
     AutoCompleteTextView patientNames;
     Validator validator;
@@ -66,8 +66,28 @@ public class CreateEnrollmentFragment extends Fragment implements Validator.Vali
     private EditText enrollment_date;
     Button submit;
     public static String FILENAME = "Pilots";
+    private static final String ARG_PARAM1 = "param1";
+    private String id;
+
+
     public CreateEnrollmentFragment() {
         // Required empty public constructor
+    }
+
+    public static CreateEnrollmentFragment newInstance(String param1) {
+        CreateEnrollmentFragment fragment = new CreateEnrollmentFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_PARAM1, param1);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            id = getArguments().getString(ARG_PARAM1);
+        }
     }
 
 
@@ -83,9 +103,9 @@ public class CreateEnrollmentFragment extends Fragment implements Validator.Vali
         // Set Cancelable as False
         prgDialog.setCancelable(false);
         // Get a reference to the AutoCompleteTextView in the layout
-        pilotPrograms = (Spinner) view.findViewById(R.id.pilotSpinner);
+        pilotPrograms = (AutoCompleteTextView) view.findViewById(R.id.autocomplete_pilots);
         patientNames = (AutoCompleteTextView) view.findViewById(R.id.autocomplete_patients);
-        pilotPrograms = (Spinner) view.findViewById(R.id.pilotSpinner);
+        patientNames.setText(id);
         comment = (EditText) view.findViewById(R.id.enrollmentComment);
         //EditText txtDate=(EditText)findViewById(R.id.enrollmentDate);
         enrollment_date = (EditText) view.findViewById(R.id.enrollmentDate);
@@ -200,13 +220,10 @@ public class CreateEnrollmentFragment extends Fragment implements Validator.Vali
 
     // add items into spinner dynamically
     public void addItemsOnPilotSpinner(List<String> pilots) {
-        pilots.add(0, "");
-        //adding to the pilot name spinner
-        ArrayAdapter<String> pilotSpinnerAdapter = new ArrayAdapter<String>(
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
                 CreateEnrollmentFragment.this.getActivity(),
-                android.R.layout.simple_spinner_item, pilots);
-        pilotSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        pilotPrograms.setAdapter(pilotSpinnerAdapter);
+                android.R.layout.simple_dropdown_item_1line, pilots);
+        pilotPrograms.setAdapter(adapter);
     }
 
 
@@ -251,7 +268,7 @@ public class CreateEnrollmentFragment extends Fragment implements Validator.Vali
              //   Toast.LENGTH_SHORT).show();
         prgDialog.show();
         String[] patientId = patientNames.getText().toString().split(":");
-        String[] program = String.valueOf(pilotPrograms.getSelectedItem()).split(":");
+        String[] program = pilotPrograms.getText().toString().split(":");
         String enrollmentComment = comment.getText().toString();
         String date = enrollment_date.getText().toString();
         if (AppStatus.getInstance(CreateEnrollmentFragment.this.getActivity()).isOnline()) {

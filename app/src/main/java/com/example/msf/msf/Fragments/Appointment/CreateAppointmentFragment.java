@@ -67,9 +67,27 @@ public class CreateAppointmentFragment extends Fragment implements ValidationLis
     EditText endTimeET;
     public static String USERINFOFILE = "Users";
     private final String TAG = this.getClass().getSimpleName();
+    private static final String ARG_PARAM1 = "param1";
+    private String id;
 
     public CreateAppointmentFragment() {
         // Required empty public constructor
+    }
+
+    public static CreateAppointmentFragment newInstance(String param1) {
+        CreateAppointmentFragment fragment = new CreateAppointmentFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_PARAM1, param1);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            id = getArguments().getString(ARG_PARAM1);
+        }
     }
 
 
@@ -92,6 +110,7 @@ public class CreateAppointmentFragment extends Fragment implements ValidationLis
         prgDialog.setCancelable(false);
         // Get a reference to the AutoCompleteTextView in the layout
         patientNames = (AutoCompleteTextView) view.findViewById(R.id.autocomplete_patients);
+        patientNames.setText(id);
         users = (Spinner) view.findViewById(R.id.ownerSpinner);
 
         //patientNames = (AutoCompleteTextView) findViewById(R.id.autocomplete_patients);

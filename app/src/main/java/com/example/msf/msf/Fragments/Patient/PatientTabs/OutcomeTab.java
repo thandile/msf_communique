@@ -92,6 +92,30 @@ public class OutcomeTab extends Fragment {
         View view = inflater.inflate(R.layout.fragment_outcome_tab, container, false);
         outcomeLV = (ListView) view.findViewById(R.id.outcomeLV);
         outcomesGet();
+        outcomeLVOnClick();
+        text = (TextView) view.findViewById(R.id.defaultText);
+        fab = (FloatingActionButton) view.findViewById(R.id.btnFloatingAction);
+        fabOnClick();
+        return view;
+    }
+
+    private void fabOnClick() {
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CreateOutcomeFragment createOutcomeFragment = new CreateOutcomeFragment()
+                        .newInstance(id+": "+getPatientInfo(Long.parseLong(id)));
+                FragmentManager manager = getActivity().getSupportFragmentManager();
+                manager.beginTransaction()
+                        .replace(R.id.rel_layout_for_frag, createOutcomeFragment,
+                                createOutcomeFragment.getTag())
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
+    }
+
+    private void outcomeLVOnClick() {
         outcomeLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -107,21 +131,6 @@ public class OutcomeTab extends Fragment {
                         .commit();
             }
         });
-        text = (TextView) view.findViewById(R.id.defaultText);
-        fab = (FloatingActionButton) view.findViewById(R.id.btnFloatingAction);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                CreateOutcomeFragment createOutcomeFragment = new CreateOutcomeFragment();
-                FragmentManager manager = getActivity().getSupportFragmentManager();
-                manager.beginTransaction()
-                        .replace(R.id.rel_layout_for_frag, createOutcomeFragment,
-                                createOutcomeFragment.getTag())
-                        .addToBackStack(null)
-                        .commit();
-            }
-        });
-        return view;
     }
 
     public void outcomesGet(){

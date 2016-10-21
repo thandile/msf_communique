@@ -63,9 +63,28 @@ public class CreateRegimenFragment extends Fragment implements Validator.Validat
     public static String REGIMENFILE = "Drugs";
     public static String PATIENTFILE = "Patients";
     private final String TAG = this.getClass().getSimpleName();
+    private static final String ARG_PARAM1 = "param1";
+    private String id;
+
 
     public CreateRegimenFragment() {
         // Required empty public constructor
+    }
+
+    public static CreateRegimenFragment newInstance(String param1) {
+        CreateRegimenFragment fragment = new CreateRegimenFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_PARAM1, param1);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            id = getArguments().getString(ARG_PARAM1);
+        }
     }
 
 
@@ -88,6 +107,7 @@ public class CreateRegimenFragment extends Fragment implements Validator.Validat
         prgDialog.setCancelable(false);
         // Get a reference to the AutoCompleteTextView in the layout
         patientNames = (AutoCompleteTextView) view.findViewById(R.id.autocomplete_patients);
+        patientNames.setText(id);
         drugsSpinner = (MultiSelectionSpinner) view.findViewById(R.id.drugs);
         notesET = (EditText) view.findViewById(R.id.noteET);
         startDateET = (EditText) view.findViewById(R.id.reg_startDateET);

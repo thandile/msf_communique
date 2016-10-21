@@ -80,6 +80,13 @@ public class EnrollmentsTab extends Fragment {
         enrollmentsGet();
         text = (TextView) view.findViewById(R.id.defaultText);
         enrollmentLV = (ListView) view.findViewById(R.id.enrollmentsLV);
+        fab = (FloatingActionButton) view.findViewById(R.id.btnFloatingAction);
+        fabOnClick();
+        enrollmentLVOnClick();
+        return view;
+    }
+
+    private void enrollmentLVOnClick() {
         enrollmentLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -95,11 +102,14 @@ public class EnrollmentsTab extends Fragment {
                         .commit();
             }
         });
-        fab = (FloatingActionButton) view.findViewById(R.id.btnFloatingAction);
+    }
+
+    private void fabOnClick() {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CreateEnrollmentFragment createEnrollmentFragment = new CreateEnrollmentFragment();
+                CreateEnrollmentFragment createEnrollmentFragment = new CreateEnrollmentFragment()
+                        .newInstance(id+": "+getPatientInfo(Long.parseLong(id)));
                 FragmentManager manager = getActivity().getSupportFragmentManager();
                 manager.beginTransaction()
                         .replace(R.id.rel_layout_for_frag, createEnrollmentFragment,
@@ -110,7 +120,6 @@ public class EnrollmentsTab extends Fragment {
             }
         });
 
-        return view;
     }
 
     public void onButtonPressed(String data) {

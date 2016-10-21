@@ -94,19 +94,12 @@ public class AdmissionsTab extends Fragment {
         admissionsGet();
         text = (TextView) view.findViewById(R.id.defaultText);
         fab = (FloatingActionButton) view.findViewById(R.id.btnFloatingAction);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                CreateAdmissionFragment createAdmissionFragment = new CreateAdmissionFragment();
-                FragmentManager manager = getActivity().getSupportFragmentManager();
-                manager.beginTransaction()
-                        .replace(R.id.rel_layout_for_frag, createAdmissionFragment,
-                                createAdmissionFragment.getTag())
-                        .addToBackStack(null)
-                        .commit();
+        fabOnClick();
+        admissionsLVOnCLick();
+        return view;
+    }
 
-            }
-        });
+    private void admissionsLVOnCLick() {
         admissionsLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -125,9 +118,24 @@ public class AdmissionsTab extends Fragment {
                 //startActivity(intent);
             }
         });
-        return view;
     }
 
+    public void fabOnClick(){
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CreateAdmissionFragment createAdmissionFragment = new CreateAdmissionFragment()
+                        .newInstance(id+": "+getPatientInfo(Long.parseLong(id)));
+                FragmentManager manager = getActivity().getSupportFragmentManager();
+                manager.beginTransaction()
+                        .replace(R.id.rel_layout_for_frag, createAdmissionFragment,
+                                createAdmissionFragment.getTag())
+                        .addToBackStack(null)
+                        .commit();
+
+            }
+        });
+    }
 
     public void admissionsGet(){
         final ArrayList<Admission> admissionList = new ArrayList<Admission>();

@@ -56,11 +56,28 @@ public class CreateAdmissionFragment extends Fragment implements Validator.Valid
     EditText notes;
     public static String PATIENTINFOFILE = "Patients";
     private final String TAG = this.getClass().getSimpleName();
+    private static final String ARG_PARAM1 = "param1";
+    private String id;
 
     public CreateAdmissionFragment() {
         // Required empty public constructor
     }
 
+    public static CreateAdmissionFragment newInstance(String param1) {
+        CreateAdmissionFragment fragment = new CreateAdmissionFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_PARAM1, param1);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            id = getArguments().getString(ARG_PARAM1);
+        }
+    }
 
 
     @Override
@@ -82,6 +99,7 @@ public class CreateAdmissionFragment extends Fragment implements Validator.Valid
         prgDialog.setCancelable(false);
         // Get a reference to the AutoCompleteTextView in the layout
         patientNames = (AutoCompleteTextView) view.findViewById(R.id.autocomplete_patients);
+        patientNames.setText(id);
         admissionDate = (EditText) view.findViewById(R.id.admissionDate);
         dischargeDate = (EditText) view.findViewById(R.id. dischargeDate);
         healthCentre = (EditText) view.findViewById(R.id.healthCentreET);

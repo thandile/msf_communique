@@ -90,18 +90,12 @@ public class AdverseEventTab extends Fragment {
         adverseEventsGet();
         text = (TextView) view.findViewById(R.id.defaultText);
         fab = (FloatingActionButton) view.findViewById(R.id.btnFloatingAction);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                CreateAdverseEventFragment createAdverseEventFragment = new CreateAdverseEventFragment();
-                FragmentManager manager = getActivity().getSupportFragmentManager();
-                manager.beginTransaction()
-                        .replace(R.id.rel_layout_for_frag, createAdverseEventFragment,
-                                createAdverseEventFragment.getTag())
-                        .addToBackStack(null)
-                        .commit();
-            }
-        });
+        fabOnClick();
+        adverseOnClick();
+        return view;
+    }
+
+    private void adverseOnClick() {
         adverseEventLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -121,7 +115,22 @@ public class AdverseEventTab extends Fragment {
                 //startActivity(intent);
             }
         });
-        return view;
+    }
+
+    private void fabOnClick() {
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CreateAdverseEventFragment createAdverseEventFragment = new CreateAdverseEventFragment()
+                        .newInstance(id+": "+getPatientInfo(Long.parseLong(id)));
+                FragmentManager manager = getActivity().getSupportFragmentManager();
+                manager.beginTransaction()
+                        .replace(R.id.rel_layout_for_frag, createAdverseEventFragment,
+                                createAdverseEventFragment.getTag())
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
     }
 
     public String adverseType(Long eventID) {
@@ -283,6 +292,27 @@ public class AdverseEventTab extends Fragment {
         mListener = null;
     }
 
+    public String getPatientInfo(Long pid) {
+        String patients = WriteRead.read(PATIENTINFOFILE, getContext());
+        String full_name = "";
+        try {
+            JSONArray jsonarray = new JSONArray(patients);
+            for (int i = 0; i < jsonarray.length(); i++) {
+                JSONObject jsonobject = jsonarray.getJSONObject(i);
+                Log.d(TAG, "ID: " + jsonobject.getString("id"));
+                if (jsonobject.getString("id").equals(""+pid)) {
+                    //String id = jsonobject.getString("id");
+                    final String first_name = jsonobject.getString("other_names");
+                    String last_name = jsonobject.getString("last_name");
+                    full_name = first_name + " " + last_name;
+                    break;
+                }
+            }
+        } catch (JSONException e) {
+            System.out.print("unsuccessful");
+        }
+        return full_name;
+    }
 
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name

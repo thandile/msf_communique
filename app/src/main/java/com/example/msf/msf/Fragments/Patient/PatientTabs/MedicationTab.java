@@ -99,6 +99,30 @@ public class MedicationTab extends Fragment {
         View view = inflater.inflate(R.layout.fragment_medication_tab, container, false);
         text = (TextView) view.findViewById(R.id.defaultText);
         regimenLV = (ListView) view.findViewById(R.id.medicationLV);
+        regimenLVOnClick();
+        regimensGet();
+        fab = (FloatingActionButton) view.findViewById(R.id.btnFloatingAction);
+        fabOnClick();
+        return view;
+    }
+
+    private void fabOnClick() {
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CreateRegimenFragment createRegimenFragment = new CreateRegimenFragment()
+                        .newInstance(id+": "+getPatientInfo(Long.parseLong(id)));
+                FragmentManager manager = getActivity().getSupportFragmentManager();
+                manager.beginTransaction()
+                        .replace(R.id.rel_layout_for_frag, createRegimenFragment,
+                                createRegimenFragment.getTag())
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
+    }
+
+    private void regimenLVOnClick() {
         regimenLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -118,21 +142,6 @@ public class MedicationTab extends Fragment {
                 //startActivity(intent);
             }
         });
-        regimensGet();
-        fab = (FloatingActionButton) view.findViewById(R.id.btnFloatingAction);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                CreateRegimenFragment createRegimenFragment = new CreateRegimenFragment();
-                FragmentManager manager = getActivity().getSupportFragmentManager();
-                manager.beginTransaction()
-                        .replace(R.id.rel_layout_for_frag, createRegimenFragment,
-                                createRegimenFragment.getTag())
-                        .addToBackStack(null)
-                        .commit();
-            }
-        });
-        return view;
     }
 
     public String getPatientInfo(Long pid) {

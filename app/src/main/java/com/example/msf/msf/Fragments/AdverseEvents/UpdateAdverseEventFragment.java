@@ -24,6 +24,7 @@ import com.example.msf.msf.API.Communicator;
 import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.ServerEvent;
 import com.example.msf.msf.Dialogs.DateDialog;
+import com.example.msf.msf.Fragments.Appointment.UpdateAppointmentFragment;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.AppStatus;
 import com.example.msf.msf.Utils.WriteRead;
@@ -66,8 +67,8 @@ public class UpdateAdverseEventFragment extends Fragment implements Validator.Va
     AutoCompleteTextView patientNames;
     @NotEmpty
     EditText eventDate;
-    @Select
-    Spinner adverseEvent;
+    @NotEmpty
+    AutoCompleteTextView adverseEvent;
     EditText notes;
 
     private OnFragmentInteractionListener mListener;
@@ -120,7 +121,7 @@ public class UpdateAdverseEventFragment extends Fragment implements Validator.Va
         // Get a reference to the AutoCompleteTextView in the layout
         patientNames = (AutoCompleteTextView) view.findViewById(R.id.autocomplete_patients);
         eventDate = (EditText) view.findViewById(R.id.eventDateET);
-        adverseEvent = (Spinner) view.findViewById(R.id.adverseEventSpinner);
+        adverseEvent = (AutoCompleteTextView) view.findViewById(R.id.autocomplete_adverseEvent);
         notes = (EditText) view.findViewById(R.id.noteET);
         submit = (Button) view.findViewById(R.id.adverse_submit);
         eventDate.setOnFocusChangeListener(new View.OnFocusChangeListener(){
@@ -196,12 +197,10 @@ public class UpdateAdverseEventFragment extends Fragment implements Validator.Va
 
     // add items into spinner dynamically
     public void addItemsOnAdverseSpinner(List<String> sessions) {
-        //adding to the pilot name spinner
-        ArrayAdapter<String> adversSpinnerAdapter = new ArrayAdapter<String>(
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
                 UpdateAdverseEventFragment.this.getActivity(),
-                android.R.layout.simple_spinner_item, sessions);
-        adversSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        adverseEvent.setAdapter(adversSpinnerAdapter);
+                android.R.layout.simple_dropdown_item_1line, sessions);
+        adverseEvent.setAdapter(adapter);
     }
 
 
@@ -209,7 +208,7 @@ public class UpdateAdverseEventFragment extends Fragment implements Validator.Va
     public void onValidationSucceeded() {
         prgDialog.show();
         String[] patientId = patientNames.getText().toString().split(":");
-        String[] adverse = String.valueOf(adverseEvent.getSelectedItem()).split(":");
+        String[] adverse = adverseEvent.getText().toString().split(":");
         String note = notes.getText().toString();
         String date = eventDate.getText().toString();
         Log.d(TAG,  adverseEvent +" "+patientId);

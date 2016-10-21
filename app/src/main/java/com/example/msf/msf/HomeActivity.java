@@ -230,7 +230,7 @@ public class HomeActivity extends AppCompatActivity
             // rather than home
             if (navItemIndex == 0) {
                 navItemIndex = 0;
-                Toast.makeText(HomeActivity.this, ""+navItemIndex, Toast.LENGTH_SHORT).show();
+               // Toast.makeText(HomeActivity.this, ""+navItemIndex, Toast.LENGTH_SHORT).show();
                 HomeFragment home = new HomeFragment();
                 FragmentManager manager = getSupportFragmentManager();
                 manager.beginTransaction().replace(R.id.rel_layout_for_frag,
@@ -323,7 +323,16 @@ public class HomeActivity extends AppCompatActivity
             outcomesGet();
             HomeActivity.this.deleteFile(NOTIFICATIONFILE);
             notificationRegGet();
-
+            if (navItemIndex==1){
+                NotificationFragment notificationFragment = new NotificationFragment();
+                FragmentManager manager = getSupportFragmentManager();
+                manager.beginTransaction().replace(R.id.rel_layout_for_frag,
+                        notificationFragment,
+                        notificationFragment.getTag())
+                        .addToBackStack(null)
+                        .commit();
+                setToolbarTitle();
+            }
         }
         else {
             Toast.makeText(HomeActivity.this.getApplicationContext(),"You are not online." +

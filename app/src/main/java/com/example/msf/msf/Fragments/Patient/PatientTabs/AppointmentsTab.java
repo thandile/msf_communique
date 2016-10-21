@@ -82,18 +82,12 @@ public class AppointmentsTab extends Fragment {
         text = (TextView) view.findViewById(R.id.defaultText);
         appointmentLV = (ListView) view.findViewById(R.id.enrollmentsLV) ;
         fab = (FloatingActionButton) view.findViewById(R.id.btnFloatingAction);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                CreateAppointmentFragment createAppointmentFragment = new CreateAppointmentFragment();
-                FragmentManager manager = getActivity().getSupportFragmentManager();
-                manager.beginTransaction()
-                        .replace(R.id.rel_layout_for_frag, createAppointmentFragment,
-                                createAppointmentFragment.getTag())
-                        .addToBackStack(null)
-                        .commit();
-            }
-        });
+        fabOnclick();
+        appointmentLVOnClick();
+        return view;
+    }
+
+    private void appointmentLVOnClick() {
         appointmentLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -112,7 +106,22 @@ public class AppointmentsTab extends Fragment {
                 //startActivity(intent);
             }
         });
-        return view;
+    }
+
+    private void fabOnclick() {
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CreateAppointmentFragment createAppointmentFragment = new CreateAppointmentFragment()
+                        .newInstance(id+": "+getPatientInfo(Long.parseLong(id)));
+                FragmentManager manager = getActivity().getSupportFragmentManager();
+                manager.beginTransaction()
+                        .replace(R.id.rel_layout_for_frag, createAppointmentFragment,
+                                createAppointmentFragment.getTag())
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
     }
 
     public void onButtonPressed(String data) {
@@ -120,6 +129,8 @@ public class AppointmentsTab extends Fragment {
             mListener.onFragmentInteraction(data);
         }
     }
+
+
 
     @Override
     public void onAttach(Context context) {

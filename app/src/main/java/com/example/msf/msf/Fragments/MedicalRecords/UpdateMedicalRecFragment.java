@@ -47,8 +47,8 @@ public class UpdateMedicalRecFragment extends Fragment implements Validator.Vali
     ProgressDialog prgDialog;
     @NotEmpty
     AutoCompleteTextView patientNames;
-    @Select(message = "Select a medical record type")
-    Spinner recordType;
+    @NotEmpty
+    AutoCompleteTextView recordType;
     EditText notesET;
     @NotEmpty
     EditText title;
@@ -109,7 +109,7 @@ public class UpdateMedicalRecFragment extends Fragment implements Validator.Vali
         prgDialog.setCancelable(false);
         // Get a reference to the AutoCompleteTextView in the layout
         patientNames = (AutoCompleteTextView) view.findViewById(R.id.autocomplete_patients);
-        recordType = (Spinner) view.findViewById(R.id.reportTypeSpinner);
+        recordType = (AutoCompleteTextView) view.findViewById(R.id.autocomplete_report);
         title = (EditText) view.findViewById(R.id.titltET);
         notesET = (EditText) view.findViewById(R.id.notesET);
         submit = (Button) view.findViewById(R.id.appointment_submit);
@@ -167,12 +167,10 @@ public class UpdateMedicalRecFragment extends Fragment implements Validator.Vali
     }
 
     public void addItemsOnReportTypeSpinner(List<String> reportType) {
-        //adding to the pilot name spinner
-        ArrayAdapter<String> sessionSpinnerAdapter = new ArrayAdapter<String>(
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
                 UpdateMedicalRecFragment.this.getActivity(),
-                android.R.layout.simple_spinner_item, reportType);
-        sessionSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        recordType.setAdapter(sessionSpinnerAdapter);
+                android.R.layout.simple_dropdown_item_1line, reportType);
+        recordType.setAdapter(adapter);
     }
 
     @Override
@@ -219,7 +217,7 @@ public class UpdateMedicalRecFragment extends Fragment implements Validator.Vali
     public void onValidationSucceeded() {
         prgDialog.show();
         String[] patientId = patientNames.getText().toString().split(":");
-        String[] record = String.valueOf(recordType.getSelectedItem()).split(":");
+        String[] record = recordType.getText().toString().split(":");
         String notes = notesET.getText().toString();
         String titleText = title.getText().toString();
         if (AppStatus.getInstance(UpdateMedicalRecFragment.this.getActivity()).isOnline()) {

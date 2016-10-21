@@ -61,8 +61,8 @@ public class UpdateEnrollmentFragment extends Fragment implements Validator.Vali
     Validator validator;
     private Communicator communicator;
     ProgressDialog prgDialog;
-    @Select(message = "Select a pilot")
-    Spinner pilotPrograms;
+    @NotEmpty
+    AutoCompleteTextView pilotPrograms;
     EditText comment;
     @NotEmpty
     EditText enrollment_date;
@@ -122,7 +122,7 @@ public class UpdateEnrollmentFragment extends Fragment implements Validator.Vali
         // Call the validation listener method.
         validator.setValidationListener(this);
         patientsTV = (AutoCompleteTextView) view.findViewById(R.id.autocomplete_patients);
-        pilotPrograms = (Spinner) view.findViewById(R.id.pilotSpinner);
+        pilotPrograms = (AutoCompleteTextView) view.findViewById(R.id.autocomplete_pilots);
         comment = (EditText) view.findViewById(R.id.enrollmentComment);
         enrollment_date = (EditText) view.findViewById(R.id.enrollmentDate);
         enrollment_date.setOnFocusChangeListener(new View.OnFocusChangeListener(){
@@ -177,7 +177,7 @@ public class UpdateEnrollmentFragment extends Fragment implements Validator.Vali
           //      Toast.LENGTH_SHORT).show();
         prgDialog.show();
         String[] patientID = patientsTV.getText().toString().split(":");
-        String[] program = String.valueOf(pilotPrograms.getSelectedItem()).split(":");
+        String[] program = pilotPrograms.getText().toString().split(":");
         String enrollmentComment = comment.getText().toString();
         String date = enrollment_date.getText().toString();
         if (AppStatus.getInstance(UpdateEnrollmentFragment.this.getActivity()).isOnline()) {
@@ -288,13 +288,10 @@ public class UpdateEnrollmentFragment extends Fragment implements Validator.Vali
 
     // add items into spinner dynamically
     public void addItemsOnPilotSpinner(List<String> pilots) {
-        //adding to the pilot name spinner
-        pilots.add(0,"");
-        ArrayAdapter<String> pilotSpinnerAdapter = new ArrayAdapter<String>(
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
                 UpdateEnrollmentFragment.this.getActivity(),
-                android.R.layout.simple_spinner_item, pilots);
-        pilotSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        pilotPrograms.setAdapter(pilotSpinnerAdapter);
+                android.R.layout.simple_dropdown_item_1line, pilots);
+        pilotPrograms.setAdapter(adapter);
     }
 
     // get the selected dropdown list value
