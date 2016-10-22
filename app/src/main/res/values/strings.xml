@@ -80,6 +80,7 @@
         <item>Adverse Events</item>
         <item>Medication</item>
         <item>Patient Outcomes</item>
+        <item>File Uploads</item>
     </string-array>
     <string name="title_activity_settings">Settings</string>
 

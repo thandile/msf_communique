@@ -44,7 +44,7 @@ public class PatientFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        HomeActivity.navItemIndex = 1;
+        HomeActivity.navItemIndex = 2;
         View view = inflater.inflate(R.layout.fragment_patient, container, false);
 
         setHasOptionsMenu(true);

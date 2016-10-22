@@ -204,9 +204,9 @@ public class RegimenFragment extends Fragment {
                         regimenLV.setAdapter(adapter);
                     }
                     else{
-                        text.setText("No recorded counselling sessions");
+                        text.setText("No recorded patient medications");
                         Toast.makeText(RegimenFragment.this.getActivity(),
-                                "No recorded counselling sessions", Toast.LENGTH_SHORT).show();
+                                "No recorded patient medications", Toast.LENGTH_SHORT).show();
                         //regimenList.add("No scheduled appointments.");
                     }
                    // swipeRefreshLayout.setRefreshing(false);

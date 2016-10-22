@@ -57,6 +57,7 @@ import com.example.msf.msf.Fragments.Events.CreateEventFragment;
 import com.example.msf.msf.Fragments.Events.EventInfoFragment;
 import com.example.msf.msf.Fragments.Events.EventsFragment;
 import com.example.msf.msf.Fragments.Events.UpdateEventFragment;
+import com.example.msf.msf.Fragments.FileUploads.FileUploadFragment;
 import com.example.msf.msf.Fragments.HomeFragment;
 import com.example.msf.msf.Fragments.MedicalRecords.CreateMedicalRecFragment;
 import com.example.msf.msf.Fragments.MedicalRecords.MedicalInfoFragment;
@@ -138,7 +139,8 @@ public class HomeActivity extends AppCompatActivity
         OutcomeInfoFragment.OnFragmentInteractionListener,
         UpdateOutcomeFragment.OnFragmentInteractionListener,
         OutcomeTab.OnFragmentInteractionListener,
-        NotificationFragment.OnFragmentInteractionListener{
+        NotificationFragment.OnFragmentInteractionListener,
+        FileUploadFragment.OnFragmentInteractionListener{
 
     // flag to load home fragment when user presses back key
     private boolean shouldLoadHomeFragOnBackPress = false;
@@ -722,6 +724,17 @@ public class HomeActivity extends AppCompatActivity
             manager.beginTransaction().replace(R.id.rel_layout_for_frag,
                     outcomeFragment,
                     outcomeFragment.getTag())
+                    .addToBackStack(null)
+                    .commit();
+            setToolbarTitle();
+        }
+        else if (id == R.id.nav_files){
+            navItemIndex = 12;
+            FileUploadFragment fileUploadFragment = new FileUploadFragment();
+            FragmentManager manager = getSupportFragmentManager();
+            manager.beginTransaction().replace(R.id.rel_layout_for_frag,
+                    fileUploadFragment,
+                    fileUploadFragment.getTag())
                     .addToBackStack(null)
                     .commit();
             setToolbarTitle();

@@ -50,6 +50,10 @@
             android:id="@+id/nav_outcomes"
             android:icon="@drawable/heart_health"
             android:title="Patient Outcomes" />
+        <item
+            android:id="@+id/nav_files"
+            android:icon="@drawable/upload"
+            android:title="File Uploads" />
     </group>
 
 </menu>
