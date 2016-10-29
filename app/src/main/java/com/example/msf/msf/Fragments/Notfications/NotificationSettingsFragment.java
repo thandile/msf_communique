@@ -71,6 +71,7 @@ public class NotificationSettingsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        HomeActivity.navItemIndex = 1;
         View view = inflater.inflate(R.layout.fragment_notification_settings, container, false);
         prgDialog = new ProgressDialog(NotificationSettingsFragment.this.getActivity());
         // Set Progress Dialog Text

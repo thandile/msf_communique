@@ -22,6 +22,7 @@ import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.API.ServerEvent;
 import com.example.msf.msf.Fragments.Appointment.UpdateAppointmentFragment;
+import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.WriteRead;
@@ -94,6 +95,7 @@ public class AdmissionInfoFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        HomeActivity.navItemIndex = 6;
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_admission_info, container, false);
         patientName = (TextView) view.findViewById(R.id.patientNameTV);

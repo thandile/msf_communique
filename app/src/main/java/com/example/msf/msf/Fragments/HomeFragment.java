@@ -129,7 +129,7 @@ public class HomeFragment extends Fragment {
                 String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
                 try{
                     JSONArray jsonarray = new JSONArray(resp);
-                    if (jsonarray.length()>0) {
+                   // if (jsonarray.length()>0) {
                         for (int i = 0; i < jsonarray.length(); i++) {
                             JSONObject jsonobject = jsonarray.getJSONObject(i);
                             String date = jsonobject.getString("appointment_date");
@@ -151,7 +151,7 @@ public class HomeFragment extends Fragment {
                             }
                         }
                         text.setText("Your upcoming appointments");
-
+                        if (appointmentList.size()>0){
                         Collections.sort(appointmentList, new DateComparator());
                         final ArrayList<Appointment> topAppointments = new ArrayList<Appointment>();
                         if (appointmentList.size()>2) {
@@ -196,8 +196,8 @@ public class HomeFragment extends Fragment {
                     }
                     else{
                         text.setText("No Scheduled appointments");
-                        Toast.makeText(HomeFragment.this.getActivity(),
-                                "No Scheduled appointments", Toast.LENGTH_SHORT).show();
+                       // Toast.makeText(HomeFragment.this.getActivity(),
+                            //    "No Scheduled appointments", Toast.LENGTH_SHORT).show();
                         //appointmentList.add("No scheduled appointments.");
                     }
                     //appointmentLV.setAdapter(adapter);
@@ -229,7 +229,7 @@ public class HomeFragment extends Fragment {
                 try{
                     Events events = new Events();
                     JSONArray jsonarray = new JSONArray(resp);
-                    if (jsonarray.length()>0) {
+                    //if (jsonarray.length()>0) {
                         for (int i = 0; i < jsonarray.length(); i++) {
                             JSONObject jsonobject = jsonarray.getJSONObject(i);
                             int id = Integer.parseInt(jsonobject.getString("id"));
@@ -245,6 +245,7 @@ public class HomeFragment extends Fragment {
                             eventsList.add(events);
                         }
                         text2.setText("Upcoming events");
+                    if (eventsList.size()>0){
                         Collections.sort(eventsList, new EventDateComparator());
                         final ArrayList<Events> topEvents = new ArrayList<Events>();
                         if (eventsList.size()>2) {
@@ -290,8 +291,8 @@ public class HomeFragment extends Fragment {
                     }
                     else{
                         text2.setText("No Scheduled events");
-                        Toast.makeText(HomeFragment.this.getActivity(),
-                                "No Scheduled events", Toast.LENGTH_SHORT).show();
+                       // Toast.makeText(HomeFragment.this.getActivity(),
+                         //       "No Scheduled events", Toast.LENGTH_SHORT).show();
                         //eventsList.add("No scheduled appointments.");
                     }
                     //appointmentLV.setAdapter(adapter);

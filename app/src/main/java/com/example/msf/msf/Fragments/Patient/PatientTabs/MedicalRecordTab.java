@@ -22,6 +22,7 @@ import com.example.msf.msf.API.Deserializers.MedicalRecord;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.Fragments.MedicalRecords.CreateMedicalRecFragment;
 import com.example.msf.msf.Fragments.MedicalRecords.MedicalInfoFragment;
+import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.WriteRead;
@@ -85,6 +86,7 @@ public class MedicalRecordTab extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        HomeActivity.navItemIndex = 2;
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_medical_record_tab, container, false);
         appointmentsGet();
@@ -144,7 +146,7 @@ public class MedicalRecordTab extends Fragment {
                 try{
                     MedicalRecord appointment = new MedicalRecord();
                     JSONArray jsonarray = new JSONArray(resp);
-                    if (jsonarray.length()>0) {
+                    //if (jsonarray.length()>0) {
                         for (int i = 0; i < jsonarray.length(); i++) {
                             JSONObject jsonobject = jsonarray.getJSONObject(i);
                             if (jsonobject.getString("patient").equals(id)) {
@@ -165,7 +167,7 @@ public class MedicalRecordTab extends Fragment {
                             }
 
                         }
-
+                        if (appointmentList.size()>0){
                         Log.d(TAG, appointmentList.toString());
                         BindDictionary<MedicalRecord> dictionary = new BindDictionary<>();
                         dictionary.addStringField(R.id.titleTV, new StringExtractor<MedicalRecord>() {

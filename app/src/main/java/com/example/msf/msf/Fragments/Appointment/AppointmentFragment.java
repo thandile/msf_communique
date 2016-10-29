@@ -44,6 +44,7 @@ import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -61,20 +62,28 @@ public class AppointmentFragment extends Fragment {
     public static String PATIENTINFOFILE = "Patients";
     public static String USERINFOFILE = "Users";
     ListView appointmentLV;
-    DateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
-    Date dateobj = new Date();
     RadioButton all, own;
     TextView text;
     ProgressDialog prgDialog;
+    DateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
+    Date dateobj = new Date();
+
     public AppointmentFragment() {
         // Required empty public constructor
     }
 
 
+    private String getYesterdayDateString() {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DATE, -1);
+        return dateFormat.format(cal.getTime());
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        HomeActivity.navItemIndex = 2;
+        HomeActivity.navItemIndex = 3;
         View view  = inflater.inflate(R.layout.fragment_appointment, container, false);
         text = (TextView) view.findViewById(R.id.defaultText);
         prgDialog = new ProgressDialog(AppointmentFragment.this.getActivity());
@@ -323,14 +332,13 @@ public class AppointmentFragment extends Fragment {
         prgDialog.hide();
         Toast.makeText(AppointmentFragment.this.getActivity(), "" +
                 errorEvent.getErrorMsg(), Toast.LENGTH_SHORT).show();
-          /**  appointmentsGet("all");
-            AppointmentFragment appointmentFragment = new AppointmentFragment();
-            FragmentManager manager = getActivity().getSupportFragmentManager();
-            manager.beginTransaction().replace(R.id.rel_layout_for_frag,
-                    appointmentFragment,
-                    appointmentFragment.getTag())
-                    .addToBackStack(null)
-                    .commit();**/
+        AppointmentFragment appointmentFragment = new AppointmentFragment();
+        FragmentManager manager = getActivity().getSupportFragmentManager();
+        manager.beginTransaction().replace(R.id.rel_layout_for_frag,
+                appointmentFragment,
+                appointmentFragment.getTag())
+                .addToBackStack(null)
+                .commit();
 
     }
 }

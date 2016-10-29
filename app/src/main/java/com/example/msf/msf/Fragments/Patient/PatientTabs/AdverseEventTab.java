@@ -21,6 +21,7 @@ import com.example.msf.msf.API.Deserializers.AdverseEvent;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.Fragments.AdverseEvents.AdverseEventInfoFragment;
 import com.example.msf.msf.Fragments.AdverseEvents.CreateAdverseEventFragment;
+import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.WriteRead;
@@ -85,7 +86,7 @@ public class AdverseEventTab extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_adverse_event_tab, container, false);
-
+        HomeActivity.navItemIndex = 2;
         adverseEventLV = (ListView) view.findViewById(R.id.adverseEventsLV);
         adverseEventsGet();
         text = (TextView) view.findViewById(R.id.defaultText);
@@ -191,7 +192,7 @@ public class AdverseEventTab extends Fragment {
                 String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
                 try{
                     JSONArray jsonarray = new JSONArray(resp);
-                    if (jsonarray.length()>0) {
+                   // if (jsonarray.length()>0) {
                         for (int i = 0; i < jsonarray.length(); i++) {
                             JSONObject jsonobject = jsonarray.getJSONObject(i);
                             Log.d(TAG,"ids "+jsonobject.getString("patient")+" "+id );
@@ -209,7 +210,7 @@ public class AdverseEventTab extends Fragment {
                                 adverseEventArrayList.add(appointment);
                             }
                         }
-
+                        if (adverseEventArrayList.size()>0){
                         Log.d(TAG, adverseEventArrayList.toString());
                         BindDictionary<AdverseEvent> dictionary = new BindDictionary<>();
                         dictionary.addStringField(R.id.titleTV, new StringExtractor<AdverseEvent>() {

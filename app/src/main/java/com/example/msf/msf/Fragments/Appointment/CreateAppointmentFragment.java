@@ -1,6 +1,7 @@
 package com.example.msf.msf.Fragments.Appointment;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -9,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -18,11 +20,13 @@ import android.widget.Toast;
 
 import com.example.msf.msf.API.BusProvider;
 import com.example.msf.msf.API.Communicator;
+import com.example.msf.msf.API.Deserializers.Appointment;
 import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.ServerEvent;
 import com.example.msf.msf.Dialogs.DateDialog;
 import com.example.msf.msf.Dialogs.TimeDialog;
 import com.example.msf.msf.Fragments.Patient.PatientFragment;
+import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.AppStatus;
 import com.example.msf.msf.Utils.WriteRead;
@@ -38,8 +42,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 import static com.mobsandgeeks.saripaar.Validator.*;
@@ -69,6 +77,8 @@ public class CreateAppointmentFragment extends Fragment implements ValidationLis
     private final String TAG = this.getClass().getSimpleName();
     private static final String ARG_PARAM1 = "param1";
     private String id;
+    DateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
+    Date dateobj = new Date();
 
     public CreateAppointmentFragment() {
         // Required empty public constructor
@@ -95,6 +105,7 @@ public class CreateAppointmentFragment extends Fragment implements ValidationLis
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        HomeActivity.navItemIndex = 3;
         View view = inflater.inflate(R.layout.fragment_create_appointment, container, false);
         communicator = new Communicator();
         /* Create Validator object to
@@ -222,14 +233,44 @@ public class CreateAppointmentFragment extends Fragment implements ValidationLis
         }
     }
 
+    public class DateComparator implements Comparator<String>
+    {
+        public int compare(String o1, String o2)
+        {
+            return o1.compareTo(o2);
+        }
+    }
+
+    private String getYesterdayDateString() {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DATE, -1);
+        return dateFormat.format(cal.getTime());
+    }
+
+
     // get the selected dropdown list value
     public void addListenerOnButton() {
 
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                InputMethodManager inputManager = (InputMethodManager)
+                        getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+
+                inputManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(),
+                        InputMethodManager.HIDE_NOT_ALWAYS);
+                String eventDate = dateET.getText().toString();
                 String endTime = endTimeET.getText().toString();
                 String startTime = startTimeET.getText().toString();
+
+               /** if (getYesterdayDateString().compareTo(eventDate)<=0 && startTime.compareTo(endTime)<=0) {
+                    validator.validate();
+                }
+                else {
+                    Toast.makeText(CreateAppointmentFragment.this.getActivity(),
+                            "You can not set date in the past", Toast.LENGTH_SHORT).show();
+                }**/
                 if (startTime.compareTo(endTime)<=0) {
                     validator.validate();
                 }
@@ -237,6 +278,7 @@ public class CreateAppointmentFragment extends Fragment implements ValidationLis
                     Toast.makeText(CreateAppointmentFragment.this.getActivity(),
                             "The end time must be after start time", Toast.LENGTH_SHORT).show();
                 }
+
             }
         });
     }

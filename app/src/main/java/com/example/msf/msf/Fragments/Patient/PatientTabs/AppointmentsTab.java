@@ -21,6 +21,7 @@ import com.example.msf.msf.API.Deserializers.Appointment;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.Fragments.Appointment.AppointmentInfoFragment;
 import com.example.msf.msf.Fragments.Appointment.CreateAppointmentFragment;
+import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.WriteRead;
@@ -77,6 +78,7 @@ public class AppointmentsTab extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        HomeActivity.navItemIndex = 2;
         View view = inflater.inflate(R.layout.fragment_tab_appointments, container, false);
         appointmentsGet();
         text = (TextView) view.findViewById(R.id.defaultText);

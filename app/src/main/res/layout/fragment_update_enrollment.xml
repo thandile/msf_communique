@@ -43,10 +43,10 @@
             android:paddingTop="10dp"
             android:paddingBottom="10dp"/>
 
-        <AutoCompleteTextView xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/autocomplete_pilots"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content" />
+        <Spinner
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/pilotSpinner" />
 
         <TextView
             android:layout_width="wrap_content"

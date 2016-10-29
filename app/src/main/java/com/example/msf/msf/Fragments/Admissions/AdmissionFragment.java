@@ -22,11 +22,16 @@ import com.amigold.fundapter.extractors.StringExtractor;
 import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.Deserializers.Admission;
 import com.example.msf.msf.API.Deserializers.Appointment;
+import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.Interface;
+import com.example.msf.msf.API.ServerEvent;
+import com.example.msf.msf.Fragments.Appointment.AppointmentFragment;
+import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.AppStatus;
 import com.example.msf.msf.Utils.WriteRead;
+import com.squareup.otto.Subscribe;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -60,7 +65,7 @@ public class AdmissionFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+        HomeActivity.navItemIndex = 6;
         View view = inflater.inflate(R.layout.fragment_admission, container, false);
         admissionsLV = (ListView) view.findViewById(R.id.admissionLV);
         text = (TextView) view.findViewById(R.id.defaultText);
@@ -201,7 +206,6 @@ public class AdmissionFragment extends Fragment {
     }
 
 
-
     public String getPatientInfo(Long pid) {
         String patients = WriteRead.read(PATIENTINFOFILE, getContext());
         String full_name = "";
@@ -237,5 +241,24 @@ public class AdmissionFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    @Subscribe
+    public void onServerEvent(ServerEvent serverEvent){
+        prgDialog.hide();
+    }
+
+    @Subscribe
+    public void onErrorEvent(ErrorEvent errorEvent){
+        prgDialog.hide();
+        Toast.makeText(AdmissionFragment.this.getActivity(), "" +
+                errorEvent.getErrorMsg(), Toast.LENGTH_SHORT).show();
+        AdmissionFragment appointmentFragment = new AdmissionFragment();
+        FragmentManager manager = getActivity().getSupportFragmentManager();
+        manager.beginTransaction().replace(R.id.rel_layout_for_frag,
+                appointmentFragment,
+                appointmentFragment.getTag())
+                .addToBackStack(null)
+                .commit();
     }
 }

@@ -1,5 +1,6 @@
 package com.example.msf.msf.Fragments.Notfications;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -29,7 +30,9 @@ import com.example.msf.msf.API.Communicator;
 import com.example.msf.msf.API.Deserializers.Admission;
 import com.example.msf.msf.API.Deserializers.Notifications;
 import com.example.msf.msf.API.Deserializers.Patients;
+import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.Interface;
+import com.example.msf.msf.API.ServerEvent;
 import com.example.msf.msf.Fragments.Admissions.AdmissionFragment;
 import com.example.msf.msf.Fragments.Admissions.AdmissionInfoFragment;
 import com.example.msf.msf.Fragments.AdverseEvents.AdverseEventInfoFragment;
@@ -45,6 +48,7 @@ import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.WriteRead;
+import com.squareup.otto.Subscribe;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -101,6 +105,7 @@ public class NotificationFragment extends Fragment {
     String PATIENT_OUTCOMES = "PO";
     String ENROLLMENTS = "EN";
     String REGIMENS = "RE";
+    ProgressDialog prgDialog;
 
     ArrayList<Notifications> notification_items = new ArrayList<Notifications>();
     int count = 0;
@@ -137,6 +142,12 @@ public class NotificationFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         HomeActivity.navItemIndex = 1;
+
+        prgDialog = new ProgressDialog(NotificationFragment.this.getActivity());
+        // Set Progress Dialog Text
+        prgDialog.setMessage("Please wait...");
+        // Set Cancelable as False
+        prgDialog.setCancelable(false);
         View view = inflater.inflate(R.layout.fragment_notification, container, false);
         communicator = new Communicator();
         text = (TextView) view.findViewById(R.id.text);
@@ -354,6 +365,7 @@ public class NotificationFragment extends Fragment {
 
 
     public void notificationsGet(){
+        prgDialog.show();
         Callback<List<Notifications>> callback = new Callback<List<Notifications>>() {
             ArrayList<Notifications> notificationList = new ArrayList<Notifications>();
             @Override
@@ -519,6 +531,8 @@ public class NotificationFragment extends Fragment {
             }
             };
         communicatorInterface.getNotifications(callback);
+
+        prgDialog.hide();
     }
 
     public String loadUserFromFile(Long uid){
@@ -594,5 +608,24 @@ public class NotificationFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(String message);
+    }
+
+    @Subscribe
+    public void onServerEvent(ServerEvent serverEvent){
+        prgDialog.hide();
+    }
+
+    @Subscribe
+    public void onErrorEvent(ErrorEvent errorEvent){
+        prgDialog.hide();
+        Toast.makeText(NotificationFragment.this.getActivity(), "" +
+                errorEvent.getErrorMsg(), Toast.LENGTH_SHORT).show();
+        NotificationFragment appointmentFragment = new NotificationFragment();
+        FragmentManager manager = getActivity().getSupportFragmentManager();
+        manager.beginTransaction().replace(R.id.rel_layout_for_frag,
+                appointmentFragment,
+                appointmentFragment.getTag())
+                .addToBackStack(null)
+                .commit();
     }
 }

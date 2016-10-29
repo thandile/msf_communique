@@ -1,5 +1,6 @@
 package com.example.msf.msf.Fragments.MedicalRecords;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -18,11 +19,16 @@ import com.amigold.fundapter.FunDapter;
 import com.amigold.fundapter.extractors.StringExtractor;
 import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.Deserializers.MedicalRecord;
+import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.Interface;
+import com.example.msf.msf.API.ServerEvent;
+import com.example.msf.msf.Fragments.Admissions.AdmissionFragment;
+import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.AppStatus;
 import com.example.msf.msf.Utils.WriteRead;
+import com.squareup.otto.Subscribe;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -44,6 +50,7 @@ public class MedicalRecordFragment extends Fragment {
     public static String MEDICALRECORDFILE = "MedicalRecords";
     ListView recordsLV;
     TextView text;
+    ProgressDialog prgDialog;
 
     public MedicalRecordFragment() {
         // Required empty public constructor
@@ -54,8 +61,13 @@ public class MedicalRecordFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        HomeActivity.navItemIndex = 8;
         View view = inflater.inflate(R.layout.fragment_medical_record, container, false);
-
+        prgDialog = new ProgressDialog(MedicalRecordFragment.this.getActivity());
+        // Set Progress Dialog Text
+        prgDialog.setMessage("Please wait...");
+        // Set Cancelable as False
+        prgDialog.setCancelable(false);
         text = (TextView) view.findViewById(R.id.defaultText);
         if (AppStatus.getInstance(MedicalRecordFragment.this.getActivity()).isOnline()) {
             medicalRecordsGet();
@@ -101,6 +113,7 @@ public class MedicalRecordFragment extends Fragment {
     }
 
     public void medicalRecordsGet(){
+        prgDialog.show();
         final ArrayList<MedicalRecord> appointmentList = new ArrayList<MedicalRecord>();
         Interface communicatorInterface;
         communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
@@ -186,6 +199,7 @@ public class MedicalRecordFragment extends Fragment {
             }
         };
         communicatorInterface.getMedicalReports(callback);
+        prgDialog.hide();
     }
 
 
@@ -232,6 +246,25 @@ public class MedicalRecordFragment extends Fragment {
             System.out.print("unsuccessful");
         }
         return full_name;
+    }
+
+    @Subscribe
+    public void onServerEvent(ServerEvent serverEvent){
+        prgDialog.hide();
+    }
+
+    @Subscribe
+    public void onErrorEvent(ErrorEvent errorEvent){
+        prgDialog.hide();
+        Toast.makeText(MedicalRecordFragment.this.getActivity(), "" +
+                errorEvent.getErrorMsg(), Toast.LENGTH_SHORT).show();
+        MedicalRecordFragment appointmentFragment = new MedicalRecordFragment();
+        FragmentManager manager = getActivity().getSupportFragmentManager();
+        manager.beginTransaction().replace(R.id.rel_layout_for_frag,
+                appointmentFragment,
+                appointmentFragment.getTag())
+                .addToBackStack(null)
+                .commit();
     }
 
 

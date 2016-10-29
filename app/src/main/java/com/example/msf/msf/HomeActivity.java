@@ -1,11 +1,14 @@
 package com.example.msf.msf;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.support.v4.app.FragmentManager;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -151,6 +154,7 @@ public class HomeActivity extends AppCompatActivity
     // toolbar titles respected to selected nav menu item
     private String[] activityTitles;
     NavigationView navigationView;
+    ProgressDialog prgDialog;
 
     public static String PATIENTFILE = "Patients";
     public static String PILOTFILE = "Pilots";
@@ -176,6 +180,11 @@ public class HomeActivity extends AppCompatActivity
         menuFragment = getIntent().getStringExtra("menuFragment");
         //Log.d(TAG,"menuFragment "+ menuFragment);
         communicator = new Communicator();
+        prgDialog = new ProgressDialog(HomeActivity.this);
+        // Set Progress Dialog Text
+        prgDialog.setMessage("Please wait...");
+        // Set Cancelable as False
+        prgDialog.setCancelable(false);
         FirebaseMessaging.getInstance().subscribeToTopic("test");
         //String token =
         String token = FirebaseInstanceId.getInstance().getToken();
@@ -306,9 +315,18 @@ public class HomeActivity extends AppCompatActivity
     }
 
     public void refresh() {
+
         if (AppStatus.getInstance(HomeActivity.this.getApplicationContext()).isOnline()) {
-            HomeActivity.this.deleteFile(PATIENTFILE);
-            patientsGet();
+            prgDialog.show();
+            // SystemClock.sleep(6500);
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                public void run() {
+                    HomeActivity.this.deleteFile(PATIENTFILE);
+                    patientsGet();
+                    prgDialog.dismiss();
+                }
+            }, 10000);
             HomeActivity.this.deleteFile(SESSIONFILE);
             sessionTypeGet();
             HomeActivity.this.deleteFile(PILOTFILE);
@@ -325,22 +343,154 @@ public class HomeActivity extends AppCompatActivity
             outcomesGet();
             HomeActivity.this.deleteFile(NOTIFICATIONFILE);
             notificationRegGet();
-            if (navItemIndex==1){
-                NotificationFragment notificationFragment = new NotificationFragment();
-                FragmentManager manager = getSupportFragmentManager();
-                manager.beginTransaction().replace(R.id.rel_layout_for_frag,
-                        notificationFragment,
-                        notificationFragment.getTag())
-                        .addToBackStack(null)
-                        .commit();
-                setToolbarTitle();
-            }
+            setFragment();
         }
         else {
+            prgDialog.hide();
             Toast.makeText(HomeActivity.this.getApplicationContext(),"You are not online." +
                             " Data will be refreshed when you have an internet connection",
                     Toast.LENGTH_LONG).show();
             Log.v("Home", "############################You are not online!!!!");
+        }
+
+    }
+
+    public void setFragment(){
+       // prgDialog.hide();
+        if (navItemIndex==1){
+            NotificationFragment notificationFragment = new NotificationFragment();
+            FragmentManager manager = getSupportFragmentManager();
+            manager.beginTransaction().replace(R.id.rel_layout_for_frag,
+                    notificationFragment,
+                    notificationFragment.getTag())
+                    .addToBackStack(null)
+                    .commit();
+            setToolbarTitle();
+        }
+        else if (navItemIndex==2) {
+            // Handle the camera action
+            navItemIndex = 2;
+            PatientFragment patientFragment = new PatientFragment();
+            FragmentManager manager = getSupportFragmentManager();
+            manager.beginTransaction().replace(R.id.rel_layout_for_frag,
+                    patientFragment,
+                    patientFragment.getTag())
+                    .addToBackStack(null)
+                    .commit();
+            setToolbarTitle();
+        }
+
+        else if (navItemIndex==3) {
+            navItemIndex = 3;
+            AppointmentFragment appointmentFragment = new AppointmentFragment();
+            FragmentManager manager = getSupportFragmentManager();
+            manager.beginTransaction().replace(R.id.rel_layout_for_frag,
+                    appointmentFragment,
+                    appointmentFragment.getTag())
+                    .addToBackStack(null)
+                    .commit();
+            setToolbarTitle();
+        }
+        else if (navItemIndex==4) {
+            navItemIndex = 4;
+            CounsellingFragment counsellingFragment = new CounsellingFragment();
+            FragmentManager manager = getSupportFragmentManager();
+            manager.beginTransaction().replace(R.id.rel_layout_for_frag,
+                    counsellingFragment,
+                    counsellingFragment.getTag())
+                    .addToBackStack(null)
+                    .commit();
+            setToolbarTitle();
+        }
+        else if (navItemIndex==5) {
+            navItemIndex = 5;
+            EnrollmentFragment enrollmentFragment = new EnrollmentFragment();
+            FragmentManager manager = getSupportFragmentManager();
+            manager.beginTransaction().replace(R.id.rel_layout_for_frag,
+                    enrollmentFragment,
+                    enrollmentFragment.getTag())
+                    .addToBackStack(null)
+                    .commit();
+            setToolbarTitle();
+        }
+
+        else if (navItemIndex==6) {
+            navItemIndex = 6;
+            AdmissionFragment admissionFragment = new AdmissionFragment();
+            FragmentManager manager = getSupportFragmentManager();
+            manager.beginTransaction().replace(R.id.rel_layout_for_frag,
+                    admissionFragment,
+                    admissionFragment.getTag())
+                    .addToBackStack(null)
+                    .commit();
+            setToolbarTitle();
+        }
+
+        else if (navItemIndex==7) {
+            navItemIndex = 7;
+            EventsFragment eventsFragment = new EventsFragment();
+            FragmentManager manager = getSupportFragmentManager();
+            manager.beginTransaction().replace(R.id.rel_layout_for_frag,
+                    eventsFragment,
+                    eventsFragment.getTag())
+                    .addToBackStack(null)
+                    .commit();
+            setToolbarTitle();
+        }
+        else if (navItemIndex==8) {
+            navItemIndex = 8;
+            MedicalRecordFragment medicalRecordFragment = new MedicalRecordFragment();
+            FragmentManager manager = getSupportFragmentManager();
+            manager.beginTransaction().replace(R.id.rel_layout_for_frag,
+                    medicalRecordFragment,
+                    medicalRecordFragment.getTag())
+                    .addToBackStack(null)
+                    .commit();
+            setToolbarTitle();
+        }
+        else if (navItemIndex==9){
+            navItemIndex = 9;
+            AdverseEventFragment adverseEventFragment = new AdverseEventFragment();
+            FragmentManager manager = getSupportFragmentManager();
+            manager.beginTransaction().replace(R.id.rel_layout_for_frag,
+                    adverseEventFragment,
+                    adverseEventFragment.getTag())
+                    .addToBackStack(null)
+                    .commit();
+            setToolbarTitle();
+        }
+        else if (navItemIndex==10){
+            navItemIndex = 10;
+            RegimenFragment regimenFragment = new RegimenFragment();
+            FragmentManager manager = getSupportFragmentManager();
+            manager.beginTransaction().replace(R.id.rel_layout_for_frag,
+                    regimenFragment,
+                    regimenFragment.getTag())
+                    .addToBackStack(null)
+                    .commit();
+            setToolbarTitle();
+        }
+        else if (navItemIndex==11){
+            navItemIndex = 11;
+            OutcomeFragment outcomeFragment = new OutcomeFragment();
+            FragmentManager manager = getSupportFragmentManager();
+            manager.beginTransaction().replace(R.id.rel_layout_for_frag,
+                    outcomeFragment,
+                    outcomeFragment.getTag())
+                    .addToBackStack(null)
+                    .commit();
+            setToolbarTitle();
+        }
+        else if (navItemIndex==12){
+            navItemIndex = 12;
+            FileUploadFragment fileUploadFragment = new FileUploadFragment();
+            FragmentManager manager = getSupportFragmentManager();
+            manager.beginTransaction().replace(R.id.rel_layout_for_frag,
+                    fileUploadFragment,
+                    fileUploadFragment.getTag())
+                    .addToBackStack(null)
+                    .commit();
+            setToolbarTitle();
         }
     }
 

@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -22,6 +23,7 @@ import com.example.msf.msf.API.Communicator;
 import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.ServerEvent;
 import com.example.msf.msf.Dialogs.DateDialog;
+import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.AppStatus;
 import com.example.msf.msf.Utils.WriteRead;
@@ -84,7 +86,7 @@ public class CreateAdmissionFragment extends Fragment implements Validator.Valid
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_create_admission, container, false);
-
+        HomeActivity.navItemIndex = 6;
         communicator = new Communicator();
         /* Create Validator object to
          * call the setValidationListener method of Validator class*/
@@ -134,6 +136,11 @@ public class CreateAdmissionFragment extends Fragment implements Validator.Valid
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                InputMethodManager inputManager = (InputMethodManager)
+                        getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+
+                inputManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(),
+                        InputMethodManager.HIDE_NOT_ALWAYS);
                 validator.validate();
             }
         });
@@ -230,13 +237,9 @@ public class CreateAdmissionFragment extends Fragment implements Validator.Valid
     public void onServerEvent(ServerEvent serverEvent){
         prgDialog.hide();
         Toast.makeText(CreateAdmissionFragment.this.getActivity(),
-                "You have successfully added a created a hospital admission",
+               "You have successfully added a created a hospital admission",
                 Toast.LENGTH_LONG).show();
-        patientNames.setText("");
-        notes.setText("");
-        dischargeDate.setText("");
-        healthCentre.setText("");
-        admissionDate.setText("");
+
         //AppointmentFragment appointmentFragment = new AppointmentFragment();
         FragmentManager manager = getActivity().getSupportFragmentManager();
         manager.popBackStack();

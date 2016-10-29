@@ -24,6 +24,7 @@ import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.Fragments.Admissions.AdmissionFragment;
 import com.example.msf.msf.Fragments.Admissions.AdmissionInfoFragment;
 import com.example.msf.msf.Fragments.Admissions.CreateAdmissionFragment;
+import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.WriteRead;
@@ -89,6 +90,7 @@ public class AdmissionsTab extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        HomeActivity.navItemIndex = 2;
         View view = inflater.inflate(R.layout.fragment_admissions_tab, container, false);
         admissionsLV = (ListView) view.findViewById(R.id.admissionsLV);
         admissionsGet();
@@ -148,7 +150,7 @@ public class AdmissionsTab extends Fragment {
                 try{
                     Admission admission = new Admission();
                     JSONArray jsonarray = new JSONArray(resp);
-                    if (jsonarray.length()>0) {
+                  //  if (jsonarray.length()>0) {
                         for (int i = 0; i < jsonarray.length(); i++) {
                             JSONObject jsonobject = jsonarray.getJSONObject(i);
                             if (jsonobject.getString("patient").equals(id)) {
@@ -167,6 +169,7 @@ public class AdmissionsTab extends Fragment {
                             }
 
                         }
+                    if (admissionList.size()>0){
                         Log.d(TAG, admissionList.toString());
                         BindDictionary<Admission> dictionary = new BindDictionary<>();
                         dictionary.addStringField(R.id.titleTV, new StringExtractor<Admission>() {

@@ -24,6 +24,7 @@ import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.Fragments.Regimens.CreateRegimenFragment;
 import com.example.msf.msf.Fragments.Regimens.RegimenFragment;
 import com.example.msf.msf.Fragments.Regimens.RegimenInfoFragment;
+import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.WriteRead;
@@ -95,6 +96,7 @@ public class MedicationTab extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        HomeActivity.navItemIndex = 2;
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_medication_tab, container, false);
         text = (TextView) view.findViewById(R.id.defaultText);
@@ -178,7 +180,7 @@ public class MedicationTab extends Fragment {
                 try{
                     JSONArray jsonarray = new JSONArray(resp);
 
-                    if (jsonarray.length()>0) {
+                   // if (jsonarray.length()>0) {
                         for (int i = 0; i < jsonarray.length(); i++) {
 
                             JSONObject jsonobject = jsonarray.getJSONObject(i);
@@ -204,7 +206,7 @@ public class MedicationTab extends Fragment {
                                 regimenList.add(regimen);
                             }
                         }
-
+                        if (regimenList.size()>0){
                         Log.d(TAG, regimenList.toString());
                         BindDictionary<Regimen> dictionary = new BindDictionary<>();
                         dictionary.addStringField(R.id.titleTV, new StringExtractor<Regimen>() {

@@ -21,6 +21,7 @@ import com.example.msf.msf.API.Deserializers.Users;
 import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.API.ServerEvent;
+import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
 import com.squareup.otto.Subscribe;
@@ -92,6 +93,7 @@ public class AppointmentInfoFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         Log.d(TAG, id);
+        HomeActivity.navItemIndex = 3;
         // Instantiate Progress Dialog object
         prgDialog = new ProgressDialog(AppointmentInfoFragment.this.getActivity());
         // Set Progress Dialog Text

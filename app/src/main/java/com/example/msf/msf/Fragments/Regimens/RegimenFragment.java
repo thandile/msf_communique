@@ -1,6 +1,7 @@
 package com.example.msf.msf.Fragments.Regimens;
 
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -21,13 +22,19 @@ import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.Deserializers.AddCounsellingResponse;
 import com.example.msf.msf.API.Deserializers.Regimen;
 import com.example.msf.msf.API.Deserializers.SessionResponse;
+import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.Interface;
+import com.example.msf.msf.API.ServerEvent;
+import com.example.msf.msf.Fragments.Admissions.AdmissionFragment;
 import com.example.msf.msf.Fragments.AdverseEvents.AdverseEventFragment;
 import com.example.msf.msf.Fragments.Counselling.CounsellingFragment;
+import com.example.msf.msf.Fragments.Events.EventsFragment;
+import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.AppStatus;
 import com.example.msf.msf.Utils.WriteRead;
+import com.squareup.otto.Subscribe;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -53,7 +60,7 @@ public class RegimenFragment extends Fragment {
     public static String REGIMENINFOFILE = "Drugs";
     ListView regimenLV;
     TextView text;
-
+    ProgressDialog prgDialog;
 
     public RegimenFragment() {
         // Required empty public constructor
@@ -64,6 +71,12 @@ public class RegimenFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        prgDialog = new ProgressDialog(RegimenFragment.this.getActivity());
+        // Set Progress Dialog Text
+        prgDialog.setMessage("Please wait...");
+        // Set Cancelable as False
+        prgDialog.setCancelable(false);
+        HomeActivity.navItemIndex = 10;
         View view = inflater.inflate(R.layout.fragment_regimen, container, false);
         text = (TextView) view.findViewById(R.id.defaultText);
         regimenLV = (ListView) view.findViewById(R.id.regimenLV);
@@ -134,6 +147,7 @@ public class RegimenFragment extends Fragment {
 
 
     public void regimensGet(){
+        prgDialog.show();
         final ArrayList<Regimen> regimenList = new ArrayList<Regimen>();
         Interface communicatorInterface;
         communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
@@ -226,6 +240,8 @@ public class RegimenFragment extends Fragment {
             }
         };
         communicatorInterface.getRegimen(callback);
+        prgDialog.hide();
+
     }
 
     public String[]  loadDrugs(List<String> did){
@@ -249,6 +265,24 @@ public class RegimenFragment extends Fragment {
             System.out.print("unsuccessful");
         }
         return drug;
+    }
 
+    @Subscribe
+    public void onServerEvent(ServerEvent serverEvent){
+        prgDialog.hide();
+    }
+
+    @Subscribe
+    public void onErrorEvent(ErrorEvent errorEvent){
+        prgDialog.hide();
+        Toast.makeText(RegimenFragment.this.getActivity(), "" +
+                errorEvent.getErrorMsg(), Toast.LENGTH_SHORT).show();
+        RegimenFragment appointmentFragment = new RegimenFragment();
+        FragmentManager manager = getActivity().getSupportFragmentManager();
+        manager.beginTransaction().replace(R.id.rel_layout_for_frag,
+                appointmentFragment,
+                appointmentFragment.getTag())
+                .addToBackStack(null)
+                .commit();
     }
 }

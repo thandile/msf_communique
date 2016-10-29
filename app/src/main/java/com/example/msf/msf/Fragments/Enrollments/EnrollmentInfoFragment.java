@@ -22,6 +22,7 @@ import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.API.PilotsDeserializer;
 import com.example.msf.msf.API.ServerEvent;
+import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.WriteRead;
@@ -93,6 +94,7 @@ public class EnrollmentInfoFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        HomeActivity.navItemIndex = 5;
         Log.d(TAG, id);
         // Instantiate Progress Dialog object
         prgDialog = new ProgressDialog(EnrollmentInfoFragment.this.getActivity());

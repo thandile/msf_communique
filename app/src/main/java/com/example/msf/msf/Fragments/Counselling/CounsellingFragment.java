@@ -22,12 +22,16 @@ import com.amigold.fundapter.extractors.StringExtractor;
 import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.Deserializers.AddCounsellingResponse;
 import com.example.msf.msf.API.Deserializers.SessionDeserialiser;
+import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.Interface;
+import com.example.msf.msf.API.ServerEvent;
 import com.example.msf.msf.Fragments.AdverseEvents.AdverseEventFragment;
+import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.AppStatus;
 import com.example.msf.msf.Utils.WriteRead;
+import com.squareup.otto.Subscribe;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -62,7 +66,7 @@ public class CounsellingFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
+        HomeActivity.navItemIndex = 4;
         View view = inflater.inflate(R.layout.fragment_counselling, container, false);
         counsellingLV = (ListView) view.findViewById(R.id.counsellingLV);
         text = (TextView) view.findViewById(R.id.defaultText);
@@ -233,6 +237,25 @@ public class CounsellingFragment extends Fragment {
             System.out.print("unsuccessful");
         }
         return session;
+    }
+
+    @Subscribe
+    public void onServerEvent(ServerEvent serverEvent){
+        prgDialog.hide();
+    }
+
+    @Subscribe
+    public void onErrorEvent(ErrorEvent errorEvent){
+        prgDialog.hide();
+        Toast.makeText(CounsellingFragment.this.getActivity(), ""
+                + errorEvent.getErrorMsg(), Toast.LENGTH_SHORT).show();
+        CounsellingFragment counsellingFragment = new CounsellingFragment();
+        FragmentManager manager = getActivity().getSupportFragmentManager();
+        manager.beginTransaction().replace(R.id.rel_layout_for_frag,
+                counsellingFragment,
+                counsellingFragment.getTag())
+                .addToBackStack(null)
+                .commit();
     }
 
 }

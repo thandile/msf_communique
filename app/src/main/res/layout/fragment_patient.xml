@@ -6,6 +6,12 @@
     android:id="@+id/swipe_refresh_layout"
     tools:context=".Fragments.Patient.PatientFragment">
 
+    <TextView
+        android:text=""
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/text" />
+
 
     <ListView
         android:layout_width="wrap_content"

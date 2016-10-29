@@ -21,6 +21,7 @@ import com.example.msf.msf.API.Deserializers.Events;
 import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.API.ServerEvent;
+import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
 import com.squareup.otto.Subscribe;
@@ -87,6 +88,7 @@ public class EventInfoFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        HomeActivity.navItemIndex = 7;
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_event_info, container, false);
         communicator = new Communicator();

@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -25,6 +26,7 @@ import com.example.msf.msf.API.ServerEvent;
 import com.example.msf.msf.Dialogs.DateDialog;
 import com.example.msf.msf.Dialogs.TimeDialog;
 import com.example.msf.msf.Fragments.Patient.PatientFragment;
+import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.AppStatus;
 import com.example.msf.msf.Utils.WriteRead;
@@ -114,6 +116,7 @@ public class UpdateAppointmentFragment extends Fragment implements Validator.Val
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         onButtonPressed(mParam1);
+        HomeActivity.navItemIndex = 3;
         /* Create Validator object to
          * call the setValidationListener method of Validator class*/
         validator = new Validator(this);
@@ -181,6 +184,11 @@ public class UpdateAppointmentFragment extends Fragment implements Validator.Val
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                InputMethodManager inputManager = (InputMethodManager)
+                        getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+
+                inputManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(),
+                        InputMethodManager.HIDE_NOT_ALWAYS);
                 String endTime = endTimeET.getText().toString();
                 String startTime = startTimeET.getText().toString();
                 if (startTime.compareTo(endTime)<=0) {
@@ -274,16 +282,7 @@ public class UpdateAppointmentFragment extends Fragment implements Validator.Val
         }
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
+
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(String[] data);
@@ -327,7 +326,7 @@ public class UpdateAppointmentFragment extends Fragment implements Validator.Val
                 String username = jsonobject.getString("username");
                 userList.add(id+": "+username);
             }
-            userList.add(0,"");
+            //userList.add(0,mParam1[1]);
             addItemsOnUserSpinner(userList);
 
 
@@ -345,6 +344,9 @@ public class UpdateAppointmentFragment extends Fragment implements Validator.Val
                 android.R.layout.simple_spinner_item, sessions);
         sessionSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         users.setAdapter(sessionSpinnerAdapter);
+        ArrayAdapter myAdap = (ArrayAdapter) users.getAdapter();
+        int spinnerPosition = myAdap.getPosition(mParam1[1]);
+        users.setSelection(spinnerPosition);
     }
 
 
@@ -367,20 +369,8 @@ public class UpdateAppointmentFragment extends Fragment implements Validator.Val
         Toast.makeText(UpdateAppointmentFragment.this.getActivity(),
                 "You have successfully edited an appointment",
                 Toast.LENGTH_LONG).show();
-        appointmentTypeET.setText("");
-        patientNames.setText("");
-        dateET.setText("");
-        startTimeET.setText("");
-        endTimeET.setText("");
-        notesET.setText("");
-        //AppointmentFragment appointmentFragment = new AppointmentFragment();
         FragmentManager manager = getActivity().getSupportFragmentManager();
         manager.popBackStackImmediate();
-        /**manager.beginTransaction()
-                .replace(R.id.rel_layout_for_frag, appointmentFragment,
-                        appointmentFragment.getTag())
-                .addToBackStack(null)
-                .commit();**/
     }
 
     @Subscribe

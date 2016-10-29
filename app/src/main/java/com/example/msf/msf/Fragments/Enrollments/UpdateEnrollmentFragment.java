@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -26,6 +27,7 @@ import com.example.msf.msf.API.PilotsDeserializer;
 import com.example.msf.msf.API.ServerEvent;
 import com.example.msf.msf.Dialogs.DateDialog;
 import com.example.msf.msf.Fragments.Patient.PatientFragment;
+import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.AppStatus;
@@ -61,8 +63,8 @@ public class UpdateEnrollmentFragment extends Fragment implements Validator.Vali
     Validator validator;
     private Communicator communicator;
     ProgressDialog prgDialog;
-    @NotEmpty
-    AutoCompleteTextView pilotPrograms;
+    //@Select(message = "Select a pilot")
+    Spinner pilotPrograms;
     EditText comment;
     @NotEmpty
     EditText enrollment_date;
@@ -107,6 +109,7 @@ public class UpdateEnrollmentFragment extends Fragment implements Validator.Vali
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        HomeActivity.navItemIndex = 5;
         View view = inflater.inflate(R.layout.fragment_update_enrollment, container, false);
         communicator = new Communicator();
         // Instantiate Progress Dialog object
@@ -122,7 +125,7 @@ public class UpdateEnrollmentFragment extends Fragment implements Validator.Vali
         // Call the validation listener method.
         validator.setValidationListener(this);
         patientsTV = (AutoCompleteTextView) view.findViewById(R.id.autocomplete_patients);
-        pilotPrograms = (AutoCompleteTextView) view.findViewById(R.id.autocomplete_pilots);
+        pilotPrograms = (Spinner) view.findViewById(R.id.pilotSpinner);
         comment = (EditText) view.findViewById(R.id.enrollmentComment);
         enrollment_date = (EditText) view.findViewById(R.id.enrollmentDate);
         enrollment_date.setOnFocusChangeListener(new View.OnFocusChangeListener(){
@@ -177,7 +180,7 @@ public class UpdateEnrollmentFragment extends Fragment implements Validator.Vali
           //      Toast.LENGTH_SHORT).show();
         prgDialog.show();
         String[] patientID = patientsTV.getText().toString().split(":");
-        String[] program = pilotPrograms.getText().toString().split(":");
+        String[] program = String.valueOf(pilotPrograms.getSelectedItem()).split(":");
         String enrollmentComment = comment.getText().toString();
         String date = enrollment_date.getText().toString();
         if (AppStatus.getInstance(UpdateEnrollmentFragment.this.getActivity()).isOnline()) {
@@ -288,10 +291,16 @@ public class UpdateEnrollmentFragment extends Fragment implements Validator.Vali
 
     // add items into spinner dynamically
     public void addItemsOnPilotSpinner(List<String> pilots) {
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+       // pilots.add(0, enrollmentInfo[0]);
+        //adding to the pilot name spinner
+        ArrayAdapter<String> pilotSpinnerAdapter = new ArrayAdapter<String>(
                 UpdateEnrollmentFragment.this.getActivity(),
-                android.R.layout.simple_dropdown_item_1line, pilots);
-        pilotPrograms.setAdapter(adapter);
+                android.R.layout.simple_spinner_item, pilots);
+        pilotSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        pilotPrograms.setAdapter(pilotSpinnerAdapter);
+        ArrayAdapter myAdap = (ArrayAdapter) pilotPrograms.getAdapter();
+        int spinnerPosition = myAdap.getPosition(enrollmentInfo[0]);
+        pilotPrograms.setSelection(spinnerPosition);
     }
 
     // get the selected dropdown list value
@@ -299,6 +308,11 @@ public class UpdateEnrollmentFragment extends Fragment implements Validator.Vali
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                InputMethodManager inputManager = (InputMethodManager)
+                        getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+
+                inputManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(),
+                        InputMethodManager.HIDE_NOT_ALWAYS);
                 validator.validate();
             }
         });
@@ -323,9 +337,7 @@ public class UpdateEnrollmentFragment extends Fragment implements Validator.Vali
         Toast.makeText(UpdateEnrollmentFragment.this.getActivity(),
                 "You have successfully enrolled the patient into a pilot",
                 Toast.LENGTH_LONG).show();
-        comment.setText("");
-        enrollment_date.setText("");
-        patientsTV.setText("");
+
         //EnrollmentFragment enrollmentFragment = new EnrollmentFragment();
         FragmentManager manager = getActivity().getSupportFragmentManager();
         manager.popBackStackImmediate();

@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -21,6 +22,7 @@ import com.example.msf.msf.API.Communicator;
 import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.ServerEvent;
 import com.example.msf.msf.Dialogs.DateDialog;
+import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.R;
 import com.mobsandgeeks.saripaar.ValidationError;
 import com.mobsandgeeks.saripaar.Validator;
@@ -101,6 +103,7 @@ public class UpdatePatientFragment extends Fragment implements Validator.Validat
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        HomeActivity.navItemIndex = 2;
         View view = inflater.inflate(R.layout.fragment_update_patient, container, false);
         communicator = new Communicator();
         patient_fname = (EditText) view.findViewById(R.id.patient_fname);
@@ -135,8 +138,8 @@ public class UpdatePatientFragment extends Fragment implements Validator.Validat
         sex = (Spinner) view.findViewById(R.id.sexSpinner);
         ArrayList<String> sexes = new ArrayList<String>();
         sexes.add("");
-        sexes.add("Female");
-        sexes.add("Male");
+        sexes.add("F");
+        sexes.add("M");
         /* Create Validator object to
          * call the setValidationListener method of Validator class*/
         validator = new Validator(this);
@@ -147,6 +150,9 @@ public class UpdatePatientFragment extends Fragment implements Validator.Validat
                 android.R.layout.simple_spinner_item, sexes);
         sessionSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sex.setAdapter(sessionSpinnerAdapter);
+        ArrayAdapter myAdap = (ArrayAdapter) sex.getAdapter(); //cast to an ArrayAdapter
+        int spinnerPosition = myAdap.getPosition(patientInfo[5]);
+        sex.setSelection(spinnerPosition);
         onButtonPressed(patientInfo);
         // Instantiate Progress Dialog object
         prgDialog = new ProgressDialog(UpdatePatientFragment.this.getActivity());
@@ -160,6 +166,11 @@ public class UpdatePatientFragment extends Fragment implements Validator.Validat
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                InputMethodManager inputManager = (InputMethodManager)
+                        getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+
+                inputManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(),
+                        InputMethodManager.HIDE_NOT_ALWAYS);
                 validator.validate();
             }
         });

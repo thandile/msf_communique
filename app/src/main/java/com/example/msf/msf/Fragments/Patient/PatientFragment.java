@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.example.msf.msf.API.Deserializers.Patients;
 import com.example.msf.msf.Fragments.Patient.PatientTabs.TabFragment;
@@ -35,6 +36,7 @@ public class PatientFragment extends Fragment {
     ListView patientLv;
     public static String PATIENTFILE = "Patients";
     ArrayAdapter<String> adapter;
+    TextView text;
 
     public PatientFragment() {
         // Required empty public constructor
@@ -46,7 +48,7 @@ public class PatientFragment extends Fragment {
                              Bundle savedInstanceState) {
         HomeActivity.navItemIndex = 2;
         View view = inflater.inflate(R.layout.fragment_patient, container, false);
-
+        text = (TextView) view.findViewById(R.id.text);
         setHasOptionsMenu(true);
         patientLv = (ListView) view.findViewById(R.id.patientLV);
         loadFromFile();
@@ -87,6 +89,9 @@ public class PatientFragment extends Fragment {
                 adapter = new ArrayAdapter<String>(PatientFragment.this.getActivity(),
                         android.R.layout.simple_list_item_1, patientList);
                 patientLv.setAdapter(adapter);
+            }
+            else {
+                text.setText("No existing patients");
             }
         }
         catch (JSONException e) {

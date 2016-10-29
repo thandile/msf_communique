@@ -5,10 +5,12 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -21,6 +23,8 @@ import com.example.msf.msf.API.BusProvider;
 import com.example.msf.msf.API.Communicator;
 import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.ServerEvent;
+import com.example.msf.msf.Dialogs.DateDialog;
+import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.AppStatus;
 import com.example.msf.msf.Utils.WriteRead;
@@ -50,8 +54,8 @@ public class UpdateOutcomeFragment extends Fragment implements Validator.Validat
     ProgressDialog prgDialog;
     @NotEmpty
     AutoCompleteTextView patientNames;
-    @NotEmpty
-    AutoCompleteTextView outcomeType;
+    @Select(message = "Select a outcome type")
+    Spinner outcomeType;
     EditText outcomeDateET;
     EditText notesET;
     private final String TAG = this.getClass().getSimpleName();
@@ -86,6 +90,7 @@ public class UpdateOutcomeFragment extends Fragment implements Validator.Validat
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        HomeActivity.navItemIndex = 11;
         View view = inflater.inflate(R.layout.fragment_update_outcome, container, false);
         communicator = new Communicator();
         /* Create Validator object to
@@ -101,12 +106,21 @@ public class UpdateOutcomeFragment extends Fragment implements Validator.Validat
         prgDialog.setCancelable(false);
         // Get a reference to the AutoCompleteTextView in the layout
         patientNames = (AutoCompleteTextView) view.findViewById(R.id.autocomplete_patients);
-        outcomeType = (AutoCompleteTextView) view.findViewById(R.id.autocomplete_outcome);
+        outcomeType = (Spinner) view.findViewById(R.id.OutcomeET);
         outcomeDateET = (EditText) view.findViewById(R.id.dateET);
         notesET = (EditText) view.findViewById(R.id.notesET);
         submit = (Button) view.findViewById(R.id.outcome_submit);
         patientNames.setText(input[1], TextView.BufferType.EDITABLE);
         outcomeDateET.setText(input[2], TextView.BufferType.EDITABLE);
+        outcomeDateET.setOnFocusChangeListener(new View.OnFocusChangeListener(){
+            public void onFocusChange(View view, boolean hasfocus){
+                if(hasfocus){
+                    DateDialog dialog=new DateDialog(view);
+                    FragmentTransaction ft =getFragmentManager().beginTransaction();
+                    dialog.show(ft, "DatePicker");
+                }
+            }
+        });
         notesET.setText(input[3], TextView.BufferType.EDITABLE);
         patientsGet();
         addListenerOnButton();
@@ -119,16 +133,25 @@ public class UpdateOutcomeFragment extends Fragment implements Validator.Validat
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                InputMethodManager inputManager = (InputMethodManager)
+                        getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+
+                inputManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(),
+                        InputMethodManager.HIDE_NOT_ALWAYS);
                 validator.validate();
             }
         });
     }
 
     public void addItemsOnReportTypeSpinner(List<String> outcomes) {
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+        ArrayAdapter<String> sessionSpinnerAdapter = new ArrayAdapter<String>(
                 UpdateOutcomeFragment.this.getActivity(),
-                android.R.layout.simple_dropdown_item_1line, outcomes);
-        outcomeType.setAdapter(adapter);
+                android.R.layout.simple_spinner_item, outcomes);
+        sessionSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        outcomeType.setAdapter(sessionSpinnerAdapter);
+        ArrayAdapter myAdap = (ArrayAdapter) outcomeType.getAdapter();
+        int spinnerPosition = myAdap.getPosition(input[0]);
+        outcomeType.setSelection(spinnerPosition);
     }
 
 
@@ -166,7 +189,7 @@ public class UpdateOutcomeFragment extends Fragment implements Validator.Validat
                 String id_name =jsonobject.getString("id")+": "+jsonobject.getString("name");
                 reportList.add(id_name);
             }
-            reportList.add(0, "");
+            //reportList.add(0, input[0]);
             addItemsOnReportTypeSpinner(reportList);
         }
         catch (JSONException e){
@@ -212,7 +235,7 @@ public class UpdateOutcomeFragment extends Fragment implements Validator.Validat
         prgDialog.show();
 
         String[] patientId = patientNames.getText().toString().split(":");
-        String[] outcome = outcomeType.getText().toString().split(":");
+        String[] outcome = String.valueOf(outcomeType.getSelectedItem()).split(":");
         String notes = notesET.getText().toString();
         String date = outcomeDateET.getText().toString();
         if (AppStatus.getInstance(UpdateOutcomeFragment.this.getActivity()).isOnline()) {

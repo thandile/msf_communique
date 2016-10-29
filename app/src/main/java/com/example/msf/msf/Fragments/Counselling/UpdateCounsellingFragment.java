@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -22,6 +23,7 @@ import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.ServerEvent;
 import com.example.msf.msf.Fragments.Enrollments.UpdateEnrollmentFragment;
 import com.example.msf.msf.Fragments.Patient.PatientFragment;
+import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.AppStatus;
 import com.example.msf.msf.Utils.WriteRead;
@@ -55,8 +57,8 @@ public class UpdateCounsellingFragment extends Fragment implements Validator.Val
     @NotEmpty
     AutoCompleteTextView patientNames;
     EditText notesET;
-    @NotEmpty
-    AutoCompleteTextView sessionType;
+    //@Select(message = "Select a session type")
+    Spinner sessionType;
     Button submit;
     public static String PATIENTINFOFILE = "Patients";
     public static String SESSIONTYPEFILE = "SessionType";
@@ -99,6 +101,7 @@ public class UpdateCounsellingFragment extends Fragment implements Validator.Val
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        HomeActivity.navItemIndex = 4;
         View view = inflater.inflate(R.layout.fragment_update_counselling, container, false);
         communicator = new Communicator();
         // Instantiate Progress Dialog object
@@ -109,7 +112,7 @@ public class UpdateCounsellingFragment extends Fragment implements Validator.Val
         prgDialog.setCancelable(false);
         // Get a reference to the AutoCompleteTextView in the layout
         patientNames = (AutoCompleteTextView) view.findViewById(R.id.autocomplete_patients);
-        sessionType = (AutoCompleteTextView) view.findViewById(R.id.autocomplete_session);
+        sessionType = (Spinner) view.findViewById(R.id.session_spinner);
         notesET = (EditText) view.findViewById(R.id.notesET);
         //sessionType = (Spinner) view.findViewById(R.id.session_spinner);
         submit = (Button) view.findViewById(R.id.session_submit);
@@ -120,16 +123,26 @@ public class UpdateCounsellingFragment extends Fragment implements Validator.Val
         validator.setValidationListener(this);
         patientNames.setText(counsellingInfo[2]);
         notesET.setText(counsellingInfo[1]);
+        patientsGet();
+        sessionGet();
+        submitListener();
+        return view;
+    }
+
+    private void submitListener() {
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               validator.validate();
+                InputMethodManager inputManager = (InputMethodManager)
+                        getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+
+                inputManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(),
+                        InputMethodManager.HIDE_NOT_ALWAYS);
+                validator.validate();
             }
         });
-        patientsGet();
-        sessionGet();
-        return view;
     }
+
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(String[] data) {
@@ -159,7 +172,7 @@ public class UpdateCounsellingFragment extends Fragment implements Validator.Val
     public void onValidationSucceeded() {
         prgDialog.show();
         String[] patientId = patientNames.getText().toString().split(":");
-        String[] counsellingSession = sessionType.getText().toString().split(":");
+        String[] counsellingSession = String.valueOf(sessionType.getSelectedItem()).split(":");
         String notes = notesET.getText().toString();
         Log.d(TAG, "heyyo " + counsellingSession[0] +" "+patientId[0] + " " + notes);
         if (AppStatus.getInstance(UpdateCounsellingFragment.this.getActivity()).isOnline()) {
@@ -234,7 +247,7 @@ public class UpdateCounsellingFragment extends Fragment implements Validator.Val
                 String id_name =jsonobject.getString("id")+": "+jsonobject.getString("name");
                 sessionList.add(id_name);
             }
-            sessionList.add(0, "");
+           // sessionList.add(0, counsellingInfo[0]);
             addItemsOnSessionSpinner(sessionList);
         }
         catch (JSONException e){
@@ -244,11 +257,17 @@ public class UpdateCounsellingFragment extends Fragment implements Validator.Val
 
     // add items into spinner dynamically
     public void addItemsOnSessionSpinner(List<String> sessions) {
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+        ArrayAdapter<String> sessionSpinnerAdapter = new ArrayAdapter<String>(
                 UpdateCounsellingFragment.this.getActivity(),
-                android.R.layout.simple_dropdown_item_1line, sessions);
-        sessionType.setAdapter(adapter);
+                android.R.layout.simple_spinner_item, sessions);
+        sessionSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sessionType.setAdapter(sessionSpinnerAdapter);
+        ArrayAdapter myAdap = (ArrayAdapter) sessionType.getAdapter();
+        int spinnerPosition = myAdap.getPosition(counsellingInfo[0]);
+        sessionType.setSelection(spinnerPosition);
+       // sessionType.setSelection(0);
     }
+
 
 
     @Override

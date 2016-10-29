@@ -23,6 +23,7 @@ import com.example.msf.msf.API.Deserializers.Regimen;
 import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.API.ServerEvent;
+import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.WriteRead;
@@ -95,6 +96,7 @@ public class RegimenInfoFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        HomeActivity.navItemIndex = 10;
         communicator = new Communicator();
         View view = inflater.inflate(R.layout.fragment_regimen_info, container, false);
         patientName = (TextView) view.findViewById(R.id.patientNameTV);

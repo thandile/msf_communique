@@ -1,5 +1,6 @@
 package com.example.msf.msf.Fragments.Outcomes;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -19,12 +20,17 @@ import com.amigold.fundapter.extractors.StringExtractor;
 import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.Deserializers.Enrollment;
 import com.example.msf.msf.API.Deserializers.Outcome;
+import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.Interface;
+import com.example.msf.msf.API.ServerEvent;
 import com.example.msf.msf.Fragments.AdverseEvents.AdverseEventFragment;
+import com.example.msf.msf.Fragments.Notfications.NotificationFragment;
+import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.AppStatus;
 import com.example.msf.msf.Utils.WriteRead;
+import com.squareup.otto.Subscribe;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -47,7 +53,7 @@ public class OutcomeFragment extends Fragment {
     private final String TAG = this.getClass().getSimpleName();
     public static String PATIENTINFOFILE = "Patients";
     public static String OUTCOMEFILE = "Outcomes";
-
+    ProgressDialog prgDialog;
 
 
     public OutcomeFragment() {
@@ -59,9 +65,15 @@ public class OutcomeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        HomeActivity.navItemIndex = 11;
+
         View view = inflater.inflate(R.layout.fragment_outcome, container, false);
         outcomeLV = (ListView) view.findViewById(R.id.outcomeLV);
-
+        prgDialog = new ProgressDialog(OutcomeFragment.this.getActivity());
+        // Set Progress Dialog Text
+        prgDialog.setMessage("Please wait...");
+        // Set Cancelable as False
+        prgDialog.setCancelable(false);
         outcomeLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -101,6 +113,7 @@ public class OutcomeFragment extends Fragment {
     }
 
     public void outcomesGet(){
+        prgDialog.show();
         final ArrayList<Outcome> outcomeList = new ArrayList<Outcome>();
         Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
         Callback<List<Outcome>> callback = new Callback<List<Outcome>>() {
@@ -182,6 +195,7 @@ public class OutcomeFragment extends Fragment {
             }
         };
         communicatorInterface.getOutcomes(callback);
+        prgDialog.hide();
     }
 
     public String getPatientInfo(Long pid) {
@@ -224,4 +238,22 @@ public class OutcomeFragment extends Fragment {
         return pilot;
     }
 
+    @Subscribe
+    public void onServerEvent(ServerEvent serverEvent){
+        prgDialog.hide();
+    }
+
+    @Subscribe
+    public void onErrorEvent(ErrorEvent errorEvent){
+        prgDialog.hide();
+        Toast.makeText(OutcomeFragment.this.getActivity(), "" +
+                errorEvent.getErrorMsg(), Toast.LENGTH_SHORT).show();
+        OutcomeFragment appointmentFragment = new OutcomeFragment();
+        FragmentManager manager = getActivity().getSupportFragmentManager();
+        manager.beginTransaction().replace(R.id.rel_layout_for_frag,
+                appointmentFragment,
+                appointmentFragment.getTag())
+                .addToBackStack(null)
+                .commit();
+    }
 }

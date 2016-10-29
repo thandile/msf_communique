@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -22,6 +23,7 @@ import com.example.msf.msf.API.BusProvider;
 import com.example.msf.msf.API.Communicator;
 import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.ServerEvent;
+import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.AppStatus;
 import com.example.msf.msf.Utils.WriteRead;
@@ -47,8 +49,8 @@ public class UpdateMedicalRecFragment extends Fragment implements Validator.Vali
     ProgressDialog prgDialog;
     @NotEmpty
     AutoCompleteTextView patientNames;
-    @NotEmpty
-    AutoCompleteTextView recordType;
+    //@Select(message = "Select a medical record type")
+    Spinner recordType;
     EditText notesET;
     @NotEmpty
     EditText title;
@@ -93,6 +95,7 @@ public class UpdateMedicalRecFragment extends Fragment implements Validator.Vali
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        HomeActivity.navItemIndex = 8;
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_update_medical_rec, container, false);
         communicator = new Communicator();
@@ -109,13 +112,13 @@ public class UpdateMedicalRecFragment extends Fragment implements Validator.Vali
         prgDialog.setCancelable(false);
         // Get a reference to the AutoCompleteTextView in the layout
         patientNames = (AutoCompleteTextView) view.findViewById(R.id.autocomplete_patients);
-        recordType = (AutoCompleteTextView) view.findViewById(R.id.autocomplete_report);
+        recordType = (Spinner) view.findViewById(R.id.reportTypeSpinner);
+        recordTypeGet();
         title = (EditText) view.findViewById(R.id.titltET);
         notesET = (EditText) view.findViewById(R.id.notesET);
         submit = (Button) view.findViewById(R.id.appointment_submit);
         patientsGet();
         addListenerOnButton();
-        recordTypeGet();
         title.setText(input[0], TextView.BufferType.EDITABLE);
         patientNames.setText(input[2], TextView.BufferType.EDITABLE);
         notesET.setText(input[3], TextView.BufferType.EDITABLE);
@@ -157,7 +160,7 @@ public class UpdateMedicalRecFragment extends Fragment implements Validator.Vali
                 String id_name =jsonobject.getString("id")+": "+jsonobject.getString("name");
                 reportList.add(id_name);
             }
-            reportList.add(0, "");
+            //reportList.add(0, input[1]);
             addItemsOnReportTypeSpinner(reportList);
         }
         catch (JSONException e){
@@ -167,10 +170,16 @@ public class UpdateMedicalRecFragment extends Fragment implements Validator.Vali
     }
 
     public void addItemsOnReportTypeSpinner(List<String> reportType) {
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+        ArrayAdapter<String> sessionSpinnerAdapter = new ArrayAdapter<String>(
                 UpdateMedicalRecFragment.this.getActivity(),
-                android.R.layout.simple_dropdown_item_1line, reportType);
-        recordType.setAdapter(adapter);
+                android.R.layout.simple_spinner_item, reportType);
+        sessionSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        recordType.setAdapter(sessionSpinnerAdapter);
+        ArrayAdapter myAdap = (ArrayAdapter) recordType.getAdapter();
+        int spinnerPosition = myAdap.getPosition(input[1]);
+        recordType.setSelection(spinnerPosition);
+        String record = String.valueOf(recordType.getSelectedItem()).split(":")[1];
+        Log.d(TAG, "record type "+record);
     }
 
     @Override
@@ -208,6 +217,11 @@ public class UpdateMedicalRecFragment extends Fragment implements Validator.Vali
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                InputMethodManager inputManager = (InputMethodManager)
+                        getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+
+                inputManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(),
+                        InputMethodManager.HIDE_NOT_ALWAYS);
                 validator.validate();
             }
         });
@@ -217,7 +231,7 @@ public class UpdateMedicalRecFragment extends Fragment implements Validator.Vali
     public void onValidationSucceeded() {
         prgDialog.show();
         String[] patientId = patientNames.getText().toString().split(":");
-        String[] record = recordType.getText().toString().split(":");
+        String[] record = String.valueOf(recordType.getSelectedItem()).split(":");
         String notes = notesET.getText().toString();
         String titleText = title.getText().toString();
         if (AppStatus.getInstance(UpdateMedicalRecFragment.this.getActivity()).isOnline()) {

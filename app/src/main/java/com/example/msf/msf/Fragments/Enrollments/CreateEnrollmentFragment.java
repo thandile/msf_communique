@@ -2,6 +2,7 @@ package com.example.msf.msf.Fragments.Enrollments;
 
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -10,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -26,6 +28,7 @@ import com.example.msf.msf.API.PilotsDeserializer;
 import com.example.msf.msf.API.ServerEvent;
 import com.example.msf.msf.Dialogs.DateDialog;
 import com.example.msf.msf.Fragments.Patient.PatientFragment;
+import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.AppStatus;
@@ -56,8 +59,8 @@ public class CreateEnrollmentFragment extends Fragment implements Validator.Vali
     private final String TAG = this.getClass().getSimpleName();
     private Communicator communicator;
     ProgressDialog prgDialog;
-    @NotEmpty
-    AutoCompleteTextView pilotPrograms;
+    @Select(message = "Select a pilot")
+    Spinner pilotPrograms;
     @NotEmpty
     AutoCompleteTextView patientNames;
     Validator validator;
@@ -94,6 +97,7 @@ public class CreateEnrollmentFragment extends Fragment implements Validator.Vali
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        HomeActivity.navItemIndex = 5;
         View view = inflater.inflate(R.layout.fragment_create_enrollment, container, false);
         communicator = new Communicator();
         // Instantiate Progress Dialog object
@@ -103,7 +107,7 @@ public class CreateEnrollmentFragment extends Fragment implements Validator.Vali
         // Set Cancelable as False
         prgDialog.setCancelable(false);
         // Get a reference to the AutoCompleteTextView in the layout
-        pilotPrograms = (AutoCompleteTextView) view.findViewById(R.id.autocomplete_pilots);
+        pilotPrograms = (Spinner) view.findViewById(R.id.pilotSpinner);
         patientNames = (AutoCompleteTextView) view.findViewById(R.id.autocomplete_patients);
         patientNames.setText(id);
         comment = (EditText) view.findViewById(R.id.enrollmentComment);
@@ -130,6 +134,11 @@ public class CreateEnrollmentFragment extends Fragment implements Validator.Vali
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                InputMethodManager inputManager = (InputMethodManager)
+                        getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+
+                inputManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(),
+                        InputMethodManager.HIDE_NOT_ALWAYS);
                 validator.validate();
 
             }
@@ -220,10 +229,13 @@ public class CreateEnrollmentFragment extends Fragment implements Validator.Vali
 
     // add items into spinner dynamically
     public void addItemsOnPilotSpinner(List<String> pilots) {
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+        pilots.add(0, "");
+        //adding to the pilot name spinner
+        ArrayAdapter<String> pilotSpinnerAdapter = new ArrayAdapter<String>(
                 CreateEnrollmentFragment.this.getActivity(),
-                android.R.layout.simple_dropdown_item_1line, pilots);
-        pilotPrograms.setAdapter(adapter);
+                android.R.layout.simple_spinner_item, pilots);
+        pilotSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        pilotPrograms.setAdapter(pilotSpinnerAdapter);
     }
 
 
@@ -268,7 +280,7 @@ public class CreateEnrollmentFragment extends Fragment implements Validator.Vali
              //   Toast.LENGTH_SHORT).show();
         prgDialog.show();
         String[] patientId = patientNames.getText().toString().split(":");
-        String[] program = pilotPrograms.getText().toString().split(":");
+        String[] program = String.valueOf(pilotPrograms.getSelectedItem()).split(":");
         String enrollmentComment = comment.getText().toString();
         String date = enrollment_date.getText().toString();
         if (AppStatus.getInstance(CreateEnrollmentFragment.this.getActivity()).isOnline()) {

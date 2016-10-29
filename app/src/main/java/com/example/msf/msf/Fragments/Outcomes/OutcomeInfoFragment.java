@@ -23,6 +23,7 @@ import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.API.ServerEvent;
 import com.example.msf.msf.Fragments.Admissions.AdmissionInfoFragment;
 import com.example.msf.msf.Fragments.Enrollments.UpdateEnrollmentFragment;
+import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.WriteRead;
@@ -93,6 +94,7 @@ public class OutcomeInfoFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        HomeActivity.navItemIndex = 11;
         View view = inflater.inflate(R.layout.fragment_outcome_info, container, false);
         prgDialog = new ProgressDialog(OutcomeInfoFragment.this.getActivity());
         // Set Progress Dialog Text

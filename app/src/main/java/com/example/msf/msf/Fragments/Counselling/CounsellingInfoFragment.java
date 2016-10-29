@@ -22,6 +22,7 @@ import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.API.ServerEvent;
 import com.example.msf.msf.Fragments.Admissions.AdmissionFragment;
+import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.WriteRead;
@@ -97,6 +98,7 @@ public class CounsellingInfoFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        HomeActivity.navItemIndex = 4;
         View view = inflater.inflate(R.layout.fragment_counselling_info, container, false);
         patient = (TextView) view.findViewById(R.id.patient);
         sessionType = (TextView) view.findViewById(R.id.sessionTypeTv);

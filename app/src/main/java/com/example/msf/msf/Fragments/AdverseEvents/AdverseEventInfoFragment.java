@@ -20,6 +20,7 @@ import com.example.msf.msf.API.Deserializers.AdverseEvent;
 import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.API.ServerEvent;
+import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.WriteRead;
@@ -76,7 +77,7 @@ public class AdverseEventInfoFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+        HomeActivity.navItemIndex = 9;
         View view = inflater.inflate(R.layout.fragment_adverse_event_info, container, false);
         patientName = (TextView) view.findViewById(R.id.patientNameTV);
         eventDate = (TextView) view.findViewById(R.id.eventDateTV);

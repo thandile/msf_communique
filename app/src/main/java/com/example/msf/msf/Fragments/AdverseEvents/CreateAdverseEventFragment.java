@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -55,8 +56,8 @@ public class CreateAdverseEventFragment extends Fragment implements Validator.Va
     AutoCompleteTextView patientNames;
     @NotEmpty
     EditText eventDate;
-    @NotEmpty
-    AutoCompleteTextView adverseEvent;
+    @Select
+    Spinner adverseEvent;
     EditText notes;
     private OnFragmentInteractionListener mListener;
     private static final String ARG_PARAM1 = "param1";
@@ -86,7 +87,7 @@ public class CreateAdverseEventFragment extends Fragment implements Validator.Va
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+        HomeActivity.navItemIndex = 9;
         View view = inflater.inflate(R.layout.fragment_create_adverse_event, container, false);
         communicator = new Communicator();
         /* Create Validator object to
@@ -104,7 +105,7 @@ public class CreateAdverseEventFragment extends Fragment implements Validator.Va
         patientNames = (AutoCompleteTextView) view.findViewById(R.id.autocomplete_patients);
         patientNames.setText(id);
         eventDate = (EditText) view.findViewById(R.id.eventDateET);
-        adverseEvent = (AutoCompleteTextView) view.findViewById(R.id.autocomplete_adverseEvent);
+        adverseEvent = (Spinner) view.findViewById(R.id.AdverseEventspinner);
         notes = (EditText) view.findViewById(R.id.noteET);
         submit = (Button) view.findViewById(R.id.adverse_submit);
         eventDate.setOnFocusChangeListener(new View.OnFocusChangeListener(){
@@ -149,6 +150,11 @@ public class CreateAdverseEventFragment extends Fragment implements Validator.Va
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                InputMethodManager inputManager = (InputMethodManager)
+                        getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+
+                inputManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(),
+                        InputMethodManager.HIDE_NOT_ALWAYS);
                 validator.validate();
             }
         });
@@ -176,10 +182,11 @@ public class CreateAdverseEventFragment extends Fragment implements Validator.Va
 
     // add items into spinner dynamically
     public void addItemsOnSessionSpinner(List<String> sessions) {
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+        ArrayAdapter<String> sessionSpinnerAdapter = new ArrayAdapter<String>(
                 CreateAdverseEventFragment.this.getActivity(),
-                android.R.layout.simple_dropdown_item_1line, sessions);
-        adverseEvent.setAdapter(adapter);
+                android.R.layout.simple_spinner_item, sessions);
+        sessionSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        adverseEvent.setAdapter(sessionSpinnerAdapter);
     }
 
 
@@ -187,7 +194,7 @@ public class CreateAdverseEventFragment extends Fragment implements Validator.Va
     public void onValidationSucceeded() {
         prgDialog.show();
         String[] patientId = patientNames.getText().toString().split(":");
-        String[] adverse = adverseEvent.getText().toString().split(":");
+        String[] adverse = String.valueOf(adverseEvent.getSelectedItem()).split(":");
         String note = notes.getText().toString();
         String date = eventDate.getText().toString();
         Log.d(TAG,  adverseEvent +" "+patientId);

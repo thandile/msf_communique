@@ -23,6 +23,7 @@ import com.example.msf.msf.API.Deserializers.Enrollment;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.Fragments.Counselling.CounsellingInfoFragment;
 import com.example.msf.msf.Fragments.Counselling.CreateCounsellingFragment;
+import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.WriteRead;
@@ -76,6 +77,7 @@ public class SessionsTab extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        HomeActivity.navItemIndex = 2;
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_tab_sessions, container, false);
         counsellingGet();

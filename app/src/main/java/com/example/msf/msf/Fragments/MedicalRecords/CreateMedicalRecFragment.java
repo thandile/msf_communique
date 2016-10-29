@@ -1,6 +1,7 @@
 package com.example.msf.msf.Fragments.MedicalRecords;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -9,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -20,6 +22,7 @@ import com.example.msf.msf.API.BusProvider;
 import com.example.msf.msf.API.Communicator;
 import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.ServerEvent;
+import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.AppStatus;
 import com.example.msf.msf.Utils.WriteRead;
@@ -45,8 +48,8 @@ public class CreateMedicalRecFragment extends Fragment implements ValidationList
     ProgressDialog prgDialog;
     @NotEmpty
     AutoCompleteTextView patientNames;
-    @NotEmpty
-    AutoCompleteTextView recordType;
+    @Select(message = "Select a medical record type")
+    Spinner recordType;
     EditText notesET;
     @NotEmpty
     EditText title;
@@ -81,6 +84,7 @@ public class CreateMedicalRecFragment extends Fragment implements ValidationList
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        HomeActivity.navItemIndex = 8;
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_create_medical_rec, container, false);
         communicator = new Communicator();
@@ -97,7 +101,7 @@ public class CreateMedicalRecFragment extends Fragment implements ValidationList
         prgDialog.setCancelable(false);
         // Get a reference to the AutoCompleteTextView in the layout
         patientNames = (AutoCompleteTextView) view.findViewById(R.id.autocomplete_patients);
-        recordType = (AutoCompleteTextView) view.findViewById(R.id.autocomplete_report);
+        recordType = (Spinner) view.findViewById(R.id.reportTypeSpinner);
         title = (EditText) view.findViewById(R.id.titltET);
         notesET = (EditText) view.findViewById(R.id.notesET);
         submit = (Button) view.findViewById(R.id.appointment_submit);
@@ -151,10 +155,11 @@ public class CreateMedicalRecFragment extends Fragment implements ValidationList
     }
 
     public void addItemsOnReportTypeSpinner(List<String> reportType) {
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+        ArrayAdapter<String> sessionSpinnerAdapter = new ArrayAdapter<String>(
                 CreateMedicalRecFragment.this.getActivity(),
-                android.R.layout.simple_dropdown_item_1line, reportType);
-        recordType.setAdapter(adapter);
+                android.R.layout.simple_spinner_item, reportType);
+        sessionSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        recordType.setAdapter(sessionSpinnerAdapter);
     }
 
     @Override
@@ -198,6 +203,11 @@ public class CreateMedicalRecFragment extends Fragment implements ValidationList
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                InputMethodManager inputManager = (InputMethodManager)
+                        getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+
+                inputManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(),
+                        InputMethodManager.HIDE_NOT_ALWAYS);
                 validator.validate();
             }
         });
@@ -208,7 +218,7 @@ public class CreateMedicalRecFragment extends Fragment implements ValidationList
         prgDialog.show();
 
         String[] patientId = patientNames.getText().toString().split(":");
-        String[] record = recordType.getText().toString().split(":");
+        String[] record = String.valueOf(recordType.getSelectedItem()).split(":");
         String notes = notesET.getText().toString();
         String titleText = title.getText().toString();
         if (AppStatus.getInstance(CreateMedicalRecFragment.this.getActivity()).isOnline()) {

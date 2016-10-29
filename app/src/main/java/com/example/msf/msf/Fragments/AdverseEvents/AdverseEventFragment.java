@@ -20,11 +20,16 @@ import com.amigold.fundapter.FunDapter;
 import com.amigold.fundapter.extractors.StringExtractor;
 import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.Deserializers.AdverseEvent;
+import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.Interface;
+import com.example.msf.msf.API.ServerEvent;
+import com.example.msf.msf.Fragments.Admissions.AdmissionFragment;
+import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.AppStatus;
 import com.example.msf.msf.Utils.WriteRead;
+import com.squareup.otto.Subscribe;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -59,7 +64,7 @@ public class AdverseEventFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+        HomeActivity.navItemIndex = 9;
         View view = inflater.inflate(R.layout.fragment_adverse_event, container, false);
         text = (TextView) view.findViewById(R.id.defaultText);
         prgDialog = new ProgressDialog(AdverseEventFragment.this.getActivity());
@@ -224,9 +229,9 @@ public class AdverseEventFragment extends Fragment {
                     }
                     else{
 
-                        text.setText("No Scheduled appointments");
+                        text.setText("No recorded adverse events");
                         Toast.makeText(AdverseEventFragment.this.getActivity(),
-                                "No Scheduled appointments", Toast.LENGTH_SHORT).show();
+                                "No recorded adverse events", Toast.LENGTH_SHORT).show();
                         //adverseEventArrayList.add("No scheduled appointments.");
                     }
                     //swipeRefreshLayout.setRefreshing(false);
@@ -249,5 +254,24 @@ public class AdverseEventFragment extends Fragment {
         prgDialog.hide();
     }
 
+    @Subscribe
+    public void onServerEvent(ServerEvent serverEvent){
+        prgDialog.hide();
+    }
+
+    @Subscribe
+    public void onErrorEvent(ErrorEvent errorEvent){
+        prgDialog.hide();
+        Toast.makeText(AdverseEventFragment.this.getActivity(), "" +
+                errorEvent.getErrorMsg(), Toast.LENGTH_SHORT).show();
+        AdverseEventFragment appointmentFragment = new AdverseEventFragment();
+        FragmentManager manager = getActivity().getSupportFragmentManager();
+        manager.beginTransaction().replace(R.id.rel_layout_for_frag,
+                appointmentFragment,
+                appointmentFragment.getTag())
+                .addToBackStack(null)
+                .commit();
+
+    }
 
 }

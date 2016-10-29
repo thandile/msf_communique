@@ -24,6 +24,7 @@ import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.Fragments.Outcomes.CreateOutcomeFragment;
 import com.example.msf.msf.Fragments.Outcomes.OutcomeFragment;
 import com.example.msf.msf.Fragments.Outcomes.OutcomeInfoFragment;
+import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.WriteRead;
@@ -88,6 +89,7 @@ public class OutcomeTab extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        HomeActivity.navItemIndex = 2;
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_outcome_tab, container, false);
         outcomeLV = (ListView) view.findViewById(R.id.outcomeLV);
@@ -143,7 +145,7 @@ public class OutcomeTab extends Fragment {
                 try{
                     //Outcome outcome = new Outcome();
                     JSONArray jsonarray = new JSONArray(resp);
-                    if (jsonarray.length()>0) {
+                  //  if (jsonarray.length()>0) {
                         Log.d(TAG, jsonarray.toString());
                         for (int i = 0; i < jsonarray.length(); i++) {
                             JSONObject jsonobject = jsonarray.getJSONObject(i);
@@ -161,7 +163,7 @@ public class OutcomeTab extends Fragment {
                                 outcomeList.add(outcome);
                             }
                         }
-
+                        if (outcomeList.size()>0){
                         Log.d(TAG, "enrollment "+outcomeList.toString());
                         BindDictionary<Outcome> dictionary = new BindDictionary<>();
                         dictionary.addStringField(R.id.titleTV, new StringExtractor<Outcome>() {

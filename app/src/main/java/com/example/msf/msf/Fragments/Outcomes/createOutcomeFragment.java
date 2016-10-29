@@ -1,6 +1,7 @@
 package com.example.msf.msf.Fragments.Outcomes;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -10,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -23,6 +25,7 @@ import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.ServerEvent;
 import com.example.msf.msf.Dialogs.DateDialog;
 import com.example.msf.msf.Fragments.MedicalRecords.CreateMedicalRecFragment;
+import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.AppStatus;
 import com.example.msf.msf.Utils.WriteRead;
@@ -50,8 +53,8 @@ public class CreateOutcomeFragment extends Fragment implements Validator.Validat
     ProgressDialog prgDialog;
     @NotEmpty
     AutoCompleteTextView patientNames;
-    @NotEmpty
-    AutoCompleteTextView outcomeType;
+    @Select(message = "Select a outcome type")
+    Spinner outcomeType;
     EditText outcomeDateET;
     EditText notesET;
     private final String TAG = this.getClass().getSimpleName();
@@ -85,7 +88,7 @@ public class CreateOutcomeFragment extends Fragment implements Validator.Validat
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_create_outcome, container, false);
-
+        HomeActivity.navItemIndex = 11;
         communicator = new Communicator();
         /* Create Validator object to
          * call the setValidationListener method of Validator class*/
@@ -101,7 +104,7 @@ public class CreateOutcomeFragment extends Fragment implements Validator.Validat
         // Get a reference to the AutoCompleteTextView in the layout
         patientNames = (AutoCompleteTextView) view.findViewById(R.id.autocomplete_patients);
         patientNames.setText(id);
-        outcomeType = (AutoCompleteTextView) view.findViewById(R.id.autocomplete_outcome);
+        outcomeType = (Spinner) view.findViewById(R.id.OutcomeET);
         outcomeDateET = (EditText) view.findViewById(R.id.dateET);
         notesET = (EditText) view.findViewById(R.id.notesET);
         submit = (Button) view.findViewById(R.id.outcome_submit);
@@ -125,16 +128,22 @@ public class CreateOutcomeFragment extends Fragment implements Validator.Validat
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                InputMethodManager inputManager = (InputMethodManager)
+                        getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+
+                inputManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(),
+                        InputMethodManager.HIDE_NOT_ALWAYS);
                 validator.validate();
             }
         });
     }
 
     public void addItemsOnReportTypeSpinner(List<String> outcomes) {
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+        ArrayAdapter<String> sessionSpinnerAdapter = new ArrayAdapter<String>(
                 CreateOutcomeFragment.this.getActivity(),
-                android.R.layout.simple_dropdown_item_1line, outcomes);
-        outcomeType.setAdapter(adapter);
+                android.R.layout.simple_spinner_item, outcomes);
+        sessionSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        outcomeType.setAdapter(sessionSpinnerAdapter);
     }
 
 
@@ -218,7 +227,7 @@ public class CreateOutcomeFragment extends Fragment implements Validator.Validat
         prgDialog.show();
 
         String[] patientId = patientNames.getText().toString().split(":");
-        String[] outcome = outcomeType.getText().toString().split(":");
+        String[] outcome = String.valueOf(outcomeType.getSelectedItem()).split(":");
         String notes = notesET.getText().toString();
         String date = outcomeDateET.getText().toString();
         if (AppStatus.getInstance(CreateOutcomeFragment.this.getActivity()).isOnline()) {

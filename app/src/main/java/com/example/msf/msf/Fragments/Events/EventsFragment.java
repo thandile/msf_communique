@@ -1,5 +1,6 @@
 package com.example.msf.msf.Fragments.Events;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -20,11 +21,16 @@ import com.amigold.fundapter.extractors.StringExtractor;
 import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.Deserializers.Appointment;
 import com.example.msf.msf.API.Deserializers.Events;
+import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.Interface;
+import com.example.msf.msf.API.ServerEvent;
+import com.example.msf.msf.Fragments.Admissions.AdmissionFragment;
 import com.example.msf.msf.Fragments.AdverseEvents.AdverseEventFragment;
+import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.AppStatus;
+import com.squareup.otto.Subscribe;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -43,6 +49,7 @@ public class EventsFragment extends Fragment {
     FloatingActionButton fab;
     ListView eventsLV;
     TextView text;
+    ProgressDialog prgDialog;
     private final String TAG = this.getClass().getSimpleName();
 
 
@@ -54,7 +61,13 @@ public class EventsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        HomeActivity.navItemIndex = 7;
         // Inflate the layout for this fragment
+        prgDialog = new ProgressDialog(EventsFragment.this.getActivity());
+        // Set Progress Dialog Text
+        prgDialog.setMessage("Please wait...");
+        // Set Cancelable as False
+        prgDialog.setCancelable(false);
         View view = inflater.inflate(R.layout.fragment_events, container, false);
         text = (TextView) view.findViewById(R.id.defaultText);
         eventsLV = (ListView) view.findViewById(R.id.eventsLV);
@@ -103,6 +116,7 @@ public class EventsFragment extends Fragment {
 
 
     public void eventsGet(){
+        prgDialog.show();
         final ArrayList<Events> eventsList = new ArrayList<Events>();
         Interface communicatorInterface;
         communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
@@ -184,6 +198,26 @@ public class EventsFragment extends Fragment {
             }
         };
         communicatorInterface.getEvents(callback);
+        prgDialog.hide();
+    }
+
+    @Subscribe
+    public void onServerEvent(ServerEvent serverEvent){
+        prgDialog.hide();
+    }
+
+    @Subscribe
+    public void onErrorEvent(ErrorEvent errorEvent){
+        prgDialog.hide();
+        Toast.makeText(EventsFragment.this.getActivity(), "" +
+                errorEvent.getErrorMsg(), Toast.LENGTH_SHORT).show();
+        EventsFragment appointmentFragment = new EventsFragment();
+        FragmentManager manager = getActivity().getSupportFragmentManager();
+        manager.beginTransaction().replace(R.id.rel_layout_for_frag,
+                appointmentFragment,
+                appointmentFragment.getTag())
+                .addToBackStack(null)
+                .commit();
     }
 
 }
