@@ -2,9 +2,11 @@ package com.example.msf.msf.Fragments.Appointment;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -268,8 +270,20 @@ public class AppointmentInfoFragment extends Fragment {
         delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                prgDialog.show();
-                communicator.appointmentDelete(Long.parseLong(id));
+                AlertDialog.Builder builder = new AlertDialog.Builder(AppointmentInfoFragment.this.getActivity());
+                builder.setTitle("Delete appointment?");
+                builder.setMessage("Are you sure you want to delete this appointment?");
+                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        prgDialog.show();
+                        communicator.appointmentDelete(Long.parseLong(id));
+                        }
+                });
+                builder.setNegativeButton("No", null);
+                AlertDialog alertDialog = builder.create();
+                alertDialog.show();
+
             }
         });
     }
@@ -315,14 +329,8 @@ public class AppointmentInfoFragment extends Fragment {
     public void onServerEvent(ServerEvent serverEvent){
         prgDialog.hide();
         Toast.makeText(AppointmentInfoFragment.this.getActivity(),
-                "You have successfully deleted an appointment", Toast.LENGTH_SHORT).show();
-        appointmentTypeTV.setText("");
-        notesTV.setText("");
-        dateTV.setText("");
-        startTimeTV.setText("");
-        endTimeTV.setText("");
-        ownerTV.setText("");
-        patientTV.setText("");
+                "Deleted!", Toast.LENGTH_SHORT).show();
+
         FragmentManager manager = getActivity().getSupportFragmentManager();
         manager.popBackStackImmediate();
     }

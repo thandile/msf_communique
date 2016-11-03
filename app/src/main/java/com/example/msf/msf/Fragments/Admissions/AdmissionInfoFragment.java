@@ -135,7 +135,9 @@ public class AdmissionInfoFragment extends Fragment {
                     Log.d(TAG, "patientName "+jsonObject.getString("patient"));
                     notes.setText(jsonObject.getString("notes"));
                     admissionDate.setText(jsonObject.getString("admission_date"));
-                    dischargeDate.setText(jsonObject.getString("discharge_date"));
+                    if (!jsonObject.getString("discharge_date").equals("null")) {
+                        dischargeDate.setText(jsonObject.getString("discharge_date"));
+                    }
                     healthCentre.setText(jsonObject.getString("health_centre"));
                     //ownerTV.setText(jsonObject.getString("owner"));
                     //patientTV.setText(jsonObject.getString("patient"));

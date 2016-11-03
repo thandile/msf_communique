@@ -228,7 +228,7 @@ public class EnrollmentsTab extends Fragment {
                             long[] enrolls = getPatientInfo();
                             for (int j=0; j<enrolls.length; j++) {
                                 if (jsonobject.getString("program").equals(""+enrolls[j]) && jsonobject.getString("patient").equals(id)) {
-                                    Log.d(TAG, "enrollment " + enrolls[j]);
+
                                     int id = Integer.parseInt(jsonobject.getString("id"));
                                     String program = "";
                                     program = loadPilots(Long.parseLong(jsonobject.getString("program")));

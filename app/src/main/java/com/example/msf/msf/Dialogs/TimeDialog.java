@@ -40,12 +40,24 @@ public class TimeDialog extends DialogFragment implements TimePickerDialog.OnTim
 
 
     public void onTimeSet(TimePicker picker,int hour, int minute){
+        String min;
+        String hr;
         if (minute<10) {
-            txt_time.setText(hour + ":0" + minute);
+           // txt_time.setText(hour + ":0" + minute);
+            min = "0"+minute;
         }
-        else
-        {
-            txt_time.setText(hour + ":" + minute);
+        else{
+            min = ""+minute;
         }
+        if (hour<10){
+             hr = "0"+hour;
+        }
+        else {
+            hr = ""+hour;
+        }
+        //else
+       // {
+            txt_time.setText(hr + ":" + min);
+      //  }
     }
 }

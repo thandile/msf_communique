@@ -2,9 +2,11 @@ package com.example.msf.msf.Fragments.Events;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -153,9 +155,20 @@ public class EventInfoFragment extends Fragment {
         delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                prgDialog.show();
-                Log.d(TAG, "event id: "+ id);
-                communicator.eventDelete(Long.parseLong(id));
+                AlertDialog.Builder builder = new AlertDialog.Builder(EventInfoFragment.this.getActivity());
+                builder.setTitle("Delete event?");
+                builder.setMessage("Are you sure you want to delete this event?");
+                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        prgDialog.show();
+                        communicator.eventDelete(Long.parseLong(id));
+                    }
+                });
+                builder.setNegativeButton("No", null);
+                AlertDialog alertDialog = builder.create();
+                alertDialog.show();
+
             }
         });
     }
@@ -237,7 +250,7 @@ public class EventInfoFragment extends Fragment {
     @Subscribe
     public void onServerEvent(ServerEvent serverEvent){
         prgDialog.hide();
-        Toast.makeText(EventInfoFragment.this.getActivity(), "You have successfully deleted an event",
+        Toast.makeText(EventInfoFragment.this.getActivity(), "Deleted!",
                 Toast.LENGTH_SHORT).show();
         FragmentManager manager = getActivity().getSupportFragmentManager();
         manager.popBackStackImmediate();

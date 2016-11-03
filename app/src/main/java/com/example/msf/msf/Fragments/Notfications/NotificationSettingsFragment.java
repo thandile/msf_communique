@@ -26,6 +26,8 @@ import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.WriteRead;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.squareup.otto.Subscribe;
 
 import org.json.JSONArray;
@@ -79,6 +81,11 @@ public class NotificationSettingsFragment extends Fragment {
         // Set Cancelable as False
         prgDialog.setCancelable(false);
         communicator = new Communicator();
+        //FirebaseMessaging.getInstance().subscribeToTopic("test");
+        //String token =
+        String token = FirebaseInstanceId.getInstance().getToken();
+        Log.d(TAG, "TOKEN "+FirebaseInstanceId.getInstance().getToken());
+        communicator.registrationPost(token);
         patients = (CheckBox) view.findViewById(R.id.patients);
         appointments = (CheckBox) view.findViewById(R.id.appointments);
         enrollments = (CheckBox) view.findViewById(R.id.enrollments);

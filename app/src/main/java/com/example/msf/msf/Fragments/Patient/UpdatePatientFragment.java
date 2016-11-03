@@ -26,6 +26,7 @@ import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.R;
 import com.mobsandgeeks.saripaar.ValidationError;
 import com.mobsandgeeks.saripaar.Validator;
+import com.mobsandgeeks.saripaar.annotation.Length;
 import com.mobsandgeeks.saripaar.annotation.NotEmpty;
 import com.mobsandgeeks.saripaar.annotation.Past;
 import com.mobsandgeeks.saripaar.annotation.Select;
@@ -206,9 +207,6 @@ public class UpdatePatientFragment extends Fragment implements Validator.Validat
             treatment_start.setText(patientInfo[7], TextView.BufferType.EDITABLE);
         }
     }
-
-
-
 
 
     // TODO: Rename method, update argument and hook method into UI event

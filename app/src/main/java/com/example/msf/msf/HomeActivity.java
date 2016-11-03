@@ -185,7 +185,7 @@ public class HomeActivity extends AppCompatActivity
         prgDialog.setMessage("Please wait...");
         // Set Cancelable as False
         prgDialog.setCancelable(false);
-        FirebaseMessaging.getInstance().subscribeToTopic("test");
+        //FirebaseMessaging.getInstance().subscribeToTopic("test");
         //String token =
         String token = FirebaseInstanceId.getInstance().getToken();
         Log.d(TAG, "TOKEN "+FirebaseInstanceId.getInstance().getToken());
