@@ -19,16 +19,10 @@ import com.amigold.fundapter.BindDictionary;
 import com.amigold.fundapter.FunDapter;
 import com.amigold.fundapter.extractors.StringExtractor;
 import com.example.msf.msf.API.Auth;
-import com.example.msf.msf.API.Deserializers.AddCounsellingResponse;
-import com.example.msf.msf.API.Deserializers.Regimen;
-import com.example.msf.msf.API.Deserializers.SessionResponse;
+import com.example.msf.msf.API.Models.Regimen;
 import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.API.ServerEvent;
-import com.example.msf.msf.Fragments.Admissions.AdmissionFragment;
-import com.example.msf.msf.Fragments.AdverseEvents.AdverseEventFragment;
-import com.example.msf.msf.Fragments.Counselling.CounsellingFragment;
-import com.example.msf.msf.Fragments.Events.EventsFragment;
 import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
@@ -40,7 +34,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 

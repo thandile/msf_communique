@@ -1,9 +1,8 @@
 package com.example.msf.msf.API;
 import android.util.Log;
 
-import com.amigold.fundapter.fields.StringField;
-import com.example.msf.msf.API.Deserializers.Users;
-import com.example.msf.msf.API.Deserializers.*;
+import com.example.msf.msf.API.Models.Users;
+import com.example.msf.msf.API.Models.*;
 //import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.LoginActivity;
 import com.squareup.otto.Produce;
@@ -14,7 +13,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringTokenizer;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -359,10 +357,10 @@ public class Communicator {
 
 
     public void counsellingPost(String patient, String sessionType, String notes){
-        Callback<AddCounsellingResponse> callback = new Callback<AddCounsellingResponse>() {
+        Callback<Counselling> callback = new Callback<Counselling>() {
 
             @Override
-            public void success(AddCounsellingResponse serverResponse, Response response2) {
+            public void success(Counselling serverResponse, Response response2) {
                 if(serverResponse.getResponseCode() == 0){
                     BusProvider.getInstance().post(produceCounsellingServerEvent(serverResponse));
                 }else{
@@ -818,9 +816,9 @@ public class Communicator {
     }
 
     public void counsellingDelete(final long counsellingID){
-        Callback<AddCounsellingResponse> callback = new Callback<AddCounsellingResponse>() {
+        Callback<Counselling> callback = new Callback<Counselling>() {
             @Override
-            public void success(AddCounsellingResponse serverResponse, Response response2) {
+            public void success(Counselling serverResponse, Response response2) {
                 //if(serverResponse.getResponseCode() == 0){
                 BusProvider.getInstance().post(produceCounsellingServerEvent(serverResponse));
                 // }else{
@@ -844,10 +842,10 @@ public class Communicator {
 
     public void counsellingUpdate(long counsellingID, String  patient, String  sessionType,
                                   String notes){
-        Callback<AddCounsellingResponse> callback = new Callback<AddCounsellingResponse>() {
+        Callback<Counselling> callback = new Callback<Counselling>() {
 
             @Override
-            public void success(AddCounsellingResponse serverResponse, Response response2) {
+            public void success(Counselling serverResponse, Response response2) {
                 if(serverResponse.getResponseCode() == 0){
                     BusProvider.getInstance().post(produceCounsellingServerEvent(serverResponse));
                 }else{
@@ -1053,8 +1051,8 @@ public class Communicator {
     }
 
     @Produce
-    public ServerEvent produceCounsellingServerEvent(AddCounsellingResponse AddCounsellingResponse) {
-        return new ServerEvent(AddCounsellingResponse);
+    public ServerEvent produceCounsellingServerEvent(Counselling Counselling) {
+        return new ServerEvent(Counselling);
     }
 
     @Produce

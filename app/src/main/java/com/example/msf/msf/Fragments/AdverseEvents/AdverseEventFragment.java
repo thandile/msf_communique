@@ -19,13 +19,15 @@ import com.amigold.fundapter.BindDictionary;
 import com.amigold.fundapter.FunDapter;
 import com.amigold.fundapter.extractors.StringExtractor;
 import com.example.msf.msf.API.Auth;
-import com.example.msf.msf.API.Deserializers.AdverseEvent;
+import com.example.msf.msf.API.Models.AdverseEvent;
 import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.API.ServerEvent;
-import com.example.msf.msf.Fragments.Admissions.AdmissionFragment;
+import com.example.msf.msf.DataAdapter;
 import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.LoginActivity;
+import com.example.msf.msf.Presenters.AdverseEvents.AdverseEventPresenter;
+import com.example.msf.msf.Presenters.AdverseEvents.IAdverseEventListView;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.AppStatus;
 import com.example.msf.msf.Utils.WriteRead;
@@ -46,15 +48,14 @@ import retrofit.mime.TypedByteArray;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class AdverseEventFragment extends Fragment {
+public class AdverseEventFragment extends Fragment implements IAdverseEventListView{
 
     FloatingActionButton fab;
     private final String TAG = this.getClass().getSimpleName();
-    public static String PATIENTINFOFILE = "Patients";
-    public static String ADVERSEINFOFILE = "AdverseEvents";
     ListView adverseEventLV;
     TextView text;
     ProgressDialog prgDialog;
+    AdverseEventPresenter presenter;
 
     public AdverseEventFragment() {
         // Required empty public constructor
@@ -66,13 +67,44 @@ public class AdverseEventFragment extends Fragment {
                              Bundle savedInstanceState) {
         HomeActivity.navItemIndex = 9;
         View view = inflater.inflate(R.layout.fragment_adverse_event, container, false);
+        presenter = new AdverseEventPresenter(this);
         text = (TextView) view.findViewById(R.id.defaultText);
         prgDialog = new ProgressDialog(AdverseEventFragment.this.getActivity());
-        // Set Progress Dialog Text
         prgDialog.setMessage("Please wait...");
-        // Set Cancelable as False
         prgDialog.setCancelable(false);
         adverseEventLV = (ListView) view.findViewById(R.id.adverseEventsLV);
+        listViewListener();
+        fab = (FloatingActionButton) view.findViewById(R.id.btnFloatingAction);
+        fabListener();
+        return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (AppStatus.getInstance(AdverseEventFragment.this.getActivity()).isOnline()) {
+            presenter.loadAdverseEvents();
+        } else {
+            text.setText("You are currently offline, therefore patient adverse events cannot be loaded");
+        }
+    }
+
+    private void fabListener() {
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CreateAdverseEventFragment createAdverseEventFragment = new CreateAdverseEventFragment();
+                FragmentManager manager = getActivity().getSupportFragmentManager();
+                manager.beginTransaction()
+                        .replace(R.id.rel_layout_for_frag, createAdverseEventFragment,
+                                createAdverseEventFragment.getTag())
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
+    }
+
+    private void listViewListener() {
         adverseEventLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -88,171 +120,11 @@ public class AdverseEventFragment extends Fragment {
                                 adverseEventInfoFragment.getTag())
                         .addToBackStack(null)
                         .commit();
-                //intent.putExtra(EXTRA_MESSAGE,id);
-                //startActivity(intent);
             }
         });
-        if (AppStatus.getInstance(AdverseEventFragment.this.getActivity()).isOnline()) {
-            adverseEventsGet();
-        }
-        else {
-            text.setText("You are currently offline, therefore patient adverse events cannot be loaded");
-        }
-
-        fab = (FloatingActionButton) view.findViewById(R.id.btnFloatingAction);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                CreateAdverseEventFragment createAdverseEventFragment = new CreateAdverseEventFragment();
-                FragmentManager manager = getActivity().getSupportFragmentManager();
-                manager.beginTransaction()
-                        .replace(R.id.rel_layout_for_frag, createAdverseEventFragment,
-                                createAdverseEventFragment.getTag())
-                        .addToBackStack(null)
-                        .commit();
-            }
-        });
-
-        return view;
     }
 
 
-    public String eventTypeGet(Long eventID) {
-        String events = WriteRead.read(ADVERSEINFOFILE, getContext());
-        String eventType = "";
-        try {
-            JSONArray jsonarray = new JSONArray(events);
-            for (int i = 0; i < jsonarray.length(); i++) {
-                JSONObject jsonobject = jsonarray.getJSONObject(i);
-
-                if (jsonobject.getString("id").equals(""+eventID)) {
-                    //String id = jsonobject.getString("id");
-                    final String name = jsonobject.getString("name");
-                    eventType = name;
-                    Log.d(TAG, "ID: " + jsonobject.getString("id"));
-                    break;
-                }
-            }
-        } catch (JSONException e) {
-            System.out.print("unsuccessful");
-        }
-        return eventType;
-    }
-
-    public String patientsGet(String patientID){
-        String patients = WriteRead.read(PATIENTINFOFILE, getContext());
-        String fullName ="";
-        Log.d(TAG, "pName "+patients);
-        try{
-            JSONArray jsonarray = new JSONArray(patients);
-
-            // JSONArray jsonarray = new JSONArray(resp);
-            for (int i = 0; i < jsonarray.length(); i++) {
-                JSONObject jsonobject = jsonarray.getJSONObject(i);
-                String id = jsonobject.getString("id");
-
-                if (patientID.equals(id)) {
-                    fullName = jsonobject.getString("other_names") + " " +
-                            jsonobject.getString("last_name");
-                }
-            }
-
-
-        }
-        catch (JSONException e){
-            System.out.print("unsuccessful");
-        }
-        return fullName;
-    }
-
-
-    public void adverseEventsGet(){
-        prgDialog.show();
-        final ArrayList<AdverseEvent> adverseEventArrayList = new ArrayList<AdverseEvent>();
-        Interface communicatorInterface;
-        communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
-        Callback<List<AdverseEvent>> callback = new Callback<List<AdverseEvent>>() {
-            @Override
-            public void success(List<AdverseEvent> serverResponse, Response response2) {
-                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
-                try{
-                    JSONArray jsonarray = new JSONArray(resp);
-                    if (jsonarray.length()>0) {
-                        for (int i = 0; i < jsonarray.length(); i++) {
-                            JSONObject jsonobject = jsonarray.getJSONObject(i);
-                            int id = Integer.parseInt(jsonobject.getString("id"));
-                            String date = jsonobject.getString("event_date");
-                            String patient = patientsGet(jsonobject.getString("patient"));
-                            String adverseEvent = eventTypeGet(Long.parseLong(jsonobject.getString("adverse_event_type")));
-
-                            String notes = jsonobject.getString("notes");
-
-                            AdverseEvent appointment = new AdverseEvent(id, patient,adverseEvent, date,
-                                    notes);
-                            //userGet(adverseEvent);
-                            adverseEventArrayList.add(appointment);
-
-                        }
-
-                        Log.d(TAG, adverseEventArrayList.toString());
-                        BindDictionary<AdverseEvent> dictionary = new BindDictionary<>();
-                        dictionary.addStringField(R.id.titleTV, new StringExtractor<AdverseEvent>() {
-                            @Override
-                            public String getStringValue(AdverseEvent adverseEvent, int position) {
-                                return "Patient: "+adverseEvent.getPatientName();
-                            }
-                        });
-                        dictionary.addStringField(R.id.personTV, new StringExtractor<AdverseEvent>() {
-                            @Override
-                            public String getStringValue(AdverseEvent adverseEvent, int position) {
-                                return "Event: "+adverseEvent.getAdverseEventType();
-                            }
-                        });
-
-                        dictionary.addStringField(R.id.dateTV, new StringExtractor<AdverseEvent>() {
-                            @Override
-                            public String getStringValue(AdverseEvent adverseEvent, int position) {
-                                return adverseEvent.getEventDate();
-                            }
-                        });
-
-                        dictionary.addStringField(R.id.idTV, new StringExtractor<AdverseEvent>() {
-                            @Override
-                            public String getStringValue(AdverseEvent adverseEvent, int position) {
-                                return "ID: "+adverseEvent.getId();
-                            }
-                        });
-                        FunDapter adapter = new FunDapter(AdverseEventFragment.this.getActivity(),
-                                adverseEventArrayList,
-                                R.layout.appointment_list_layout, dictionary);
-                        adverseEventLV.setAdapter(adapter);
-                    }
-                    else{
-
-                        text.setText("No recorded adverse events");
-                        Toast.makeText(AdverseEventFragment.this.getActivity(),
-                                "No recorded adverse events", Toast.LENGTH_SHORT).show();
-                        //adverseEventArrayList.add("No scheduled appointments.");
-                    }
-                    //swipeRefreshLayout.setRefreshing(false);
-                    //appointmentLV.setAdapter(adapter);
-                }
-                catch (JSONException e){
-                    System.out.print("unsuccessful");
-                }
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                if(error != null ){
-                    Log.e(TAG, error.getMessage());
-                    error.printStackTrace();
-                }
-            }
-        };
-        communicatorInterface.getAdverseEvents(callback);
-        prgDialog.hide();
-    }
 
     @Subscribe
     public void onServerEvent(ServerEvent serverEvent){
@@ -274,4 +146,54 @@ public class AdverseEventFragment extends Fragment {
 
     }
 
+    @Override
+    public void onAdmissionsLoadedSuccess(List<AdverseEvent> list, Response response) {
+            ArrayList<AdverseEvent> adverseEventArrayList = new ArrayList<AdverseEvent>();
+            adverseEventArrayList.addAll(list);
+            if (adverseEventArrayList.size()>0) {
+            BindDictionary<AdverseEvent> dictionary = new BindDictionary<>();
+            dictionary.addStringField(R.id.titleTV, new StringExtractor<AdverseEvent>() {
+                @Override
+                public String getStringValue(AdverseEvent adverseEvent, int position) {
+                    return "Patient: "+ DataAdapter.getPatientInfo((long) adverseEvent.getPatientID(), getActivity());
+                }
+            });
+            dictionary.addStringField(R.id.personTV, new StringExtractor<AdverseEvent>() {
+                @Override
+                public String getStringValue(AdverseEvent adverseEvent, int position) {
+                    return "Event: "+DataAdapter.eventTypeGet((long) adverseEvent.getAdverseEventTypeID(), getActivity());
+                }
+            });
+
+            dictionary.addStringField(R.id.dateTV, new StringExtractor<AdverseEvent>() {
+                @Override
+                public String getStringValue(AdverseEvent adverseEvent, int position) {
+                    return adverseEvent.getEventDate();
+                }
+            });
+
+            dictionary.addStringField(R.id.idTV, new StringExtractor<AdverseEvent>() {
+                @Override
+                public String getStringValue(AdverseEvent adverseEvent, int position) {
+                    return "ID: "+adverseEvent.getId();
+                }
+            });
+            FunDapter adapter = new FunDapter(AdverseEventFragment.this.getActivity(),
+                    adverseEventArrayList,
+                    R.layout.appointment_list_layout, dictionary);
+            adverseEventLV.setAdapter(adapter);
+        }
+        else{
+
+            text.setText("No recorded adverse events");
+            Toast.makeText(AdverseEventFragment.this.getActivity(),
+                    "No recorded adverse events", Toast.LENGTH_SHORT).show();
+            //adverseEventArrayList.add("No scheduled appointments.");
+        }
+    }
+
+    @Override
+    public void onAdmissionsLoadedFailure(RetrofitError error) {
+        Toast.makeText(getActivity(), error.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+    }
 }

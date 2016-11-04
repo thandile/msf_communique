@@ -12,14 +12,12 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.amigold.fundapter.BindDictionary;
 import com.amigold.fundapter.FunDapter;
 import com.amigold.fundapter.extractors.StringExtractor;
 import com.example.msf.msf.API.Auth;
-import com.example.msf.msf.API.Deserializers.AddCounsellingResponse;
-import com.example.msf.msf.API.Deserializers.Enrollment;
+import com.example.msf.msf.API.Models.Counselling;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.Fragments.Counselling.CounsellingInfoFragment;
 import com.example.msf.msf.Fragments.Counselling.CreateCounsellingFragment;
@@ -153,15 +151,15 @@ public class SessionsTab extends Fragment {
     }
 
     public void counsellingGet() {
-        final ArrayList<AddCounsellingResponse> counsellingList = new ArrayList<AddCounsellingResponse>();
+        final ArrayList<Counselling> counsellingList = new ArrayList<Counselling>();
         Interface communicatorInterface;
         communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
-        Callback<List<AddCounsellingResponse>> callback = new Callback<List<AddCounsellingResponse>>() {
+        Callback<List<Counselling>> callback = new Callback<List<Counselling>>() {
             @Override
-            public void success(List<AddCounsellingResponse> serverResponse, Response response2) {
+            public void success(List<Counselling> serverResponse, Response response2) {
                 String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
                 try {
-                    AddCounsellingResponse counselling = new AddCounsellingResponse();
+                    Counselling counselling = new Counselling();
                     JSONArray jsonarray = new JSONArray(resp);
                         for (int i = 0; i < jsonarray.length(); i++) {
                             JSONObject jsonobject = jsonarray.getJSONObject(i);
@@ -175,37 +173,37 @@ public class SessionsTab extends Fragment {
                                 String notes = jsonobject.getString("notes");
 
 
-                                counselling = new AddCounsellingResponse(id, patient, session, notes, date);
+                                counselling = new Counselling(id, patient, session, notes, date);
                                 //userGet(owner);
                                 counsellingList.add(counselling);
                             }
                         }
                     if (counsellingList.size() > 0) {
                         Log.d(TAG, counsellingList.toString());
-                        BindDictionary<AddCounsellingResponse> dictionary = new BindDictionary<>();
-                        dictionary.addStringField(R.id.titleTV, new StringExtractor<AddCounsellingResponse>() {
+                        BindDictionary<Counselling> dictionary = new BindDictionary<>();
+                        dictionary.addStringField(R.id.titleTV, new StringExtractor<Counselling>() {
                             @Override
-                            public String getStringValue(AddCounsellingResponse counselling, int position) {
+                            public String getStringValue(Counselling counselling, int position) {
                                 return counselling.getSession_type();
                             }
                         });
-                        dictionary.addStringField(R.id.personTV, new StringExtractor<AddCounsellingResponse>() {
+                        dictionary.addStringField(R.id.personTV, new StringExtractor<Counselling>() {
                             @Override
-                            public String getStringValue(AddCounsellingResponse counselling, int position) {
+                            public String getStringValue(Counselling counselling, int position) {
                                 return counselling.getPatient_name();
                             }
                         });
 
-                        dictionary.addStringField(R.id.dateTV, new StringExtractor<AddCounsellingResponse>() {
+                        dictionary.addStringField(R.id.dateTV, new StringExtractor<Counselling>() {
                             @Override
-                            public String getStringValue(AddCounsellingResponse counselling, int position) {
+                            public String getStringValue(Counselling counselling, int position) {
                                 Log.d(TAG, "counselling " + counselling.getId());
                                 return "Date: "+counselling.getDate();
                             }
                         });
-                        dictionary.addStringField(R.id.idTV, new StringExtractor<AddCounsellingResponse>() {
+                        dictionary.addStringField(R.id.idTV, new StringExtractor<Counselling>() {
                             @Override
-                            public String getStringValue(AddCounsellingResponse counselling, int position) {
+                            public String getStringValue(Counselling counselling, int position) {
                                 return "ID: "+counselling.getId();
                             }
                         });

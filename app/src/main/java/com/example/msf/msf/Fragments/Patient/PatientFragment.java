@@ -1,6 +1,5 @@
 package com.example.msf.msf.Fragments.Patient;
 
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -17,7 +16,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.example.msf.msf.API.Deserializers.Patients;
+import com.example.msf.msf.API.Models.Patients;
 import com.example.msf.msf.Fragments.Patient.PatientTabs.TabFragment;
 import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.R;

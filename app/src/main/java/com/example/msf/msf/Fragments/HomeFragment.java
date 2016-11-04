@@ -3,7 +3,6 @@ package com.example.msf.msf.Fragments;
 
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
@@ -13,19 +12,15 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.amigold.fundapter.BindDictionary;
 import com.amigold.fundapter.FunDapter;
 import com.amigold.fundapter.extractors.StringExtractor;
 import com.example.msf.msf.API.Auth;
-import com.example.msf.msf.API.Deserializers.Appointment;
-import com.example.msf.msf.API.Deserializers.Events;
+import com.example.msf.msf.API.Models.Appointment;
+import com.example.msf.msf.API.Models.Events;
 import com.example.msf.msf.API.Interface;
-import com.example.msf.msf.Fragments.AdverseEvents.AdverseEventFragment;
-import com.example.msf.msf.Fragments.Appointment.AppointmentFragment;
 import com.example.msf.msf.Fragments.Appointment.AppointmentInfoFragment;
-import com.example.msf.msf.Fragments.Appointment.CreateAppointmentFragment;
 import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;

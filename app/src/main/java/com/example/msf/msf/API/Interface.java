@@ -1,24 +1,24 @@
 package com.example.msf.msf.API;
 
-import com.example.msf.msf.API.Deserializers.AddCounsellingResponse;
-import com.example.msf.msf.API.Deserializers.Admission;
-import com.example.msf.msf.API.Deserializers.AdverseEvent;
-import com.example.msf.msf.API.Deserializers.AdverseEventType;
-import com.example.msf.msf.API.Deserializers.Drug;
-import com.example.msf.msf.API.Deserializers.EmergencyContact;
-import com.example.msf.msf.API.Deserializers.Enrollment;
-import com.example.msf.msf.API.Deserializers.AddPilotResponse;
-import com.example.msf.msf.API.Deserializers.Appointment;
-import com.example.msf.msf.API.Deserializers.Events;
-import com.example.msf.msf.API.Deserializers.MedicalRecord;
-import com.example.msf.msf.API.Deserializers.MedicalRecordType;
-import com.example.msf.msf.API.Deserializers.NotificationRegistration;
-import com.example.msf.msf.API.Deserializers.Notifications;
-import com.example.msf.msf.API.Deserializers.Outcome;
-import com.example.msf.msf.API.Deserializers.OutcomeType;
-import com.example.msf.msf.API.Deserializers.Regimen;
-import com.example.msf.msf.API.Deserializers.Users;
-import com.example.msf.msf.API.Deserializers.SessionDeserialiser;
+import com.example.msf.msf.API.Models.Counselling;
+import com.example.msf.msf.API.Models.Admission;
+import com.example.msf.msf.API.Models.AdverseEvent;
+import com.example.msf.msf.API.Models.AdverseEventType;
+import com.example.msf.msf.API.Models.Drug;
+import com.example.msf.msf.API.Models.EmergencyContact;
+import com.example.msf.msf.API.Models.Enrollment;
+import com.example.msf.msf.API.Models.AddPilotResponse;
+import com.example.msf.msf.API.Models.Appointment;
+import com.example.msf.msf.API.Models.Events;
+import com.example.msf.msf.API.Models.MedicalRecord;
+import com.example.msf.msf.API.Models.MedicalRecordType;
+import com.example.msf.msf.API.Models.NotificationRegistration;
+import com.example.msf.msf.API.Models.Notifications;
+import com.example.msf.msf.API.Models.Outcome;
+import com.example.msf.msf.API.Models.OutcomeType;
+import com.example.msf.msf.API.Models.Regimen;
+import com.example.msf.msf.API.Models.Users;
+import com.example.msf.msf.API.Models.SessionDeserialiser;
 
 import java.util.List;
 
@@ -80,11 +80,11 @@ public interface Interface {
             Callback<SessionDeserialiser> serverResponseCallback);
 
     @GET("/counselling/")
-    void getCounselling(Callback<List<AddCounsellingResponse>> serverResponseCallback);
+    void getCounselling(Callback<List<Counselling>> serverResponseCallback);
 
     @GET("/counselling/{id}/")
     void getCounsellingSession(@Path("id") long counsellingID,
-            Callback<AddCounsellingResponse> serverResponseCallback);
+            Callback<Counselling> serverResponseCallback);
 
     @GET("/appointments/")
     void getAppointments(Callback<List<Appointment>> serverResponseCallback);
@@ -184,7 +184,7 @@ public interface Interface {
     void postCounselling(@Field("patient") String patient,
                          @Field("counselling_session_type") String sessionType,
                          @Field("notes") String notes,
-                         Callback<AddCounsellingResponse> serverResponseCallback);
+                         Callback<Counselling> serverResponseCallback);
 
     @FormUrlEncoded
     @POST("/patients/")
@@ -371,7 +371,7 @@ public interface Interface {
                            @Part("patient") String patient,
                            @Part("counselling_session_type") String sessionType,
                            @Part("notes") String notes,
-                           Callback<AddCounsellingResponse> serverResponseCallback);
+                           Callback<Counselling> serverResponseCallback);
 
     @Multipart
     @PUT("/enrollments/{id}/")
@@ -433,7 +433,7 @@ public interface Interface {
 
     @DELETE("/counselling/{id}/")
     void deleteSession(@Path("id") long sessionID,
-                       Callback<AddCounsellingResponse> callback);
+                       Callback<Counselling> callback);
 
     @DELETE("/enrollments/{id}/")
     void deleteEnrollment(@Path("id") long enrollmentID,

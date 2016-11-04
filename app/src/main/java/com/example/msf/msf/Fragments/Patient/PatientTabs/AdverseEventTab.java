@@ -17,7 +17,7 @@ import com.amigold.fundapter.BindDictionary;
 import com.amigold.fundapter.FunDapter;
 import com.amigold.fundapter.extractors.StringExtractor;
 import com.example.msf.msf.API.Auth;
-import com.example.msf.msf.API.Deserializers.AdverseEvent;
+import com.example.msf.msf.API.Models.AdverseEvent;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.Fragments.AdverseEvents.AdverseEventInfoFragment;
 import com.example.msf.msf.Fragments.AdverseEvents.CreateAdverseEventFragment;

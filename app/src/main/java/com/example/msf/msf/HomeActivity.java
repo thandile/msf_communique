@@ -4,11 +4,9 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.SystemClock;
 import android.support.v4.app.FragmentManager;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -23,16 +21,13 @@ import android.widget.Toast;
 
 import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.Communicator;
-import com.example.msf.msf.API.Deserializers.AdverseEventType;
-import com.example.msf.msf.API.Deserializers.Drug;
-import com.example.msf.msf.API.Deserializers.Events;
-import com.example.msf.msf.API.Deserializers.MedicalRecordType;
-import com.example.msf.msf.API.Deserializers.NotificationRegistration;
-import com.example.msf.msf.API.Deserializers.OutcomeType;
-import com.example.msf.msf.API.Deserializers.Patients;
-import com.example.msf.msf.API.Deserializers.Regimen;
-import com.example.msf.msf.API.Deserializers.SessionDeserialiser;
-import com.example.msf.msf.API.Deserializers.Users;
+import com.example.msf.msf.API.Models.AdverseEventType;
+import com.example.msf.msf.API.Models.Drug;
+import com.example.msf.msf.API.Models.MedicalRecordType;
+import com.example.msf.msf.API.Models.NotificationRegistration;
+import com.example.msf.msf.API.Models.OutcomeType;
+import com.example.msf.msf.API.Models.SessionDeserialiser;
+import com.example.msf.msf.API.Models.Users;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.API.PatientsDeserialiser;
 import com.example.msf.msf.API.PilotsDeserializer;
@@ -88,13 +83,11 @@ import com.example.msf.msf.Fragments.Regimens.UpdateRegimenFragment;
 import com.example.msf.msf.Utils.AppStatus;
 import com.example.msf.msf.Utils.WriteRead;
 import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.messaging.FirebaseMessaging;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -102,8 +95,6 @@ import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 import retrofit.mime.TypedByteArray;
-
-import static java.security.AccessController.getContext;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,

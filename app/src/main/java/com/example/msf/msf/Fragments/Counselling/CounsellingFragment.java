@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,14 +19,16 @@ import com.amigold.fundapter.BindDictionary;
 import com.amigold.fundapter.FunDapter;
 import com.amigold.fundapter.extractors.StringExtractor;
 import com.example.msf.msf.API.Auth;
-import com.example.msf.msf.API.Deserializers.AddCounsellingResponse;
-import com.example.msf.msf.API.Deserializers.SessionDeserialiser;
+import com.example.msf.msf.API.Models.Counselling;
 import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.Interface;
+import com.example.msf.msf.API.Models.CounsellingSession;
 import com.example.msf.msf.API.ServerEvent;
-import com.example.msf.msf.Fragments.AdverseEvents.AdverseEventFragment;
+import com.example.msf.msf.DataAdapter;
 import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.LoginActivity;
+import com.example.msf.msf.Presenters.Counselling.CounsellingPresenter;
+import com.example.msf.msf.Presenters.Counselling.ICounsellingListView;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.AppStatus;
 import com.example.msf.msf.Utils.WriteRead;
@@ -37,7 +38,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,14 +49,13 @@ import retrofit.mime.TypedByteArray;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class CounsellingFragment extends Fragment {
+public class CounsellingFragment extends Fragment implements ICounsellingListView {
     FloatingActionButton fab;
     private ListView counsellingLV;
     private final String TAG = this.getClass().getSimpleName();
-    public static String PATIENTINFOFILE = "Patients";
-    public static String SESSIONTYPEFILE = "SessionType";
     TextView text;
     ProgressDialog prgDialog;
+    CounsellingPresenter presenter;
 
     public CounsellingFragment() {
         // Required empty public constructor
@@ -68,6 +67,7 @@ public class CounsellingFragment extends Fragment {
                              Bundle savedInstanceState) {
         HomeActivity.navItemIndex = 4;
         View view = inflater.inflate(R.layout.fragment_counselling, container, false);
+        presenter = new CounsellingPresenter(this);
         counsellingLV = (ListView) view.findViewById(R.id.counsellingLV);
         text = (TextView) view.findViewById(R.id.defaultText);
         prgDialog = new ProgressDialog(CounsellingFragment.this.getActivity());
@@ -75,12 +75,29 @@ public class CounsellingFragment extends Fragment {
         prgDialog.setMessage("Please wait...");
         // Set Cancelable as False
         prgDialog.setCancelable(false);
-        if (AppStatus.getInstance(CounsellingFragment.this.getActivity()).isOnline()) {
-            counsellingGet();
-        }
-        else {
-            text.setText("You are currently offline, therefore patient counselling information cannot be loaded");
-        }
+        listViewListener();
+
+        fab = (FloatingActionButton) view.findViewById(R.id.btnFloatingAction);
+        fabListener();
+        return view;
+    }
+
+    private void fabListener() {
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CreateCounsellingFragment createCounsellingFragment = new CreateCounsellingFragment();
+                FragmentManager manager = getActivity().getSupportFragmentManager();
+                manager.beginTransaction()
+                        .replace(R.id.rel_layout_for_frag, createCounsellingFragment,
+                                createCounsellingFragment.getTag())
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
+    }
+
+    private void listViewListener() {
         counsellingLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -97,147 +114,18 @@ public class CounsellingFragment extends Fragment {
                         .commit();
             }
         });
-
-        fab = (FloatingActionButton) view.findViewById(R.id.btnFloatingAction);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                CreateCounsellingFragment createCounsellingFragment = new CreateCounsellingFragment();
-                FragmentManager manager = getActivity().getSupportFragmentManager();
-                manager.beginTransaction()
-                        .replace(R.id.rel_layout_for_frag, createCounsellingFragment,
-                                createCounsellingFragment.getTag())
-                        .addToBackStack(null)
-                        .commit();
-
-            }
-        });
-
-        return view;
     }
 
-    public void counsellingGet(){
-        prgDialog.show();
-        final ArrayList<AddCounsellingResponse> counsellingList = new ArrayList<AddCounsellingResponse>();
-        Interface communicatorInterface;
-        communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
-        Callback<List<AddCounsellingResponse>> callback = new Callback<List<AddCounsellingResponse>>() {
-            @Override
-            public void success(List<AddCounsellingResponse> serverResponse, Response response2) {
-                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
-                try{
-                    AddCounsellingResponse counselling = new AddCounsellingResponse();
-                    JSONArray jsonarray = new JSONArray(resp);
-                    if (jsonarray.length()>0) {
-                        for (int i = 0; i < jsonarray.length(); i++) {
-                            JSONObject jsonobject = jsonarray.getJSONObject(i);
-                            int id = Integer.parseInt(jsonobject.getString("id"));
-                            String patient = getPatientInfo(Long.parseLong(jsonobject.getString("patient")));
-                            String session = "";
-                            Log.d(TAG, "True");
-                            session = sessionTypeLoad(Long.parseLong(jsonobject.getString("counselling_session_type")));
-                            Log.d(TAG, session);
-                            String notes = jsonobject.getString("notes");
-
-
-                            counselling = new AddCounsellingResponse(id, patient, session, notes);
-                            //userGet(owner);
-                            counsellingList.add(counselling);
-                        }
-
-                        Log.d(TAG, counsellingList.toString());
-                        BindDictionary<AddCounsellingResponse> dictionary = new BindDictionary<>();
-                        dictionary.addStringField(R.id.titleTV, new StringExtractor<AddCounsellingResponse>() {
-                            @Override
-                            public String getStringValue(AddCounsellingResponse counselling, int position) {
-                                return counselling.getSession_type();
-                            }
-                        });
-                        dictionary.addStringField(R.id.personTV, new StringExtractor<AddCounsellingResponse>() {
-                            @Override
-                            public String getStringValue(AddCounsellingResponse counselling, int position) {
-                                return counselling.getPatient_name();
-                            }
-                        });
-
-                        dictionary.addStringField(R.id.dateTV, new StringExtractor<AddCounsellingResponse>() {
-                            @Override
-                            public String getStringValue(AddCounsellingResponse counselling, int position) {
-                                Log.d(TAG, "counselling "+counselling.getId());
-                                return "ID: "+counselling.getId();
-                            }
-                        });
-                        FunDapter adapter = new FunDapter(CounsellingFragment.this.getActivity(),
-                                counsellingList,
-                                R.layout.appointment_list_layout, dictionary);
-                        counsellingLV.setAdapter(adapter);
-                    }
-                    else{
-                        text.setText("No recorded counselling sessions");
-                        Toast.makeText(CounsellingFragment.this.getActivity(),
-                                "No recorded counselling sessions", Toast.LENGTH_SHORT).show();
-                        //counsellingList.add("No scheduled appointments.");
-                    }
-                    //appointmentLV.setAdapter(adapter);
-                }
-                catch (JSONException e){
-                    System.out.print("unsuccessful");
-                }
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                if(error != null ){
-                    Log.e(TAG, error.getMessage());
-                    error.printStackTrace();
-                }
-            }
-        };
-        communicatorInterface.getCounselling(callback);
-        prgDialog.hide();
-    }
-
-    public String getPatientInfo(Long pid) {
-        String patients = WriteRead.read(PATIENTINFOFILE, getContext());
-        String full_name = "";
-        try {
-            JSONArray jsonarray = new JSONArray(patients);
-            for (int i = 0; i < jsonarray.length(); i++) {
-                JSONObject jsonobject = jsonarray.getJSONObject(i);
-                Log.d(TAG, "ID: " + jsonobject.getString("id"));
-                if (jsonobject.getString("id").equals(""+pid)) {
-                    //String id = jsonobject.getString("id");
-                    final String first_name = jsonobject.getString("other_names");
-                    String last_name = jsonobject.getString("last_name");
-                    full_name = first_name + " " + last_name;
-                    break;
-                }
-            }
-        } catch (JSONException e) {
-            System.out.print("unsuccessful");
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (AppStatus.getInstance(CounsellingFragment.this.getActivity()).isOnline()) {
+            presenter.loadCounsellingSessions();
+        } else {
+            text.setText("You are currently offline, therefore patient counselling information cannot be loaded");
         }
-        return full_name;
     }
 
-
-    private String sessionTypeLoad(Long sid) {
-        String session = "";
-        String sessionTypes = WriteRead.read(SESSIONTYPEFILE, getContext());
-        try {
-            JSONArray jsonarray = new JSONArray(sessionTypes);
-            for (int i = 0; i < jsonarray.length(); i++) {
-                JSONObject jsonobject = jsonarray.getJSONObject(i);
-                if (jsonobject.getString("id").equals(""+sid)) {
-                    String id_name = jsonobject.getString("id") + ": " + jsonobject.getString("name");
-                    session = id_name;
-                    break;
-                }
-            }
-        } catch (JSONException e) {
-            System.out.print("unsuccessful");
-        }
-        return session;
-    }
 
     @Subscribe
     public void onServerEvent(ServerEvent serverEvent){
@@ -258,4 +146,48 @@ public class CounsellingFragment extends Fragment {
                 .commit();
     }
 
+    @Override
+    public void onCounsellingLoadedSuccess(List<Counselling> list, Response response) {
+            ArrayList<Counselling> counsellingList = new ArrayList<Counselling>();
+            counsellingList.addAll(list);
+            Log.d(TAG, counsellingList.toString());
+            if (counsellingList.size()>0){
+            BindDictionary<Counselling> dictionary = new BindDictionary<>();
+            dictionary.addStringField(R.id.titleTV, new StringExtractor<Counselling>() {
+                @Override
+                public String getStringValue(Counselling counselling, int position) {
+                    return DataAdapter.sessionTypeLoad((long) counselling.getCounselling_session_type(), getActivity());
+                }
+            });
+            dictionary.addStringField(R.id.personTV, new StringExtractor<Counselling>() {
+                @Override
+                public String getStringValue(Counselling counselling, int position) {
+                    return DataAdapter.getPatientInfo((long) counselling.getPatient(), getActivity());
+                }
+            });
+
+            dictionary.addStringField(R.id.dateTV, new StringExtractor<Counselling>() {
+                @Override
+                public String getStringValue(Counselling counselling, int position) {
+                    Log.d(TAG, "counselling "+counselling.getId());
+                    return "ID: "+counselling.getId();
+                }
+            });
+            FunDapter adapter = new FunDapter(CounsellingFragment.this.getActivity(),
+                    counsellingList,
+                    R.layout.appointment_list_layout, dictionary);
+            counsellingLV.setAdapter(adapter);
+        }
+        else{
+            text.setText("No recorded counselling sessions");
+            Toast.makeText(CounsellingFragment.this.getActivity(),
+                    "No recorded counselling sessions", Toast.LENGTH_SHORT).show();
+            //counsellingList.add("No scheduled appointments.");
+        }
+    }
+
+    @Override
+    public void onCounsellingLoadedFailure(RetrofitError error) {
+        Toast.makeText(getActivity(), error.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+    }
 }

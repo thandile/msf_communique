@@ -17,7 +17,7 @@ import com.amigold.fundapter.BindDictionary;
 import com.amigold.fundapter.FunDapter;
 import com.amigold.fundapter.extractors.StringExtractor;
 import com.example.msf.msf.API.Auth;
-import com.example.msf.msf.API.Deserializers.Enrollment;
+import com.example.msf.msf.API.Models.Enrollment;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.Fragments.Enrollments.CreateEnrollmentFragment;
 import com.example.msf.msf.Fragments.Enrollments.EnrollmentInfoFragment;

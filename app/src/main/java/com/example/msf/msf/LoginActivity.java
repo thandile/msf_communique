@@ -4,7 +4,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,17 +17,14 @@ import android.widget.Toast;
 
 import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.BusProvider;
-import com.example.msf.msf.API.Deserializers.Users;
+import com.example.msf.msf.API.Models.Users;
 import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.Interface;
-import com.example.msf.msf.API.PatientsDeserialiser;
 import com.example.msf.msf.API.ServerEvent;
 import com.example.msf.msf.Fragments.Notfications.NotificationFragment;
-import com.example.msf.msf.Fragments.Outcomes.CreateOutcomeFragment;
 import com.squareup.otto.Subscribe;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 import retrofit.Callback;

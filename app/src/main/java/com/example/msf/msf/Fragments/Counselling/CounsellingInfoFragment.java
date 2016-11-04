@@ -16,12 +16,11 @@ import android.widget.Toast;
 import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.BusProvider;
 import com.example.msf.msf.API.Communicator;
-import com.example.msf.msf.API.Deserializers.AddCounsellingResponse;
-import com.example.msf.msf.API.Deserializers.Users;
+import com.example.msf.msf.API.Models.Counselling;
+import com.example.msf.msf.API.Models.Users;
 import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.API.ServerEvent;
-import com.example.msf.msf.Fragments.Admissions.AdmissionFragment;
 import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
@@ -158,9 +157,9 @@ public class CounsellingInfoFragment extends Fragment {
         prgDialog.show();
         Interface communicatorInterface;
         communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
-        Callback<AddCounsellingResponse> callback = new Callback<AddCounsellingResponse>() {
+        Callback<Counselling> callback = new Callback<Counselling>() {
             @Override
-            public void success(AddCounsellingResponse serverResponse, Response response2) {
+            public void success(Counselling serverResponse, Response response2) {
                 String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
                 try{
                     JSONObject jsonobject = new JSONObject(resp);

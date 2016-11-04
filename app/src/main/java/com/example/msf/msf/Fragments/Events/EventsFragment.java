@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,15 +18,14 @@ import com.amigold.fundapter.BindDictionary;
 import com.amigold.fundapter.FunDapter;
 import com.amigold.fundapter.extractors.StringExtractor;
 import com.example.msf.msf.API.Auth;
-import com.example.msf.msf.API.Deserializers.Appointment;
-import com.example.msf.msf.API.Deserializers.Events;
+import com.example.msf.msf.API.Models.Events;
 import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.API.ServerEvent;
-import com.example.msf.msf.Fragments.Admissions.AdmissionFragment;
-import com.example.msf.msf.Fragments.AdverseEvents.AdverseEventFragment;
 import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.LoginActivity;
+import com.example.msf.msf.Presenters.Events.EventsPresenter;
+import com.example.msf.msf.Presenters.Events.IEventsListView;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.AppStatus;
 import com.squareup.otto.Subscribe;
@@ -45,12 +43,13 @@ import retrofit.client.Response;
 import retrofit.mime.TypedByteArray;
 
 
-public class EventsFragment extends Fragment {
+public class EventsFragment extends Fragment implements IEventsListView {
     FloatingActionButton fab;
     ListView eventsLV;
     TextView text;
     ProgressDialog prgDialog;
     private final String TAG = this.getClass().getSimpleName();
+    EventsPresenter presenter;
 
 
     public EventsFragment() {
@@ -62,7 +61,7 @@ public class EventsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         HomeActivity.navItemIndex = 7;
-        // Inflate the layout for this fragment
+        presenter = new EventsPresenter(this);
         prgDialog = new ProgressDialog(EventsFragment.this.getActivity());
         // Set Progress Dialog Text
         prgDialog.setMessage("Please wait...");
@@ -71,12 +70,39 @@ public class EventsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_events, container, false);
         text = (TextView) view.findViewById(R.id.defaultText);
         eventsLV = (ListView) view.findViewById(R.id.eventsLV);
+        listViewListener();
+        fab = (FloatingActionButton) view.findViewById(R.id.btnFloatingAction);
+        fabListener();
+        return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
         if (AppStatus.getInstance(EventsFragment.this.getActivity()).isOnline()) {
-            eventsGet();
-        }
-        else {
+            presenter.loadEvents();
+        } else {
             text.setText("You are currently offline, therefore events cannot be loaded");
         }
+    }
+
+    private void fabListener() {
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CreateEventFragment createEventFragment = new CreateEventFragment();
+                FragmentManager manager = getActivity().getSupportFragmentManager();
+                manager.beginTransaction()
+                        .replace(R.id.rel_layout_for_frag, createEventFragment,
+                                createEventFragment.getTag())
+                        .addToBackStack(null)
+                        .commit();
+
+            }
+        });
+    }
+
+    private void listViewListener() {
         eventsLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -95,24 +121,7 @@ public class EventsFragment extends Fragment {
                 //startActivity(intent);
             }
         });
-        fab = (FloatingActionButton) view.findViewById(R.id.btnFloatingAction);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                CreateEventFragment createEventFragment = new CreateEventFragment();
-                FragmentManager manager = getActivity().getSupportFragmentManager();
-                manager.beginTransaction()
-                        .replace(R.id.rel_layout_for_frag, createEventFragment,
-                                createEventFragment.getTag())
-                        .addToBackStack(null)
-                        .commit();
-
-            }
-        });
-        return view;
     }
-
-
 
 
     public void eventsGet(){
@@ -220,4 +229,53 @@ public class EventsFragment extends Fragment {
                 .commit();
     }
 
+    @Override
+    public void onEventsLoadedSuccess(List<Events> list, Response response) {
+        ArrayList<Events> eventsList = new ArrayList<Events>();
+        eventsList.addAll(list);
+        if (eventsList.size()>0){
+        BindDictionary<Events> dictionary = new BindDictionary<>();
+        dictionary.addStringField(R.id.titleTV, new StringExtractor<Events>() {
+            @Override
+            public String getStringValue(Events event, int position) {
+                return event.getName();
+            }
+        });
+        dictionary.addStringField(R.id.personTV, new StringExtractor<Events>() {
+            @Override
+            public String getStringValue(Events event, int position) {
+                return event.getDescription();
+            }
+        });
+
+        dictionary.addStringField(R.id.dateTV, new StringExtractor<Events>() {
+            @Override
+            public String getStringValue(Events event, int position) {
+                return event.getEventDate();
+            }
+        });
+
+        dictionary.addStringField(R.id.idTV, new StringExtractor<Events>() {
+            @Override
+            public String getStringValue(Events event, int position) {
+                return "ID: "+event.getId();
+            }
+        });
+        FunDapter adapter = new FunDapter(EventsFragment.this.getActivity(),
+                eventsList,
+                R.layout.appointment_list_layout, dictionary);
+        eventsLV.setAdapter(adapter);
+    }
+    else{
+        text.setText("No Scheduled events");
+        Toast.makeText(EventsFragment.this.getActivity(),
+                "No Scheduled events", Toast.LENGTH_SHORT).show();
+        //eventsList.add("No scheduled appointments.");
+    }
+    }
+
+    @Override
+    public void onEventsLoadedFailure(RetrofitError error) {
+        Toast.makeText(getActivity(), error.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+    }
 }

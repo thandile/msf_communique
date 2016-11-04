@@ -1,6 +1,6 @@
 package com.example.msf.msf.API;
 
-import com.example.msf.msf.API.Deserializers.*;
+import com.example.msf.msf.API.Models.*;
 
 
 
@@ -14,7 +14,7 @@ public class ServerEvent {
     private AddPilotResponse AddPilotResponse;
     private Enrollment Enrollment;
     private SessionDeserialiser SessionDeserialiser;
-    private AddCounsellingResponse AddCounsellingResponse;
+    private Counselling Counselling;
     private Appointment Appointment;
     private Events Events;
     private Admission Admission;
@@ -24,17 +24,17 @@ public class ServerEvent {
     private EmergencyContact EmergencyContact;
     private Outcome Outcome;
 
-    public ServerEvent(com.example.msf.msf.API.Deserializers.NotificationRegistration notificationRegistration) {
+    public ServerEvent(com.example.msf.msf.API.Models.NotificationRegistration notificationRegistration) {
         NotificationRegistration = notificationRegistration;
     }
 
     private Notifications Notifications;
 
-    public com.example.msf.msf.API.Deserializers.NotificationRegistration getNotificationRegistration() {
+    public com.example.msf.msf.API.Models.NotificationRegistration getNotificationRegistration() {
         return NotificationRegistration;
     }
 
-    public void setNotificationRegistration(com.example.msf.msf.API.Deserializers.NotificationRegistration notificationRegistration) {
+    public void setNotificationRegistration(com.example.msf.msf.API.Models.NotificationRegistration notificationRegistration) {
         NotificationRegistration = notificationRegistration;
     }
 
@@ -216,16 +216,16 @@ public class ServerEvent {
 
     /*************/
 
-    public ServerEvent(AddCounsellingResponse AddCounsellingResponse) {
-        this.AddCounsellingResponse = AddCounsellingResponse;
+    public ServerEvent(Counselling Counselling) {
+        this.Counselling = Counselling;
     }
 
-    public AddCounsellingResponse getAddCounsellingResponse() {
-        return AddCounsellingResponse;
+    public Counselling getCounselling() {
+        return Counselling;
     }
 
-    public void setAddCounsellingResponse(AddCounsellingResponse AddCounsellingResponse) {
-        this.AddCounsellingResponse = AddCounsellingResponse;
+    public void setCounselling(Counselling Counselling) {
+        this.Counselling = Counselling;
     }
 
     /*************/
