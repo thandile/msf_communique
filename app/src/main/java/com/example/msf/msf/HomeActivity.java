@@ -26,6 +26,7 @@ import com.example.msf.msf.API.Models.Drug;
 import com.example.msf.msf.API.Models.MedicalRecordType;
 import com.example.msf.msf.API.Models.NotificationRegistration;
 import com.example.msf.msf.API.Models.OutcomeType;
+import com.example.msf.msf.API.Models.Patients;
 import com.example.msf.msf.API.Models.SessionDeserialiser;
 import com.example.msf.msf.API.Models.Users;
 import com.example.msf.msf.API.Interface;
@@ -133,7 +134,6 @@ public class HomeActivity extends AppCompatActivity
         OutcomeInfoFragment.OnFragmentInteractionListener,
         UpdateOutcomeFragment.OnFragmentInteractionListener,
         OutcomeTab.OnFragmentInteractionListener,
-        NotificationFragment.OnFragmentInteractionListener,
         FileUploadFragment.OnFragmentInteractionListener{
 
     // flag to load home fragment when user presses back key
@@ -592,9 +592,9 @@ public class HomeActivity extends AppCompatActivity
         Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
 
         // showing refresh animation before making http call
-        Callback<List<PatientsDeserialiser>> callback = new Callback<List<PatientsDeserialiser>>() {
+        Callback<List<Patients>> callback = new Callback<List<Patients>>() {
             @Override
-            public void success(List<PatientsDeserialiser> serverResponse, Response response2) {
+            public void success(List<Patients> serverResponse, Response response2) {
                 String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
                 WriteRead.write(PATIENTFILE, resp, HomeActivity.this);
                 // stopping swipe refresh

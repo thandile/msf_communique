@@ -2,10 +2,8 @@ package com.example.msf.msf.Presenters.Enrollments;
 
 import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.Interface;
-import com.example.msf.msf.API.Models.Admission;
 import com.example.msf.msf.API.Models.Enrollment;
 import com.example.msf.msf.LoginActivity;
-import com.example.msf.msf.Presenters.Admissions.OnAdmissionInteractorFinishedListener;
 
 import java.util.List;
 
@@ -19,10 +17,10 @@ import retrofit.client.Response;
 
 public class EnrollmentInteractor implements Callback<List<Enrollment>> {
 
-    private OnEnrollmentInteractorFinishedListener listner;
+    private OnEnrollmentInteractorFinishedListener listener;
 
-    public EnrollmentInteractor(OnEnrollmentInteractorFinishedListener listner) {
-        this.listner = listner;
+    public EnrollmentInteractor(OnEnrollmentInteractorFinishedListener listener) {
+        this.listener = listener;
     }
 
     public void loadRecentEnrollments(){
@@ -32,12 +30,11 @@ public class EnrollmentInteractor implements Callback<List<Enrollment>> {
 
     @Override
     public void success(List<Enrollment> admissions, Response response) {
-        listner.onNetworkSuccess(admissions, response);
+        listener.onNetworkSuccess(admissions, response);
     }
 
     @Override
     public void failure(RetrofitError error) {
-        listner.onNetworkFailure(error);
-
+        listener.onNetworkFailure(error);
     }
 }

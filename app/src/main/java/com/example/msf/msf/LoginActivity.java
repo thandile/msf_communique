@@ -31,7 +31,7 @@ import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-public class LoginActivity extends AppCompatActivity implements  NotificationFragment.OnFragmentInteractionListener{
+public class LoginActivity extends AppCompatActivity{
     // Progress Dialog Object
     ProgressDialog prgDialog;
     // Error Msg TextView Object
@@ -206,10 +206,6 @@ public class LoginActivity extends AppCompatActivity implements  NotificationFra
         prgDialog.hide();
         Toast.makeText(LoginActivity.this, "error   " +
                 errorEvent.getErrorMsg(), Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onFragmentInteraction(String data) {
     }
 
 }

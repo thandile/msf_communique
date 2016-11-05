@@ -16,6 +16,7 @@ import com.example.msf.msf.API.Models.NotificationRegistration;
 import com.example.msf.msf.API.Models.Notifications;
 import com.example.msf.msf.API.Models.Outcome;
 import com.example.msf.msf.API.Models.OutcomeType;
+import com.example.msf.msf.API.Models.Patients;
 import com.example.msf.msf.API.Models.Regimen;
 import com.example.msf.msf.API.Models.Users;
 import com.example.msf.msf.API.Models.SessionDeserialiser;
@@ -52,7 +53,7 @@ public interface Interface {
                    Callback<PilotsDeserializer> serverResponseCallback);
 
     @GET("/patients/")
-    void getPatients(Callback<List<PatientsDeserialiser>> serverResponseCallback);
+    void getPatients(Callback<List<Patients>> serverResponseCallback);
 
     @GET("/patients/{id}/")
     void getPatient(@Path("id") long patientID,

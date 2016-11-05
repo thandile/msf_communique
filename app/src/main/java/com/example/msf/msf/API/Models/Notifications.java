@@ -8,18 +8,7 @@ import com.google.gson.annotations.SerializedName;
 
 public class Notifications {
     public Notifications(String id, String description, String objectID, String recipient,
-                         String timestamp, String unread, String verb) {
-        this.id = id;
-        this.description = description;
-        this.objectID = objectID;
-        this.recipient = recipient;
-        this.timestamp = timestamp;
-        this.unread = unread;
-        this.verb = verb;
-    }
-
-
-    public Notifications(String id, String description, String objectID, String recipient, String timestamp, String unread, String verb, String actorID) {
+                         String timestamp, String unread, String verb, String actorID) {
         this.id = id;
         this.description = description;
         this.objectID = objectID;
@@ -29,6 +18,18 @@ public class Notifications {
         this.verb = verb;
         this.actorID = actorID;
     }
+
+
+   /** public Notifications(String id, String description, String objectID, String recipient, String timestamp, String unread, String verb, String actorID) {
+        this.id = id;
+        this.description = description;
+        this.objectID = objectID;
+        this.recipient = recipient;
+        this.timestamp = timestamp;
+        this.unread = unread;
+        this.verb = verb;
+        this.actorID = actorID;
+    }**/
 
     @SerializedName("id")
     private String id;

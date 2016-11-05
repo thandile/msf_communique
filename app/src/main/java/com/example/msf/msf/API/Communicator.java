@@ -145,9 +145,9 @@ public class Communicator {
 
 
     public List<String> patientsGet(){
-        Callback<List<PatientsDeserialiser>> callback = new Callback<List<PatientsDeserialiser>>() {
+        Callback<List<Patients>> callback = new Callback<List<Patients>>() {
             @Override
-            public void success(List<PatientsDeserialiser> serverResponse, Response response2) {
+            public void success(List<Patients> serverResponse, Response response2) {
                 String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
                 try{
                     JSONArray jsonarray = new JSONArray(resp);

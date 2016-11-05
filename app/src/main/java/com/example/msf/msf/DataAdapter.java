@@ -9,6 +9,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 /**
  * Created by Thandile on 2016/11/03.
  */
@@ -19,6 +21,33 @@ public class DataAdapter {
     public static String USERINFOFILE = "Users";
     public static String SESSIONTYPEFILE = "SessionType";
     public static String PILOTINFOFILE = "Pilots";
+    public static String OUTCOMEFILE = "Outcomes";
+    public static String NOTIFICATIONFILE = "Notifications";
+    public static String MEDICALRECORDFILE = "MedicalRecords";
+
+
+    static String AD = "admission";
+    static String AE = "adverse event";
+    static String AP = "appointment";
+    static String CS = "counselling session";
+    static String MR = "medical report";
+    static String EV = "event";
+    static String PA = "patient";
+    static String PO = "patient outcome";
+    static String EN = "enroll";
+    static String RE = "regimen";
+
+
+    static String ADMISSIONS = "AD";
+    static String ADVERSE_EVENTS = "AE";
+    static String APPOINTMENTS = "AP";
+    static String COUNSELLING_SESSIONS = "CS";
+    static String MEDICAL_REPORTS = "MR";
+    static String EVENTS = "EV";
+    static String PATIENTS = "PA";
+    static String PATIENT_OUTCOMES = "PO";
+    static String ENROLLMENTS = "EN";
+    static String REGIMENS = "RE";
 
     public static String getPatientInfo(Long pid, Context context) {
         String patients = WriteRead.read(PATIENTINFOFILE, context);
@@ -116,4 +145,139 @@ public class DataAdapter {
         }
         return pilot;
     }
+
+    public static String loadOutcomes(Long pid, Context context){
+        String pilots = WriteRead.read(OUTCOMEFILE, context);
+        String pilot ="";
+        try {
+            JSONArray jsonarray = new JSONArray(pilots);
+            for (int i = 0; i < jsonarray.length(); i++) {
+                JSONObject jsonobject = jsonarray.getJSONObject(i);
+                if (jsonobject.getString("id").equals(""+pid)) {
+                    String id_name = jsonobject.getString("id") + ": " + jsonobject.getString("name");
+                    pilot = id_name;
+                }
+            }
+        }catch (JSONException e) {
+            System.out.print("unsuccessful");
+        }
+        return pilot;
+    }
+
+    public static ArrayList<String> subscriptionID(Context context){
+        String user = "";
+        ArrayList<String> list = new ArrayList<String >();
+        String users = WriteRead.read(NOTIFICATIONFILE, context);
+        String [] abbrev = {PATIENTS, APPOINTMENTS, ENROLLMENTS, EVENTS, ADMISSIONS,
+                COUNSELLING_SESSIONS, ADVERSE_EVENTS, REGIMENS, MEDICAL_REPORTS, PATIENT_OUTCOMES};
+        try{
+            JSONArray jsonarray = new JSONArray(users);
+            for (int i = 0; i < jsonarray.length(); i++) {
+                JSONObject jsonObject = jsonarray.getJSONObject(i);
+                user = user + " "+ jsonObject.getString("service");
+                if (jsonObject.getString("service").equals(PATIENTS)) {
+                    list.add("patient");
+                }
+                if (jsonObject.getString("service").equals(APPOINTMENTS)) {
+                    list.add("appointment");
+                }
+                if (jsonObject.getString("service").equals(ENROLLMENTS)) {
+                    list.add("enrollment");
+                }
+                if (jsonObject.getString("service").equals(EVENTS)) {
+                    list.add("event");
+                }
+                if (jsonObject.getString("service").equals(ADMISSIONS)) {
+                    list.add("admission");
+                }
+                if (jsonObject.getString("service").equals(APPOINTMENTS)) {
+                    list.add("appointment");
+                }
+                if (jsonObject.getString("service").equals(COUNSELLING_SESSIONS)) {
+                    list.add("counselling");
+                }
+                if (jsonObject.getString("service").equals(ADVERSE_EVENTS)) {
+                    list.add("adverse event");
+                }
+                if (jsonObject.getString("service").equals(REGIMENS)) {
+                    list.add("regimen");
+                }
+                if (jsonObject.getString("service").equals(MEDICAL_REPORTS)) {
+                    list.add("medical");
+                }
+                if (jsonObject.getString("service").equals(PATIENT_OUTCOMES)) {
+                    list.add("outcome");
+                }
+            }
+        }
+        catch (JSONException e){
+            System.out.print("unsuccessful");
+        }
+        //Log.d(TAG, "username"+list.get(0));
+        return list;
+    }
+
+
+    public static String loadUserFromFile(Long uid, Context context){
+        String user = "";
+        String users = WriteRead.read(USERINFOFILE, context);
+        try{
+            JSONArray jsonarray = new JSONArray(users);
+            for (int i = 0; i < jsonarray.length(); i++) {
+                JSONObject jsonObject = jsonarray.getJSONObject(i);
+                if (jsonObject.getString("id").equals("" + uid)) {
+                    int id = Integer.parseInt(jsonObject.getString("id"));
+                    String username = jsonObject.getString("username");
+                    user =  username;
+                    break;
+                }
+            }
+        }
+        catch (JSONException e){
+            System.out.print("unsuccessful");
+        }
+        return user;
+    }
+
+    public static String getUserID(String username, Context context){
+        String user = "";
+        String users = WriteRead.read(USERINFOFILE, context);
+        try{
+            JSONArray jsonarray = new JSONArray(users);
+            for (int i = 0; i < jsonarray.length(); i++) {
+                JSONObject jsonObject = jsonarray.getJSONObject(i);
+                if (jsonObject.getString("username").equals(username)) {
+                    String id = jsonObject.getString("id");
+                    user =  id;
+                    break;
+                }
+            }
+        }
+        catch (JSONException e){
+            System.out.print("unsuccessful");
+        }
+        return user;
+    }
+
+    public static String loadRecordTypeFromFile(Long uid, Context context){
+        String user = "";
+        String users = WriteRead.read(MEDICALRECORDFILE, context);
+        try{
+            JSONArray jsonarray = new JSONArray(users);
+            for (int i = 0; i < jsonarray.length(); i++) {
+                JSONObject jsonObject = jsonarray.getJSONObject(i);
+                if (jsonObject.getString("id").equals("" + uid)) {
+                    int id = Integer.parseInt(jsonObject.getString("id"));
+                    String username = jsonObject.getString("username");
+                    user =  username;
+                    break;
+                }
+            }
+        }
+        catch (JSONException e){
+            System.out.print("unsuccessful");
+        }
+        return user;
+    }
+
 }

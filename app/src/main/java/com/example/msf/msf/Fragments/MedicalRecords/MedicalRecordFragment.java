@@ -22,8 +22,11 @@ import com.example.msf.msf.API.Models.MedicalRecord;
 import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.API.ServerEvent;
+import com.example.msf.msf.DataAdapter;
 import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.LoginActivity;
+import com.example.msf.msf.Presenters.MedicalRecords.IRecordsListView;
+import com.example.msf.msf.Presenters.MedicalRecords.MecdicalRecordPresenter;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.AppStatus;
 import com.example.msf.msf.Utils.WriteRead;
@@ -42,14 +45,13 @@ import retrofit.client.Response;
 import retrofit.mime.TypedByteArray;
 
 
-public class MedicalRecordFragment extends Fragment {
+public class MedicalRecordFragment extends Fragment implements IRecordsListView {
     FloatingActionButton fab;
     private final String TAG = this.getClass().getSimpleName();
-    public static String PATIENTINFOFILE = "Patients";
-    public static String MEDICALRECORDFILE = "MedicalRecords";
     ListView recordsLV;
     TextView text;
     ProgressDialog prgDialog;
+    MecdicalRecordPresenter presenter;
 
     public MedicalRecordFragment() {
         // Required empty public constructor
@@ -59,8 +61,8 @@ public class MedicalRecordFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         HomeActivity.navItemIndex = 8;
+        presenter = new MecdicalRecordPresenter(this);
         View view = inflater.inflate(R.layout.fragment_medical_record, container, false);
         prgDialog = new ProgressDialog(MedicalRecordFragment.this.getActivity());
         // Set Progress Dialog Text
@@ -68,13 +70,39 @@ public class MedicalRecordFragment extends Fragment {
         // Set Cancelable as False
         prgDialog.setCancelable(false);
         text = (TextView) view.findViewById(R.id.defaultText);
+        recordsLV = (ListView) view.findViewById(R.id.recordsLV);
+        listViewListener();
+        fab = (FloatingActionButton) view.findViewById(R.id.btnFloatingAction);
+        fabListener();
+        return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
         if (AppStatus.getInstance(MedicalRecordFragment.this.getActivity()).isOnline()) {
-            medicalRecordsGet();
-        }
-        else {
+            presenter.loadMedicalRecords();
+        } else {
             text.setText("You are currently offline, therefore patient medical records cannot be loaded");
         }
-        recordsLV = (ListView) view.findViewById(R.id.recordsLV);
+    }
+
+    private void fabListener() {
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CreateMedicalRecFragment createMedicalRecFragment = new CreateMedicalRecFragment();
+                FragmentManager manager = getActivity().getSupportFragmentManager();
+                manager.beginTransaction()
+                        .replace(R.id.rel_layout_for_frag, createMedicalRecFragment,
+                                createMedicalRecFragment.getTag())
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
+    }
+
+    private void listViewListener() {
         recordsLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -89,163 +117,10 @@ public class MedicalRecordFragment extends Fragment {
                                 medicalInfoFragment.getTag())
                         .addToBackStack(null)
                         .commit();
-                //intent.putExtra(EXTRA_MESSAGE,id);
-                //startActivity(intent);
             }
         });
-
-        fab = (FloatingActionButton) view.findViewById(R.id.btnFloatingAction);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                CreateMedicalRecFragment createMedicalRecFragment = new CreateMedicalRecFragment();
-                FragmentManager manager = getActivity().getSupportFragmentManager();
-                manager.beginTransaction()
-                        .replace(R.id.rel_layout_for_frag, createMedicalRecFragment,
-                                createMedicalRecFragment.getTag())
-                        .addToBackStack(null)
-                        .commit();
-            }
-        });
-        return view;
-
     }
 
-    public void medicalRecordsGet(){
-        prgDialog.show();
-        final ArrayList<MedicalRecord> appointmentList = new ArrayList<MedicalRecord>();
-        Interface communicatorInterface;
-        communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
-        Callback<List<MedicalRecord>> callback = new Callback<List<MedicalRecord>>() {
-            @Override
-            public void success(List<MedicalRecord> serverResponse, Response response2) {
-                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
-                try{
-                    MedicalRecord appointment = new MedicalRecord();
-                    JSONArray jsonarray = new JSONArray(resp);
-                    if (jsonarray.length()>0) {
-                        for (int i = 0; i < jsonarray.length(); i++) {
-                            JSONObject jsonobject = jsonarray.getJSONObject(i);
-                            int id = Integer.parseInt(jsonobject.getString("id"));
-                            String date = jsonobject.getString("date_created");
-                            //String reportType = jsonobject.getString("start_time");
-                            String patient = getPatientInfo(Long.parseLong(jsonobject.getString("patient")));
-                            String reportType = "";
-                            Log.d(TAG, "file exists");
-                            reportType = loadRecordTypeFromFile(Long.parseLong(jsonobject.getString("report_type")));
-
-                            String title = jsonobject.getString("title");
-                            String notes = jsonobject.getString("notes");
-
-                            appointment = new MedicalRecord(id, title,reportType, patient, notes, date);
-                            //userGet(owner);
-                            appointmentList.add(appointment);
-
-                        }
-
-                        Log.d(TAG, appointmentList.toString());
-                        BindDictionary<MedicalRecord> dictionary = new BindDictionary<>();
-                        dictionary.addStringField(R.id.titleTV, new StringExtractor<MedicalRecord>() {
-                            @Override
-                            public String getStringValue(MedicalRecord appointment, int position) {
-                                return appointment.getTitle();
-                            }
-                        });
-                        dictionary.addStringField(R.id.personTV, new StringExtractor<MedicalRecord>() {
-                            @Override
-                            public String getStringValue(MedicalRecord appointment, int position) {
-                                return "Patient: "+appointment.getPatient();
-                            }
-                        });
-
-                        dictionary.addStringField(R.id.dateTV, new StringExtractor<MedicalRecord>() {
-                            @Override
-                            public String getStringValue(MedicalRecord appointment, int position) {
-                                return appointment.getDate();
-                            }
-                        });
-
-                        dictionary.addStringField(R.id.idTV, new StringExtractor<MedicalRecord>() {
-                            @Override
-                            public String getStringValue(MedicalRecord appointment, int position) {
-                                return "ID: "+appointment.getId();
-                            }
-                        });
-                        FunDapter adapter = new FunDapter(MedicalRecordFragment.this.getActivity(),
-                                appointmentList,
-                                R.layout.appointment_list_layout, dictionary);
-                        recordsLV.setAdapter(adapter);
-                    }
-                    else{
-                        text.setText("No medical records");
-                        Toast.makeText(MedicalRecordFragment.this.getActivity(),
-                                "No medical records", Toast.LENGTH_LONG).show();
-                        //appointmentList.add("No scheduled appointments.");
-                    }
-                    //appointmentLV.setAdapter(adapter);
-                }
-                catch (JSONException e){
-                    System.out.print("unsuccessful");
-                }
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                if(error != null ){
-                    Log.e(TAG, error.getMessage());
-                    error.printStackTrace();
-                }
-            }
-        };
-        communicatorInterface.getMedicalReports(callback);
-        prgDialog.hide();
-    }
-
-
-    public String loadRecordTypeFromFile(Long uid){
-        String user = "";
-        String users = WriteRead.read(MEDICALRECORDFILE, getContext());
-        try{
-            JSONArray jsonarray = new JSONArray(users);
-            for (int i = 0; i < jsonarray.length(); i++) {
-                JSONObject jsonObject = jsonarray.getJSONObject(i);
-                if (jsonObject.getString("id").equals("" + uid)) {
-                    Log.d(TAG, "userid"+ uid);
-                    int id = Integer.parseInt(jsonObject.getString("id"));
-                    String username = jsonObject.getString("username");
-                    user =  username;
-                    break;
-                }
-            }
-        }
-        catch (JSONException e){
-            System.out.print("unsuccessful");
-        }
-        Log.d(TAG, "username"+user);
-        return user;
-    }
-
-    public String getPatientInfo(Long pid) {
-        String patients = WriteRead.read(PATIENTINFOFILE, getContext());
-        String full_name = "";
-        try {
-            JSONArray jsonarray = new JSONArray(patients);
-            for (int i = 0; i < jsonarray.length(); i++) {
-                JSONObject jsonobject = jsonarray.getJSONObject(i);
-                Log.d(TAG, "ID: " + jsonobject.getString("id"));
-                if (jsonobject.getString("id").equals(""+pid)) {
-                    //String id = jsonobject.getString("id");
-                    final String first_name = jsonobject.getString("other_names");
-                    String last_name = jsonobject.getString("last_name");
-                    full_name = first_name + " " + last_name;
-                    break;
-                }
-            }
-        } catch (JSONException e) {
-            System.out.print("unsuccessful");
-        }
-        return full_name;
-    }
 
     @Subscribe
     public void onServerEvent(ServerEvent serverEvent){
@@ -267,4 +142,53 @@ public class MedicalRecordFragment extends Fragment {
     }
 
 
+    @Override
+    public void onRecordLoadedSuccess(List<MedicalRecord> list, Response response) {
+        ArrayList<MedicalRecord> appointmentList = new ArrayList<MedicalRecord>();
+        appointmentList.addAll(list);
+        if (appointmentList.size()>0) {
+            BindDictionary<MedicalRecord> dictionary = new BindDictionary<>();
+            dictionary.addStringField(R.id.titleTV, new StringExtractor<MedicalRecord>() {
+                @Override
+                public String getStringValue(MedicalRecord appointment, int position) {
+                    return appointment.getTitle();
+                }
+            });
+            dictionary.addStringField(R.id.personTV, new StringExtractor<MedicalRecord>() {
+                @Override
+                public String getStringValue(MedicalRecord appointment, int position) {
+                    return "Patient: "+ DataAdapter.getPatientInfo(Long.parseLong(appointment.getPatient()), getActivity());
+                }
+            });
+
+            dictionary.addStringField(R.id.dateTV, new StringExtractor<MedicalRecord>() {
+                @Override
+                public String getStringValue(MedicalRecord appointment, int position) {
+                    return appointment.getDate();
+                }
+            });
+
+            dictionary.addStringField(R.id.idTV, new StringExtractor<MedicalRecord>() {
+                @Override
+                public String getStringValue(MedicalRecord appointment, int position) {
+                    return "ID: "+appointment.getId();
+                }
+            });
+            FunDapter adapter = new FunDapter(MedicalRecordFragment.this.getActivity(),
+                    appointmentList,
+                    R.layout.appointment_list_layout, dictionary);
+            recordsLV.setAdapter(adapter);
+        }
+        else{
+            text.setText("No medical records");
+            Toast.makeText(MedicalRecordFragment.this.getActivity(),
+                    "No medical records", Toast.LENGTH_LONG).show();
+            //appointmentList.add("No scheduled appointments.");
+        }
+    }
+
+    @Override
+    public void onRecordLoadedFailure(RetrofitError error) {
+        Toast.makeText(getActivity(), error.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+    }
 }

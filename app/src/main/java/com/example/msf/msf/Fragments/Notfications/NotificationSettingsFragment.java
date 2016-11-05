@@ -79,9 +79,9 @@ public class NotificationSettingsFragment extends Fragment {
         communicator = new Communicator();
         //FirebaseMessaging.getInstance().subscribeToTopic("test");
         //String token =
-        String token = FirebaseInstanceId.getInstance().getToken();
-        Log.d(TAG, "TOKEN "+FirebaseInstanceId.getInstance().getToken());
-        communicator.registrationPost(token);
+        //String token = FirebaseInstanceId.getInstance().getToken();
+       // Log.d(TAG, "TOKEN "+FirebaseInstanceId.getInstance().getToken());
+        //communicator.registrationPost(token);
         patients = (CheckBox) view.findViewById(R.id.patients);
         appointments = (CheckBox) view.findViewById(R.id.appointments);
         enrollments = (CheckBox) view.findViewById(R.id.enrollments);
@@ -114,8 +114,6 @@ public class NotificationSettingsFragment extends Fragment {
                 boolean meds = medication.isChecked();
                 boolean record = records.isChecked();
                 boolean outcome = outcomes.isChecked();
-                //ArrayList<boolean> settings = new ArrayList<boolean>();
-                // settings = {patient, appoinment};
                 boolean[] settings = {patient, appoinment, enroll, event, admission, counsel,
                         adverseEvent, meds, record, outcome};
                 String [] abbrev = {PATIENTS, APPOINTMENTS, ENROLLMENTS, EVENTS, ADMISSIONS,

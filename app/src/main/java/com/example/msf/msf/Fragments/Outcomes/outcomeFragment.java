@@ -22,8 +22,11 @@ import com.example.msf.msf.API.Models.Outcome;
 import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.API.ServerEvent;
+import com.example.msf.msf.DataAdapter;
 import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.LoginActivity;
+import com.example.msf.msf.Presenters.Outcomes.IOutcomesListView;
+import com.example.msf.msf.Presenters.Outcomes.OutcomePresenter;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.AppStatus;
 import com.example.msf.msf.Utils.WriteRead;
@@ -42,15 +45,14 @@ import retrofit.client.Response;
 import retrofit.mime.TypedByteArray;
 
 
-public class OutcomeFragment extends Fragment {
+public class OutcomeFragment extends Fragment implements IOutcomesListView{
 
     FloatingActionButton fab;
     private ListView outcomeLV;
     TextView text;
     private final String TAG = this.getClass().getSimpleName();
-    public static String PATIENTINFOFILE = "Patients";
-    public static String OUTCOMEFILE = "Outcomes";
     ProgressDialog prgDialog;
+    OutcomePresenter presenter;
 
 
     public OutcomeFragment() {
@@ -63,7 +65,7 @@ public class OutcomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         HomeActivity.navItemIndex = 11;
-
+        presenter = new OutcomePresenter(this);
         View view = inflater.inflate(R.layout.fragment_outcome, container, false);
         outcomeLV = (ListView) view.findViewById(R.id.outcomeLV);
         prgDialog = new ProgressDialog(OutcomeFragment.this.getActivity());
@@ -71,6 +73,37 @@ public class OutcomeFragment extends Fragment {
         prgDialog.setMessage("Please wait...");
         // Set Cancelable as False
         prgDialog.setCancelable(false);
+        listViewListener();
+        text = (TextView) view.findViewById(R.id.defaultText);
+        fab = (FloatingActionButton) view.findViewById(R.id.btnFloatingAction);
+        fabListener();
+        return view;
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (AppStatus.getInstance(OutcomeFragment.this.getActivity()).isOnline()) {
+            presenter.loadOutcomes();
+        } else {
+            text.setText("You are currently offline, therefore patient outcomes cannot be loaded");
+        }
+    }
+    private void fabListener() {
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CreateOutcomeFragment createOutcomeFragment = new CreateOutcomeFragment();
+                FragmentManager manager = getActivity().getSupportFragmentManager();
+                manager.beginTransaction()
+                        .replace(R.id.rel_layout_for_frag, createOutcomeFragment,
+                                createOutcomeFragment.getTag())
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
+    }
+
+    private void listViewListener() {
         outcomeLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -86,153 +119,6 @@ public class OutcomeFragment extends Fragment {
                         .commit();
             }
         });
-        text = (TextView) view.findViewById(R.id.defaultText);
-        if (AppStatus.getInstance(OutcomeFragment.this.getActivity()).isOnline()) {
-            outcomesGet();
-        }
-        else {
-            text.setText("You are currently offline, therefore patient outcomes cannot be loaded");
-        }
-        fab = (FloatingActionButton) view.findViewById(R.id.btnFloatingAction);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                CreateOutcomeFragment createOutcomeFragment = new CreateOutcomeFragment();
-                FragmentManager manager = getActivity().getSupportFragmentManager();
-                manager.beginTransaction()
-                        .replace(R.id.rel_layout_for_frag, createOutcomeFragment,
-                                createOutcomeFragment.getTag())
-                        .addToBackStack(null)
-                        .commit();
-            }
-        });
-        return view;
-    }
-
-    public void outcomesGet(){
-        prgDialog.show();
-        final ArrayList<Outcome> outcomeList = new ArrayList<Outcome>();
-        Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
-        Callback<List<Outcome>> callback = new Callback<List<Outcome>>() {
-            @Override
-            public void success(List<Outcome> serverResponse, Response response2) {
-                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
-                try{
-                    //Outcome outcome = new Outcome();
-                    JSONArray jsonarray = new JSONArray(resp);
-                    if (jsonarray.length()>0) {
-                        Log.d(TAG, jsonarray.toString());
-                        for (int i = 0; i < jsonarray.length(); i++) {
-                            JSONObject jsonobject = jsonarray.getJSONObject(i);
-                            int id = Integer.parseInt(jsonobject.getString("id"));
-                            String outcomeType = loadOutcomes(Long.parseLong(jsonobject.getString("outcome_type")));
-                            Log.d(TAG, "read from storage");
-                            Log.d(TAG, "program "+outcomeType);
-                            String patient = getPatientInfo(Long.parseLong(jsonobject.getString("patient")));
-                            Log.d(TAG, "patient "+patient);
-                            String date = jsonobject.getString("outcome_date");
-                            String notes = jsonobject.getString("notes");
-                            Log.d(TAG, "enrollment "+date);
-                            Outcome outcome = new Outcome(id, patient, outcomeType, notes, date);
-                            outcomeList.add(outcome);
-                        }
-
-                        Log.d(TAG, "enrollment "+outcomeList.toString());
-                        BindDictionary<Outcome> dictionary = new BindDictionary<>();
-                        dictionary.addStringField(R.id.titleTV, new StringExtractor<Outcome>() {
-                            @Override
-                            public String getStringValue(Outcome outcome, int position) {
-                                return ""+outcome.getPatient();
-                            }
-                        });
-                        dictionary.addStringField(R.id.personTV, new StringExtractor<Outcome>() {
-                            @Override
-                            public String getStringValue(Outcome outcome, int position) {
-                                return ""+outcome.getOutcomeType();
-                            }
-                        });
-
-                        dictionary.addStringField(R.id.dateTV, new StringExtractor<Outcome>() {
-                            @Override
-                            public String getStringValue(Outcome outcome, int position) {
-                                return outcome.getOutcomeDate();
-                            }
-                        });
-
-                        dictionary.addStringField(R.id.idTV, new StringExtractor<Outcome>() {
-                            @Override
-                            public String getStringValue(Outcome outcome, int position) {
-                                return "ID: "+outcome.getId();
-                            }
-                        });
-                        FunDapter adapter = new FunDapter(OutcomeFragment.this.getActivity(),
-                                outcomeList,
-                                R.layout.appointment_list_layout, dictionary);
-                        outcomeLV.setAdapter(adapter);
-                    }
-                    else{
-
-                        text.setText("No recorded outcomes");
-                        Toast.makeText(OutcomeFragment.this.getActivity(),
-                                "No recorded outcomes", Toast.LENGTH_SHORT).show();
-                        //appointmentList.add("No scheduled appointments.");
-                    }
-                }
-                catch (JSONException e){
-                    System.out.print("unsuccessful");
-                }
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                if(error != null ){
-                    Log.e(TAG, error.getMessage());
-                    error.printStackTrace();
-                }
-            }
-        };
-        communicatorInterface.getOutcomes(callback);
-        prgDialog.hide();
-    }
-
-    public String getPatientInfo(Long pid) {
-        String patients = WriteRead.read(PATIENTINFOFILE, getContext());
-        String full_name = "";
-        try {
-            JSONArray jsonarray = new JSONArray(patients);
-            for (int i = 0; i < jsonarray.length(); i++) {
-                JSONObject jsonobject = jsonarray.getJSONObject(i);
-                Log.d(TAG, "ID: " + jsonobject.getString("id"));
-                if (jsonobject.getString("id").equals(""+pid)) {
-                    //String id = jsonobject.getString("id");
-                    final String first_name = jsonobject.getString("other_names");
-                    String last_name = jsonobject.getString("last_name");
-                    full_name = first_name + " " + last_name;
-                    break;
-                }
-            }
-        } catch (JSONException e) {
-            System.out.print("unsuccessful");
-        }
-        return full_name;
-    }
-
-    public String loadOutcomes(Long pid){
-        String pilots = WriteRead.read(OUTCOMEFILE, getContext());
-        String pilot ="";
-        try {
-            JSONArray jsonarray = new JSONArray(pilots);
-            for (int i = 0; i < jsonarray.length(); i++) {
-                JSONObject jsonobject = jsonarray.getJSONObject(i);
-                if (jsonobject.getString("id").equals(""+pid)) {
-                    String id_name = jsonobject.getString("id") + ": " + jsonobject.getString("name");
-                    pilot = id_name;
-                }
-            }
-        }catch (JSONException e) {
-            System.out.print("unsuccessful");
-        }
-        return pilot;
     }
 
     @Subscribe
@@ -252,5 +138,57 @@ public class OutcomeFragment extends Fragment {
                 appointmentFragment.getTag())
                 .addToBackStack(null)
                 .commit();
+    }
+
+    @Override
+    public void onOutcomeLoadedSuccess(List<Outcome> list, Response response) {
+        ArrayList<Outcome> outcomeList = new ArrayList<Outcome>();
+        outcomeList.addAll(list);
+        if (outcomeList.size()>0) {
+            Log.d(TAG, "enrollment "+outcomeList.toString());
+            BindDictionary<Outcome> dictionary = new BindDictionary<>();
+            dictionary.addStringField(R.id.titleTV, new StringExtractor<Outcome>() {
+                @Override
+                public String getStringValue(Outcome outcome, int position) {
+                    return ""+ DataAdapter.getPatientInfo(Long.parseLong(outcome.getPatient()), getActivity());
+                }
+            });
+            dictionary.addStringField(R.id.personTV, new StringExtractor<Outcome>() {
+                @Override
+                public String getStringValue(Outcome outcome, int position) {
+                    return ""+DataAdapter.loadOutcomes(Long.parseLong(outcome.getOutcomeType()), getActivity());
+                }
+            });
+
+            dictionary.addStringField(R.id.dateTV, new StringExtractor<Outcome>() {
+                @Override
+                public String getStringValue(Outcome outcome, int position) {
+                    return outcome.getOutcomeDate();
+                }
+            });
+
+            dictionary.addStringField(R.id.idTV, new StringExtractor<Outcome>() {
+                @Override
+                public String getStringValue(Outcome outcome, int position) {
+                    return "ID: "+outcome.getId();
+                }
+            });
+            FunDapter adapter = new FunDapter(OutcomeFragment.this.getActivity(),
+                    outcomeList,
+                    R.layout.appointment_list_layout, dictionary);
+            outcomeLV.setAdapter(adapter);
+        }
+        else{
+
+            text.setText("No recorded outcomes");
+            Toast.makeText(OutcomeFragment.this.getActivity(),
+                    "No recorded outcomes", Toast.LENGTH_SHORT).show();
+            //appointmentList.add("No scheduled appointments.");
+        }
+    }
+
+    @Override
+    public void onOutcomeLoadedFailure(RetrofitError error) {
+        Toast.makeText(getActivity(), error.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
     }
 }
