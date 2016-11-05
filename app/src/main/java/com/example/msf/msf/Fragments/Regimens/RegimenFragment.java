@@ -53,7 +53,6 @@ public class RegimenFragment extends Fragment implements IRegimenListView {
 
     FloatingActionButton fab;
     private final String TAG = this.getClass().getSimpleName();
-    public static String PATIENTINFOFILE = "Patients";
     ListView regimenLV;
     TextView text;
     ProgressDialog prgDialog;

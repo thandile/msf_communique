@@ -10,6 +10,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Thandile on 2016/11/03.
@@ -24,6 +25,7 @@ public class DataAdapter {
     public static String OUTCOMEFILE = "Outcomes";
     public static String NOTIFICATIONFILE = "Notifications";
     public static String MEDICALRECORDFILE = "MedicalRecords";
+    public static String REGIMENINFOFILE = "Drugs";
 
 
     static String AD = "admission";
@@ -280,4 +282,46 @@ public class DataAdapter {
         return user;
     }
 
+    public static ArrayList<String> loadFromFile(Context context){
+        String patients = WriteRead.read(PATIENTINFOFILE, context);
+        ArrayList<String> patientList = new ArrayList<>();
+        try {
+            JSONArray jsonarray = new JSONArray(patients);
+            if (jsonarray.length() > 0) {
+                for (int i = 0; i < jsonarray.length(); i++) {
+                    JSONObject jsonobject = jsonarray.getJSONObject(i);
+                    String id = jsonobject.getString("id");
+                    String firstName = jsonobject.getString("other_names");
+                    String lastName = jsonobject.getString("last_name");
+                    patientList.add(id + ": " + firstName + " " + lastName);//(createPatients(jsonobject));
+                }
+            }
+        }
+        catch (JSONException e) {
+            System.out.print("unsuccessful");
+        }
+        return patientList;
+    }
+
+    public static String[]  loadDrugs(String[] did, Context context){
+        String drugs = WriteRead.read(REGIMENINFOFILE, context);
+        String[] drug = new String[did.length];
+        try {
+            JSONArray jsonarray = new JSONArray(drugs);
+            for (int i = 0; i < jsonarray.length(); i++) {
+                JSONObject jsonobject = jsonarray.getJSONObject(i);
+
+                for (int j = 0; j < did.length; j++) {
+                    if (jsonobject.getString("id").equals("" + did[j])) {
+                        String id_name = jsonobject.getString("name");
+                        drug[j] = id_name;
+
+                    }
+                }
+            }
+        }catch (JSONException e) {
+            System.out.print("unsuccessful");
+        }
+        return drug;
+    }
 }
