@@ -23,6 +23,7 @@ import com.example.msf.msf.API.Models.Users;
 import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.API.ServerEvent;
+import com.example.msf.msf.DataAdapter;
 import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
@@ -66,14 +67,6 @@ public class AppointmentInfoFragment extends Fragment {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @return A new instance of fragment AppointmentInfoFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static AppointmentInfoFragment newInstance(String param1) {
         AppointmentInfoFragment fragment = new AppointmentInfoFragment();
         Bundle args = new Bundle();
@@ -120,7 +113,6 @@ public class AppointmentInfoFragment extends Fragment {
         return view;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(String data) {
         if (mListener != null) {
             mListener.onFragmentInteraction(data);
@@ -144,18 +136,7 @@ public class AppointmentInfoFragment extends Fragment {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(String data);
     }
 
@@ -171,16 +152,16 @@ public class AppointmentInfoFragment extends Fragment {
                 String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
                 try{
                     JSONObject jsonObject = new JSONObject(resp);
-                    userGet(Long.parseLong(jsonObject.getString("owner")));
-                    patientGet(Long.parseLong(jsonObject.getString("patient")));
+                    String owner = DataAdapter.usernames(Long.parseLong(jsonObject.getString("owner")), getActivity());
+                    String  paient = DataAdapter.patientInfo(Long.parseLong(jsonObject.getString("patient")), getActivity());
                     appointmentTypeTV.setText(jsonObject.getString("id")+": "+
                             jsonObject.getString("title"));
                     notesTV.setText(jsonObject.getString("notes"));
                     dateTV.setText(jsonObject.getString("appointment_date"));
                     startTimeTV.setText(jsonObject.getString("start_time"));
                     endTimeTV.setText(jsonObject.getString("end_time"));
-                    //ownerTV.setText(jsonObject.getString("owner"));
-                    //patientTV.setText(jsonObject.getString("patient"));
+                    ownerTV.setText(owner);
+                    patientTV.setText(paient);
                 }
                 catch (JSONException e){
                     System.out.print("unsuccessful");
@@ -201,70 +182,6 @@ public class AppointmentInfoFragment extends Fragment {
     }
 
 
-    public void patientGet(long patientID){
-        final List<String> patientList = new ArrayList<String>();
-        Interface communicatorInterface = Auth.getInterface(LoginActivity.username,
-                LoginActivity.password);
-        Callback<Users> callback = new Callback<Users>() {
-            @Override
-            public void success(Users serverResponse, Response response2) {
-                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
-                try{
-                    JSONObject jsonObject = new JSONObject(resp);
-                    String id = jsonObject.getString("id");
-                    String first_name = jsonObject.getString("other_names");
-                    String last_name = jsonObject.getString("last_name");
-                    String full_name = id + ": " +first_name + " " + last_name;
-                    patientTV.setText(full_name);
-                }
-                catch (JSONException e){
-                    System.out.print("unsuccessful");
-                }
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                if(error != null ){
-                    Log.e(TAG, error.getMessage());
-                    error.printStackTrace();
-                }
-            }
-        };
-        communicatorInterface.getPatient(patientID,callback);
-    }
-
-
-    public void userGet(long userID){
-        final List<String> userList = new ArrayList<String>();
-        final Interface communicatorInterface = Auth.getInterface(LoginActivity.username,
-                LoginActivity.password);
-        Callback<Users> callback = new Callback<Users>() {
-            @Override
-            public void success(Users serverResponse, Response response2) {
-                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
-                try{
-                    JSONObject jsonObject = new JSONObject(resp);
-                    String id = jsonObject.getString("id");
-                    String username = jsonObject.getString("username");
-                    //String last_name = jsonObject.getString("last_name");
-                    String full_name = id + ": " +username;
-                    ownerTV.setText(full_name);
-                }
-                catch (JSONException e){
-                    System.out.print("unsuccessful");
-                }
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                if(error != null ){
-                    Log.e(TAG, error.getMessage());
-                    error.printStackTrace();
-                }
-            }
-        };
-        communicatorInterface.getUser(userID, callback);
-    }
 
     public void deleteListener() {
         delete.setOnClickListener(new View.OnClickListener() {

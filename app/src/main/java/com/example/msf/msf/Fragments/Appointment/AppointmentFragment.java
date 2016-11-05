@@ -176,19 +176,19 @@ public class AppointmentFragment extends Fragment implements IAppointmentListVie
         //ArrayList<Appointment> appointmentList = new ArrayList<Appointment>();
         //appointmentList.addAll(list);
         ArrayList<Appointment> appointmentToShow = new ArrayList<Appointment>();
-        for (int i = 0; i < list.size(); i++) {
+       /** for (int i = 0; i < list.size(); i++) {
             if (df.format(dateobj).compareTo(list.get(i).getDate()) >= 0) {
                 if (appointments.equals("own")) {
-                    if (DataAdapter.usernames((long) list.get(i).getOwner(),
+                    if (DataAdapter.loadUserFromFile((long) list.get(i).getOwner(),
                             getActivity()).equals(LoginActivity.username)) {
                         appointmentToShow.add(list.get(i));
                     }
                 }
-                else{
+                else{**/
                     appointmentToShow.addAll(list);
-                }
+             /**   }
             }
-        }
+        }**/
         if (appointmentToShow.size()>0){
             Collections.sort(appointmentToShow, new DateComparator());
             Log.d(TAG, appointmentToShow.toString());

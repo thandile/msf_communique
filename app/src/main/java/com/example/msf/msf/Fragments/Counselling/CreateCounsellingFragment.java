@@ -22,6 +22,7 @@ import com.example.msf.msf.API.BusProvider;
 import com.example.msf.msf.API.Communicator;
 import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.ServerEvent;
+import com.example.msf.msf.DataAdapter;
 import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.AppStatus;
@@ -106,7 +107,7 @@ public class CreateCounsellingFragment extends Fragment implements Validator.Val
         //sessionType = (Spinner) view.findViewById(R.id.session_spinner);
         submit = (Button) view.findViewById(R.id.session_submit);
         patientsGet();
-        sessionGet();
+        addItemsOnSessionSpinner();
         submitListener();
         return view;
     }
@@ -126,51 +127,20 @@ public class CreateCounsellingFragment extends Fragment implements Validator.Val
     }
 
     public void patientsGet(){
-        final List<String> patientList = new ArrayList<String>();
-        String patients = WriteRead.read(PATIENTINFOFILE, getContext());
-        try{
-            JSONArray jsonarray = new JSONArray(patients);
-            // JSONArray jsonarray = new JSONArray(resp);
-            for (int i = 0; i < jsonarray.length(); i++) {
-                JSONObject jsonobject = jsonarray.getJSONObject(i);
-                String id = jsonobject.getString("id");
-                String fullName = jsonobject.getString("other_names")+" " +
-                        jsonobject.getString("last_name");
-                patientList.add(id+": "+fullName);
-            }
-            Log.d(TAG, patients);
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-                    CreateCounsellingFragment.this.getActivity(),
-                    android.R.layout.simple_dropdown_item_1line, patientList);
-            patientNames.setAdapter(adapter);
-        }
-        catch (JSONException e){
-            System.out.print("unsuccessful");
-        }
+        ArrayList<String> patientList = new ArrayList<String >();
+        patientList.addAll(DataAdapter.loadFromFile(getActivity()));
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                CreateCounsellingFragment.this.getActivity(),
+                android.R.layout.simple_dropdown_item_1line, patientList);
+        patientNames.setAdapter(adapter);
     }
 
-
-    public void sessionGet(){
-        final List<String> sessionList = new ArrayList<String>();
-        String sessionTypes = WriteRead.read(SESSIONTYPEFILE, getContext());
-        try {
-            JSONArray jsonarray = new JSONArray(sessionTypes);
-            for (int i = 0; i < jsonarray.length(); i++) {
-                JSONObject jsonobject = jsonarray.getJSONObject(i);
-                String id_name =jsonobject.getString("id")+": "+jsonobject.getString("name");
-                sessionList.add(id_name);
-            }
-            sessionList.add(0, "");
-            addItemsOnSessionSpinner(sessionList);
-        }
-        catch (JSONException e){
-            System.out.print("unsuccessful");
-        }
-
-    }
 
     // add items into spinner dynamically
-    public void addItemsOnSessionSpinner(List<String> sessions) {
+    public void addItemsOnSessionSpinner() {
+        ArrayList<String> sessions = new ArrayList<String >();
+        sessions.addAll(DataAdapter.sessionGet(getActivity()));
+        sessions.add(0, "");
         ArrayAdapter<String> sessionSpinnerAdapter = new ArrayAdapter<String>(
                 CreateCounsellingFragment.this.getActivity(),
                 android.R.layout.simple_spinner_item, sessions);
@@ -227,7 +197,7 @@ public class CreateCounsellingFragment extends Fragment implements Validator.Val
                             " Data will be uploaded when you have an internet connection",
                     Toast.LENGTH_LONG).show();
             WriteRead.write(patientId[0]+"counsellingPost",patientId[0]+"!"
-                    +counsellingSession[0]+"!"+notes+"!",
+                    +counsellingSession[0]+"!"+notes,
                     CreateCounsellingFragment.this.getActivity() );
             Log.v("Home", "############################You are not online!!!!");
             FragmentManager manager = getActivity().getSupportFragmentManager();

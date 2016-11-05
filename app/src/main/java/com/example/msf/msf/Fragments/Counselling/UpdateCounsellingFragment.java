@@ -21,6 +21,7 @@ import com.example.msf.msf.API.BusProvider;
 import com.example.msf.msf.API.Communicator;
 import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.ServerEvent;
+import com.example.msf.msf.DataAdapter;
 import com.example.msf.msf.Fragments.Enrollments.UpdateEnrollmentFragment;
 import com.example.msf.msf.Fragments.Patient.PatientFragment;
 import com.example.msf.msf.HomeActivity;
@@ -124,7 +125,7 @@ public class UpdateCounsellingFragment extends Fragment implements Validator.Val
         patientNames.setText(counsellingInfo[2]);
         notesET.setText(counsellingInfo[1]);
         patientsGet();
-        sessionGet();
+        addItemsOnSessionSpinner();
         submitListener();
         return view;
     }
@@ -143,8 +144,6 @@ public class UpdateCounsellingFragment extends Fragment implements Validator.Val
         });
     }
 
-
-    // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(String[] data) {
         if (mListener != null) {
             mListener.onFragmentInteraction(data);
@@ -209,54 +208,24 @@ public class UpdateCounsellingFragment extends Fragment implements Validator.Val
 
 
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(String[] data);
     }
 
     public void patientsGet(){
-        final List<String> patientList = new ArrayList<String>();
-        String patients = WriteRead.read(PatientFragment.PATIENTFILE, getContext());
-        try{
-            JSONArray jsonarray = new JSONArray(patients);
-            // JSONArray jsonarray = new JSONArray(resp);
-            for (int i = 0; i < jsonarray.length(); i++) {
-                JSONObject jsonobject = jsonarray.getJSONObject(i);
-                String id = jsonobject.getString("id");
-                String fullName = jsonobject.getString("other_names")+" " +
-                        jsonobject.getString("last_name");
-                patientList.add(id+": "+fullName);
-            }
-            Log.d(TAG, patients);
+        ArrayList<String> patientList = new ArrayList<String >();
+        patientList.addAll(DataAdapter.loadFromFile(getActivity()));
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(
                     UpdateCounsellingFragment.this.getActivity(),
                     android.R.layout.simple_dropdown_item_1line, patientList);
             patientNames.setAdapter(adapter);
-        }
-        catch (JSONException e){
-            System.out.print("unsuccessful");
-        }
     }
 
-    public void sessionGet(){
-        final List<String> sessionList = new ArrayList<String>();
-        String sessionTypes = WriteRead.read(SESSIONTYPEFILE, getContext());
-        try {
-            JSONArray jsonarray = new JSONArray(sessionTypes);
-            for (int i = 0; i < jsonarray.length(); i++) {
-                JSONObject jsonobject = jsonarray.getJSONObject(i);
-                String id_name =jsonobject.getString("id")+": "+jsonobject.getString("name");
-                sessionList.add(id_name);
-            }
-           // sessionList.add(0, counsellingInfo[0]);
-            addItemsOnSessionSpinner(sessionList);
-        }
-        catch (JSONException e){
-            System.out.print("unsuccessful");
-        }
-    }
+
 
     // add items into spinner dynamically
-    public void addItemsOnSessionSpinner(List<String> sessions) {
+    public void addItemsOnSessionSpinner() {
+        ArrayList<String> sessions = new ArrayList<String >();
+        sessions.addAll(DataAdapter.sessionGet(getActivity()));
         ArrayAdapter<String> sessionSpinnerAdapter = new ArrayAdapter<String>(
                 UpdateCounsellingFragment.this.getActivity(),
                 android.R.layout.simple_spinner_item, sessions);
@@ -265,7 +234,6 @@ public class UpdateCounsellingFragment extends Fragment implements Validator.Val
         ArrayAdapter myAdap = (ArrayAdapter) sessionType.getAdapter();
         int spinnerPosition = myAdap.getPosition(counsellingInfo[0]);
         sessionType.setSelection(spinnerPosition);
-       // sessionType.setSelection(0);
     }
 
 
@@ -293,11 +261,6 @@ public class UpdateCounsellingFragment extends Fragment implements Validator.Val
        // CounsellingFragment counsellingFragment = new CounsellingFragment();
         FragmentManager manager = getActivity().getSupportFragmentManager();
         manager.popBackStackImmediate();
-        /**manager.beginTransaction()
-                .replace(R.id.rel_layout_for_frag, counsellingFragment,
-                        counsellingFragment.getTag())
-                .addToBackStack(null)
-                .commit();**/
     }
 
     @Subscribe

@@ -23,6 +23,7 @@ import com.example.msf.msf.API.BusProvider;
 import com.example.msf.msf.API.Communicator;
 import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.ServerEvent;
+import com.example.msf.msf.DataAdapter;
 import com.example.msf.msf.Dialogs.DateDialog;
 import com.example.msf.msf.Dialogs.TimeDialog;
 import com.example.msf.msf.Fragments.Patient.PatientFragment;
@@ -139,6 +140,22 @@ public class UpdateAppointmentFragment extends Fragment implements Validator.Val
         endTimeET = (EditText) view.findViewById(R.id.endTimeET);
         notesET = (EditText) view.findViewById(R.id.noteET);
         users = (Spinner) view.findViewById(R.id.ownerSpinner);
+        initialiseDialogs();
+        patientsGet();
+        addItemsOnUserSpinner();
+        appointmentTypeET.setText(mParam1[0].split(": ")[1], TextView.BufferType.EDITABLE);
+        patientNames.setText(mParam1[2], TextView.BufferType.EDITABLE);
+        dateET.setText(mParam1[3], TextView.BufferType.EDITABLE);
+        startTimeET.setText(mParam1[4], TextView.BufferType.EDITABLE);
+        endTimeET.setText(mParam1[5], TextView.BufferType.EDITABLE);
+        notesET.setText(mParam1[6], TextView.BufferType.EDITABLE);
+
+        submit = (Button) view.findViewById(R.id.appointment_submit);
+        buttonListener();
+        return view;
+    }
+
+    private void initialiseDialogs() {
         dateET.setOnFocusChangeListener(new View.OnFocusChangeListener(){
             public void onFocusChange(View view, boolean hasfocus){
                 if(hasfocus){
@@ -166,18 +183,6 @@ public class UpdateAppointmentFragment extends Fragment implements Validator.Val
                 }
             }
         });
-        patientsGet();
-        usersGet();
-        appointmentTypeET.setText(mParam1[0].split(": ")[1], TextView.BufferType.EDITABLE);
-        patientNames.setText(mParam1[2], TextView.BufferType.EDITABLE);
-        dateET.setText(mParam1[3], TextView.BufferType.EDITABLE);
-        startTimeET.setText(mParam1[4], TextView.BufferType.EDITABLE);
-        endTimeET.setText(mParam1[5], TextView.BufferType.EDITABLE);
-        notesET.setText(mParam1[6], TextView.BufferType.EDITABLE);
-
-        submit = (Button) view.findViewById(R.id.appointment_submit);
-        buttonListener();
-        return view;
     }
 
     private void buttonListener() {
@@ -203,7 +208,6 @@ public class UpdateAppointmentFragment extends Fragment implements Validator.Val
 
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(String[] data) {
         if (mListener != null) {
             mListener.onFragmentInteraction(data);
@@ -237,9 +241,6 @@ public class UpdateAppointmentFragment extends Fragment implements Validator.Val
 
     @Override
     public void onValidationSucceeded() {
-        //Toast.makeText(UpdateAppointmentFragment.this.getActivity(),
-                //"YASS!",
-               // Toast.LENGTH_SHORT).show();
         prgDialog.show();
         appointmentType = appointmentTypeET.getText().toString();
         owner = String.valueOf(users.getSelectedItem()).split(":")[0];
@@ -284,64 +285,27 @@ public class UpdateAppointmentFragment extends Fragment implements Validator.Val
 
 
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(String[] data);
     }
 
     public void patientsGet(){
-        final List<String> patientList = new ArrayList<String>();
-        String patients = WriteRead.read(PatientFragment.PATIENTFILE, getContext());
-        try{
-            JSONArray jsonarray = new JSONArray(patients);
-            // JSONArray jsonarray = new JSONArray(resp);
-            for (int i = 0; i < jsonarray.length(); i++) {
-                JSONObject jsonobject = jsonarray.getJSONObject(i);
-                String id = jsonobject.getString("id");
-                String fullName = jsonobject.getString("other_names")+" " +
-                        jsonobject.getString("last_name");
-                patientList.add(id+": "+fullName);
-            }
-            Log.d(TAG, patients);
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-                    UpdateAppointmentFragment.this.getActivity(),
-                    android.R.layout.simple_dropdown_item_1line, patientList);
-            patientNames.setAdapter(adapter);
-        }
-        catch (JSONException e){
-            System.out.print("unsuccessful");
-        }
+        ArrayList<String> appointmentList = new ArrayList<String >();
+        appointmentList.addAll(DataAdapter.loadFromFile(getActivity()));
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                UpdateAppointmentFragment.this.getActivity(),
+                android.R.layout.simple_dropdown_item_1line, appointmentList);
+        patientNames.setAdapter(adapter);
     }
 
 
-    public void usersGet(){
-        final List<String> userList = new ArrayList<String>();
-        String users = WriteRead.read(USERINFOFILE, getContext());
-        try{
-            JSONArray jsonarray = new JSONArray(users);
-            for (int i = 0; i < jsonarray.length(); i++)
-            {
-                JSONObject jsonobject = jsonarray.getJSONObject(i);
-
-                String id = jsonobject.getString("id");
-                String username = jsonobject.getString("username");
-                userList.add(id+": "+username);
-            }
-            //userList.add(0,mParam1[1]);
-            addItemsOnUserSpinner(userList);
-
-
-                }
-                catch (JSONException e){
-                    System.out.print("unsuccessful");
-                }
-    }
 
     // add items into spinner dynamically
-    public void addItemsOnUserSpinner(List<String> sessions) {
-        //adding to the pilot name spinner
+    public void addItemsOnUserSpinner() {
+        ArrayList<String> userList = new ArrayList<String >();
+        userList.addAll(DataAdapter.ownersGet(getActivity()));
         ArrayAdapter<String> sessionSpinnerAdapter = new ArrayAdapter<String>(
                 UpdateAppointmentFragment.this.getActivity(),
-                android.R.layout.simple_spinner_item, sessions);
+                android.R.layout.simple_spinner_item, userList);
         sessionSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         users.setAdapter(sessionSpinnerAdapter);
         ArrayAdapter myAdap = (ArrayAdapter) users.getAdapter();

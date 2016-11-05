@@ -151,6 +151,23 @@ public class DataAdapter {
         return adverseEventList;
     }
 
+    public static ArrayList<String> ownersGet(Context context){
+        final ArrayList<String> userList = new ArrayList<String>();
+        String sessionTypes = WriteRead.read(USERINFOFILE, context);
+        try {
+            JSONArray jsonarray = new JSONArray(sessionTypes);
+            for (int i = 0; i < jsonarray.length(); i++) {
+                JSONObject jsonobject = jsonarray.getJSONObject(i);
+                String id_name =jsonobject.getString("id")+": "+jsonobject.getString("username");
+                userList.add(id_name);
+            }
+        }
+        catch (JSONException e){
+            System.out.print("unsuccessful");
+        }
+        return userList;
+    }
+
     public static String usernames(Long uid, Context context) {
         String user = "";
         String users = WriteRead.read(USERINFOFILE, context);
@@ -160,7 +177,7 @@ public class DataAdapter {
                 JSONObject jsonObject = jsonarray.getJSONObject(i);
                 if (jsonObject.getString("id").equals("" + uid)) {
                     int id = Integer.parseInt(jsonObject.getString("id"));
-                    String username = jsonObject.getString("username");
+                    String username = id+": "+jsonObject.getString("username");
                     user = username;
                     break;
                 }
@@ -189,6 +206,24 @@ public class DataAdapter {
             System.out.print("unsuccessful");
         }
         return session;
+    }
+
+    public static ArrayList<String> sessionGet(Context context){
+        final ArrayList<String> sessionList = new ArrayList<String>();
+        String sessionTypes = WriteRead.read(SESSIONTYPEFILE, context);
+        try {
+            JSONArray jsonarray = new JSONArray(sessionTypes);
+            for (int i = 0; i < jsonarray.length(); i++) {
+                JSONObject jsonobject = jsonarray.getJSONObject(i);
+                String id_name =jsonobject.getString("id")+": "+jsonobject.getString("name");
+                sessionList.add(id_name);
+            }
+            // sessionList.add(0, counsellingInfo[0]);
+        }
+        catch (JSONException e){
+            System.out.print("unsuccessful");
+        }
+        return sessionList;
     }
 
     public static String loadPilots(Long pid, Context context){

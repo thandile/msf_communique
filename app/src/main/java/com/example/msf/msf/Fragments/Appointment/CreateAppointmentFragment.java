@@ -22,6 +22,7 @@ import com.example.msf.msf.API.BusProvider;
 import com.example.msf.msf.API.Communicator;
 import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.ServerEvent;
+import com.example.msf.msf.DataAdapter;
 import com.example.msf.msf.Dialogs.DateDialog;
 import com.example.msf.msf.Dialogs.TimeDialog;
 import com.example.msf.msf.Fragments.Patient.PatientFragment;
@@ -133,7 +134,13 @@ public class CreateAppointmentFragment extends Fragment implements ValidationLis
         //appDatePicker = (DatePicker) view.findViewById(R.id.app_datePicker);
         submit = (Button) view.findViewById(R.id.appointment_submit);
         patientsGet();
-        usersGet();
+        addItemsOnUserSpinner();
+        initialiseDialogs();
+        addListenerOnButton();
+        return view;
+    }
+
+    private void initialiseDialogs() {
         dateET.setOnFocusChangeListener(new View.OnFocusChangeListener(){
             public void onFocusChange(View view, boolean hasfocus){
                 if(hasfocus){
@@ -161,65 +168,27 @@ public class CreateAppointmentFragment extends Fragment implements ValidationLis
                 }
             }
         });
-        addListenerOnButton();
-        return view;
     }
 
 
     public void patientsGet(){
-        final List<String> patientList = new ArrayList<String>();
-        String patients = WriteRead.read(PATIENTFILE, getContext());
-        try{
-            JSONArray jsonarray = new JSONArray(patients);
-                   // JSONArray jsonarray = new JSONArray(resp);
-                    for (int i = 0; i < jsonarray.length(); i++) {
-                        JSONObject jsonobject = jsonarray.getJSONObject(i);
-                        String id = jsonobject.getString("id");
-                        String fullName = jsonobject.getString("other_names")+" " +
-                                jsonobject.getString("last_name");
-                        patientList.add(id+": "+fullName);
-                    }
-            Log.d(TAG, patients);
-                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-                            CreateAppointmentFragment.this.getActivity(),
-                            android.R.layout.simple_dropdown_item_1line, patientList);
-                    patientNames.setAdapter(adapter);
-                }
-                catch (JSONException e){
-                    System.out.print("unsuccessful");
-                }
-            }
-
-
-    public void usersGet(){
-        final List<String> userList = new ArrayList<String>();
-        String users = WriteRead.read(USERINFOFILE, getContext());
-        try{
-            JSONArray jsonarray = new JSONArray(users);
-            for (int i = 0; i < jsonarray.length(); i++)
-            {
-                JSONObject jsonobject = jsonarray.getJSONObject(i);
-
-                String id = jsonobject.getString("id");
-                String username = jsonobject.getString("username");
-                userList.add(id+": "+username);
-            }
-            userList.add(0,"");
-            addItemsOnUserSpinner(userList);
-
-
-        }
-        catch (JSONException e){
-            System.out.print("unsuccessful");
-        }
+        ArrayList<String> appointmentList = new ArrayList<String >();
+        appointmentList.addAll(DataAdapter.loadFromFile(getActivity()));
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                CreateAppointmentFragment.this.getActivity(),
+                android.R.layout.simple_dropdown_item_1line, appointmentList);
+        patientNames.setAdapter(adapter);
     }
 
+
     // add items into spinner dynamically
-    public void addItemsOnUserSpinner(List<String> sessions) {
-        //adding to the pilot name spinner
+    public void addItemsOnUserSpinner() {
+        ArrayList<String> userList = new ArrayList<String >();
+        userList.addAll(DataAdapter.ownersGet(getActivity()));
+        userList.add(0,"");
         ArrayAdapter<String> sessionSpinnerAdapter = new ArrayAdapter<String>(
                 CreateAppointmentFragment.this.getActivity(),
-                android.R.layout.simple_spinner_item, sessions);
+                android.R.layout.simple_spinner_item, userList);
         sessionSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         users.setAdapter(sessionSpinnerAdapter);
     }
@@ -240,13 +209,6 @@ public class CreateAppointmentFragment extends Fragment implements ValidationLis
         }
     }
 
-    private String getYesterdayDateString() {
-        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DATE, -1);
-        return dateFormat.format(cal.getTime());
-    }
-
 
     // get the selected dropdown list value
     public void addListenerOnButton() {
@@ -263,13 +225,6 @@ public class CreateAppointmentFragment extends Fragment implements ValidationLis
                 String endTime = endTimeET.getText().toString();
                 String startTime = startTimeET.getText().toString();
 
-               /** if (getYesterdayDateString().compareTo(eventDate)<=0 && startTime.compareTo(endTime)<=0) {
-                    validator.validate();
-                }
-                else {
-                    Toast.makeText(CreateAppointmentFragment.this.getActivity(),
-                            "You can not set date in the past", Toast.LENGTH_SHORT).show();
-                }**/
                 if (startTime.compareTo(endTime)<=0) {
                     validator.validate();
                 }
@@ -300,7 +255,6 @@ public class CreateAppointmentFragment extends Fragment implements ValidationLis
         Toast.makeText(CreateAppointmentFragment.this.getActivity(),
                 "You have successfully added a created a new appointment",
                 Toast.LENGTH_LONG).show();
-        //AppointmentFragment appointmentFragment = new AppointmentFragment();
         FragmentManager manager = getActivity().getSupportFragmentManager();
         manager.popBackStack();
     }
@@ -322,7 +276,6 @@ public class CreateAppointmentFragment extends Fragment implements ValidationLis
         String appointmentType = appointmentTypeET.getText().toString();
         String endTime = endTimeET.getText().toString();
         String startTime = startTimeET.getText().toString();
-        // Log.d(TAG,  counsellingSession +" "+patientId);
         if (AppStatus.getInstance(CreateAppointmentFragment.this.getActivity()).isOnline()) {
             communicator.appointmentPost(patientId[0], owner[0], notes, date, appointmentType,
                 endTime, startTime);//, counsellingSession, notes);
