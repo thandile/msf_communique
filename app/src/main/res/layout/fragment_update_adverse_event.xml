@@ -79,7 +79,7 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Submit"
+            android:text="Save"
             android:id="@+id/adverse_submit"
             android:layout_marginTop="20dip"
             android:background="#ff6347"

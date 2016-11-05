@@ -72,6 +72,7 @@ public class CreateAppointmentFragment extends Fragment implements ValidationLis
     @NotEmpty
     EditText endTimeET;
     public static String USERINFOFILE = "Users";
+    public static String PATIENTFILE = "Patients";
     private final String TAG = this.getClass().getSimpleName();
     private static final String ARG_PARAM1 = "param1";
     private String id;
@@ -167,7 +168,7 @@ public class CreateAppointmentFragment extends Fragment implements ValidationLis
 
     public void patientsGet(){
         final List<String> patientList = new ArrayList<String>();
-        String patients = WriteRead.read(PatientFragment.PATIENTFILE, getContext());
+        String patients = WriteRead.read(PATIENTFILE, getContext());
         try{
             JSONArray jsonarray = new JSONArray(patients);
                    // JSONArray jsonarray = new JSONArray(resp);

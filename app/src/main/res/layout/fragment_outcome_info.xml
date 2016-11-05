@@ -10,6 +10,15 @@
         android:orientation="vertical"
         android:padding="10dip" >
 
+        <Button android:id="@+id/editButton"
+            android:text="Edit"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:background="#ff6347"
+            android:textColor="#fff"
+            android:textSize="15dp"
+            android:clickable="true" />
 
         <TextView
         android:text="Patient Name"
@@ -71,22 +80,5 @@
             android:layout_height="wrap_content"
             android:id="@+id/notesTV" />
 
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal" >
-
-            <Button android:id="@+id/editButton"
-                android:text="Edit"
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="50dp"
-                android:background="#ff6347"
-                android:textColor="#fff"
-                android:textSize="15dp"
-                android:clickable="true" />
-
-        </LinearLayout>
 </LinearLayout>
 </ScrollView>

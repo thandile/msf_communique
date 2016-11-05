@@ -23,8 +23,12 @@ import com.example.msf.msf.API.Models.Regimen;
 import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.API.ServerEvent;
+import com.example.msf.msf.DataAdapter;
 import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.LoginActivity;
+import com.example.msf.msf.Presenters.Regimens.IRegimenListView;
+import com.example.msf.msf.Presenters.Regimens.IRegmenPresenter;
+import com.example.msf.msf.Presenters.Regimens.RegimenPresenter;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.AppStatus;
 import com.example.msf.msf.Utils.WriteRead;
@@ -45,15 +49,15 @@ import retrofit.mime.TypedByteArray;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class RegimenFragment extends Fragment {
+public class RegimenFragment extends Fragment implements IRegimenListView {
 
     FloatingActionButton fab;
     private final String TAG = this.getClass().getSimpleName();
     public static String PATIENTINFOFILE = "Patients";
-    public static String REGIMENINFOFILE = "Drugs";
     ListView regimenLV;
     TextView text;
     ProgressDialog prgDialog;
+    RegimenPresenter presenter;
 
     public RegimenFragment() {
         // Required empty public constructor
@@ -65,6 +69,7 @@ public class RegimenFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         prgDialog = new ProgressDialog(RegimenFragment.this.getActivity());
+        presenter = new RegimenPresenter(this);
         // Set Progress Dialog Text
         prgDialog.setMessage("Please wait...");
         // Set Cancelable as False
@@ -73,6 +78,38 @@ public class RegimenFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_regimen, container, false);
         text = (TextView) view.findViewById(R.id.defaultText);
         regimenLV = (ListView) view.findViewById(R.id.regimenLV);
+        listViewListener();
+        fab = (FloatingActionButton) view.findViewById(R.id.btnFloatingAction);
+        fabListener();
+        return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (AppStatus.getInstance(RegimenFragment.this.getActivity()).isOnline()) {
+            presenter.loadRegimens();
+        } else {
+            text.setText("You are currently offline, therefore patient medications cannot be loaded");
+        }
+    }
+
+    private void fabListener() {
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CreateRegimenFragment createRegimenFragment = new CreateRegimenFragment();
+                FragmentManager manager = getActivity().getSupportFragmentManager();
+                manager.beginTransaction()
+                        .replace(R.id.rel_layout_for_frag, createRegimenFragment,
+                                createRegimenFragment.getTag())
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
+    }
+
+    private void listViewListener() {
         regimenLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -88,176 +125,8 @@ public class RegimenFragment extends Fragment {
                                 regimenInfoFragment.getTag())
                         .addToBackStack(null)
                         .commit();
-                //intent.putExtra(EXTRA_MESSAGE,id);
-                //startActivity(intent);
             }
         });
-        if (AppStatus.getInstance(RegimenFragment.this.getActivity()).isOnline()) {
-            regimensGet();
-        }
-        else {
-            text.setText("You are currently offline, therefore patient medications cannot be loaded");
-        }
-
-        fab = (FloatingActionButton) view.findViewById(R.id.btnFloatingAction);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                CreateRegimenFragment createRegimenFragment = new CreateRegimenFragment();
-                FragmentManager manager = getActivity().getSupportFragmentManager();
-                manager.beginTransaction()
-                        .replace(R.id.rel_layout_for_frag, createRegimenFragment,
-                                createRegimenFragment.getTag())
-                        .addToBackStack(null)
-                        .commit();
-            }
-        });
-        return view;
-    }
-
-
-    public String getPatientInfo(Long pid) {
-        String patients = WriteRead.read(PATIENTINFOFILE, getContext());
-        String full_name = "";
-        try {
-            JSONArray jsonarray = new JSONArray(patients);
-            for (int i = 0; i < jsonarray.length(); i++) {
-                JSONObject jsonobject = jsonarray.getJSONObject(i);
-                Log.d(TAG, "ID: " + jsonobject.getString("id"));
-                if (jsonobject.getString("id").equals(""+pid)) {
-                    //String id = jsonobject.getString("id");
-                    final String first_name = jsonobject.getString("other_names");
-                    String last_name = jsonobject.getString("last_name");
-                    full_name = first_name + " " + last_name;
-                    break;
-                }
-            }
-        } catch (JSONException e) {
-            System.out.print("unsuccessful");
-        }
-        return full_name;
-    }
-
-
-    public void regimensGet(){
-        prgDialog.show();
-        final ArrayList<Regimen> regimenList = new ArrayList<Regimen>();
-        Interface communicatorInterface;
-        communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
-        Callback<List<Regimen>> callback = new Callback<List<Regimen>>() {
-            @Override
-            public void success(List<Regimen> serverResponse, Response response2) {
-                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
-                try{
-                    JSONArray jsonarray = new JSONArray(resp);
-
-                    if (jsonarray.length()>0) {
-                        for (int i = 0; i < jsonarray.length(); i++) {
-
-                                    JSONObject jsonobject = jsonarray.getJSONObject(i);
-                            int id = Integer.parseInt(jsonobject.getString("id"));
-                            String patient = getPatientInfo(Long.parseLong(jsonobject.getString("patient")));
-                            Log.d(TAG, "oatuie  "+ patient);
-                            JSONArray drugJsonArray = jsonobject.getJSONArray("drugs");
-
-                            List<String> drugList = new ArrayList<String>();
-                            for (int j = 0; j <drugJsonArray.length(); j++) {
-
-                                drugList.add(drugJsonArray.getString(j));
-                            }
-                            Log.d(TAG, "druglist size "+drugList.size());
-                            String[] drugs = loadDrugs(drugList);
-
-                            String notes = jsonobject.getString("notes");
-                            String dateStarted = jsonobject.getString("date_started");
-                            String dateEnded = jsonobject.getString("date_ended");
-                            Regimen regimen = new Regimen(id, patient, notes, drugs, dateStarted, dateEnded);
-                            //userGet(owner);
-                            regimenList.add(regimen);
-                        }
-
-                        Log.d(TAG, regimenList.toString());
-                        BindDictionary<Regimen> dictionary = new BindDictionary<>();
-                        dictionary.addStringField(R.id.titleTV, new StringExtractor<Regimen>() {
-                            @Override
-                            public String getStringValue(Regimen regimen, int position) {
-                                return regimen.getPatient();
-                            }
-                        });
-                        dictionary.addStringField(R.id.personTV, new StringExtractor<Regimen>() {
-                            @Override
-                            public String getStringValue(Regimen regimen, int position) {
-                                return regimen.drugs(regimen.getDrugs());
-                            }
-                        });
-
-                        dictionary.addStringField(R.id.dateTV, new StringExtractor<Regimen>() {
-                            @Override
-                            public String getStringValue(Regimen regimen, int position) {
-                                //Log.d(TAG, "counselling "+counselling.getId());
-                                return "Date: "+regimen.getDateStarted();
-                            }
-                        });
-
-                        dictionary.addStringField(R.id.idTV, new StringExtractor<Regimen>() {
-                            @Override
-                            public String getStringValue(Regimen regimen, int position) {
-                                return "ID: "+regimen.getId_no();
-                            }
-                        });
-                        FunDapter adapter = new FunDapter(RegimenFragment.this.getActivity(),
-                                regimenList,
-                                R.layout.appointment_list_layout, dictionary);
-                        regimenLV.setAdapter(adapter);
-                    }
-                    else{
-                        text.setText("No recorded patient medications");
-                        Toast.makeText(RegimenFragment.this.getActivity(),
-                                "No recorded patient medications", Toast.LENGTH_SHORT).show();
-                        //regimenList.add("No scheduled appointments.");
-                    }
-                   // swipeRefreshLayout.setRefreshing(false);
-                    //appointmentLV.setAdapter(adapter);
-                }
-                catch (JSONException e){
-                    System.out.print("unsuccessful");
-                }
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                if(error != null ){
-                    Log.e(TAG, error.getMessage());
-                    error.printStackTrace();
-                }
-            }
-        };
-        communicatorInterface.getRegimen(callback);
-        prgDialog.hide();
-
-    }
-
-    public String[]  loadDrugs(List<String> did){
-        String drugs = WriteRead.read(REGIMENINFOFILE, getContext());
-        String[] drug = new String[did.size()];
-        try {
-            JSONArray jsonarray = new JSONArray(drugs);
-            Log.d(TAG, "drugs for patient " + jsonarray.length());
-            for (int i = 0; i < jsonarray.length(); i++) {
-                JSONObject jsonobject = jsonarray.getJSONObject(i);
-
-                for (int j = 0; j < did.size(); j++) {
-                    if (jsonobject.getString("id").equals("" + did.get(j))) {
-                        String id_name = jsonobject.getString("name");
-                        drug[j] = id_name;
-
-                    }
-                }
-            }
-        }catch (JSONException e) {
-            System.out.print("unsuccessful");
-        }
-        return drug;
     }
 
     @Subscribe
@@ -277,5 +146,56 @@ public class RegimenFragment extends Fragment {
                 appointmentFragment.getTag())
                 .addToBackStack(null)
                 .commit();
+    }
+
+    @Override
+    public void onRegimenLoadedSuccess(List<Regimen> list, Response response) {
+        ArrayList<Regimen> regimenList = new ArrayList<Regimen>();
+        regimenList.addAll(list);
+
+        if (regimenList.size()>0) {
+            BindDictionary<Regimen> dictionary = new BindDictionary<>();
+            dictionary.addStringField(R.id.titleTV, new StringExtractor<Regimen>() {
+                @Override
+                public String getStringValue(Regimen regimen, int position) {
+                    return DataAdapter.getPatientInfo(Long.parseLong(regimen.getPatient()), getActivity());
+                }
+            });
+            dictionary.addStringField(R.id.personTV, new StringExtractor<Regimen>() {
+                @Override
+                public String getStringValue(Regimen regimen, int position) {
+                    return regimen.drugs(DataAdapter.loadDrugs(regimen.getDrugs(), getActivity()));
+                }
+            });
+            dictionary.addStringField(R.id.dateTV, new StringExtractor<Regimen>() {
+                @Override
+                public String getStringValue(Regimen regimen, int position) {
+                    //Log.d(TAG, "counselling "+counselling.getId());
+                    return "Date: "+regimen.getDateStarted();
+                }
+            });
+
+            dictionary.addStringField(R.id.idTV, new StringExtractor<Regimen>() {
+                @Override
+                public String getStringValue(Regimen regimen, int position) {
+                    return "ID: "+regimen.getId();
+                }
+            });
+            FunDapter adapter = new FunDapter(RegimenFragment.this.getActivity(),
+                    regimenList,
+                    R.layout.appointment_list_layout, dictionary);
+            regimenLV.setAdapter(adapter);
+        }
+        else{
+            text.setText("No recorded patient medications");
+            Toast.makeText(RegimenFragment.this.getActivity(),
+                    "No recorded patient medications", Toast.LENGTH_SHORT).show();
+            //regimenList.add("No scheduled appointments.");
+        }
+    }
+
+    @Override
+    public void onRegimenLoadedFailure(RetrofitError error) {
+        Toast.makeText(getActivity(), error.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
     }
 }

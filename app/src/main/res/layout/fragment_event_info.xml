@@ -10,6 +10,33 @@
         android:orientation="vertical"
         android:padding="10dip" >
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal" >
+
+            <Button android:id="@+id/delBtn"
+                android:text="Delete"
+                android:background="#ff6347"
+                android:textColor="#fff"
+                android:textSize="15dp"
+                android:layout_height="wrap_content"
+                android:layout_width="120dp"
+                android:clickable="true"
+                android:layout_marginLeft="20dp"/>
+
+            <Button android:id="@+id/editButton"
+                android:text="Edit"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:background="#ff6347"
+                android:textColor="#fff"
+                android:textSize="15dp"
+                android:clickable="true"
+                android:layout_marginLeft="50dp"/>
+
+        </LinearLayout>
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -90,33 +117,6 @@
         android:layout_height="wrap_content"
         android:id="@+id/eventDescriptionTV" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal" >
-
-            <Button android:id="@+id/editButton"
-                android:text="Edit"
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="50dp"
-                android:background="#ff6347"
-                android:textColor="#fff"
-                android:textSize="15dp"
-                android:clickable="true" />
-
-            <Button android:id="@+id/delBtn"
-                android:text="Delete"
-                android:layout_marginTop="20dip"
-                android:background="#ff6347"
-                android:textColor="#fff"
-                android:textSize="15dp"
-                android:layout_height="wrap_content"
-                android:layout_width="120dp"
-                android:clickable="true"
-                android:layout_margin="50dp"
-                android:layout_marginLeft="50dp" />
-        </LinearLayout>
 </LinearLayout>
 
 </ScrollView>

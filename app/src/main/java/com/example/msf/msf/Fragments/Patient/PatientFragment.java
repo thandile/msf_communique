@@ -17,8 +17,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.msf.msf.API.Models.Patients;
+import com.example.msf.msf.DataAdapter;
 import com.example.msf.msf.Fragments.Patient.PatientTabs.TabFragment;
 import com.example.msf.msf.HomeActivity;
+import com.example.msf.msf.Presenters.Patients.IPatientListView;
+import com.example.msf.msf.Presenters.Patients.PatientPresenter;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.WriteRead;
 
@@ -27,15 +30,20 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 
 public class PatientFragment extends Fragment {
 
     private final String TAG = this.getClass().getSimpleName();
     ListView patientLv;
-    public static String PATIENTFILE = "Patients";
     ArrayAdapter<String> adapter;
     TextView text;
+    PatientPresenter presenter;
+    public static String PATIENTFILE = "Patients";
 
     public PatientFragment() {
         // Required empty public constructor
@@ -46,11 +54,30 @@ public class PatientFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         HomeActivity.navItemIndex = 2;
+        //presenter = new PatientPresenter(this);
         View view = inflater.inflate(R.layout.fragment_patient, container, false);
         text = (TextView) view.findViewById(R.id.text);
         setHasOptionsMenu(true);
         patientLv = (ListView) view.findViewById(R.id.patientLV);
-        loadFromFile();
+        displayPatients();
+        listViewListener();
+        return view;
+    }
+
+    private void displayPatients() {
+        ArrayList<String> patientList = new ArrayList<String>();
+        patientList.addAll(DataAdapter.loadFromFile(getActivity()));
+        if (patientList.size()>0) {
+            adapter = new ArrayAdapter<String>(PatientFragment.this.getActivity(),
+                    android.R.layout.simple_list_item_1, patientList);
+            patientLv.setAdapter(adapter);
+        }
+        else {
+            text.setText("No existing patients");
+        }
+    }
+
+    private void listViewListener() {
         patientLv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -66,37 +93,6 @@ public class PatientFragment extends Fragment {
                         .commit();
             }
         });
-        return view;
-    }
-
-
-    public void loadFromFile(){
-        String patients = WriteRead.read(PATIENTFILE, getContext());
-        ArrayList<String> patientList = new ArrayList<>();
-        Patients patient = new Patients();
-        try {
-            JSONArray jsonarray = new JSONArray(patients);
-            if (jsonarray.length() > 0) {
-                for (int i = 0; i < jsonarray.length(); i++) {
-                    JSONObject jsonobject = jsonarray.getJSONObject(i);
-                    String id = jsonobject.getString("id");
-                    String firstName = jsonobject.getString("other_names");
-                    String lastName = jsonobject.getString("last_name");
-                    patientList.add(id+": " +firstName +" " + lastName);//(createPatients(jsonobject));
-                }
-                Log.d(TAG, patientList.toString());
-                adapter = new ArrayAdapter<String>(PatientFragment.this.getActivity(),
-                        android.R.layout.simple_list_item_1, patientList);
-                patientLv.setAdapter(adapter);
-            }
-            else {
-                text.setText("No existing patients");
-            }
-        }
-        catch (JSONException e) {
-            System.out.print("unsuccessful");
-        }
-        Log.d(TAG, "read from phone");
     }
 
 
@@ -120,6 +116,4 @@ public class PatientFragment extends Fragment {
             }
         });
     }
-
-
 }

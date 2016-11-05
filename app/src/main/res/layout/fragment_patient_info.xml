@@ -10,12 +10,34 @@
         android:orientation="vertical"
         android:padding="10dip"
         android:weightSum="1">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:text="page 1 of 9"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/defaultText" />
+
+            <Button android:id="@+id/editBtn"
+                android:text="Edit"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_marginLeft="120dp"
+                android:background="#ff6347"
+                android:textColor="#fff"
+                android:textSize="15dp"
+                android:clickable="true" />
+        </LinearLayout>
+
 
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="First name"
+            android:text="First counsellingSession"
             android:id="@+id/textView6"
             android:textStyle="bold"
             android:textSize="20dp"
@@ -30,7 +52,7 @@
         <TextView
             android:layout_width="104dp"
             android:layout_height="wrap_content"
-            android:text="Last name"
+            android:text="Last counsellingSession"
             android:id="@+id/textView8"
             android:layout_below="@+id/textView6"
             android:layout_marginRight="171dp"
@@ -47,7 +69,7 @@
             android:id="@+id/last_nameTV" />
 
         <TextView
-        android:layout_width="104dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Patient Identifier"
         android:id="@+id/textView81"
@@ -205,17 +227,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/health_centreTV" />
-
-
-            <Button android:id="@+id/editBtn"
-                android:text="Edit"
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="50dp"
-                android:background="#ff6347"
-                android:textColor="#fff"
-                android:textSize="15dp"
-                android:clickable="true" />
 
 
 
