@@ -24,6 +24,7 @@ import com.example.msf.msf.API.BusProvider;
 import com.example.msf.msf.API.Communicator;
 import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.ServerEvent;
+import com.example.msf.msf.DataAdapter;
 import com.example.msf.msf.Dialogs.DateDialog;
 import com.example.msf.msf.Fragments.Appointment.UpdateAppointmentFragment;
 import com.example.msf.msf.HomeActivity;
@@ -43,16 +44,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link UpdateAdverseEventFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link UpdateAdverseEventFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+
 public class UpdateAdverseEventFragment extends Fragment implements Validator.ValidationListener  {
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
 
 
@@ -79,14 +72,6 @@ public class UpdateAdverseEventFragment extends Fragment implements Validator.Va
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @return A new instance of fragment UpdateAdverseEventFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static UpdateAdverseEventFragment newInstance(String[] param1) {
         UpdateAdverseEventFragment fragment = new UpdateAdverseEventFragment();
         Bundle args = new Bundle();
@@ -136,7 +121,7 @@ public class UpdateAdverseEventFragment extends Fragment implements Validator.Va
             }
         });
         patientsGet();
-        adverseEventsGet();
+        addItemsOnSpinner();
         addListenerOnButton();
         patientNames.setText(input[0],  TextView.BufferType.EDITABLE);
         eventDate.setText(input[2],  TextView.BufferType.EDITABLE);
@@ -146,28 +131,15 @@ public class UpdateAdverseEventFragment extends Fragment implements Validator.Va
     }
 
     public void patientsGet(){
-        final List<String> patientList = new ArrayList<String>();
-        String patients = WriteRead.read(PATIENTINFOFILE, getContext());
-        try{
-            JSONArray jsonarray = new JSONArray(patients);
-            // JSONArray jsonarray = new JSONArray(resp);
-            for (int i = 0; i < jsonarray.length(); i++) {
-                JSONObject jsonobject = jsonarray.getJSONObject(i);
-                String id = jsonobject.getString("id");
-                String fullName = jsonobject.getString("other_names")+" " +
-                        jsonobject.getString("last_name");
-                patientList.add(id+": "+fullName);
-            }
-            Log.d(TAG, patients);
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-                    UpdateAdverseEventFragment.this.getActivity(),
-                    android.R.layout.simple_dropdown_item_1line, patientList);
-            patientNames.setAdapter(adapter);
-        }
-        catch (JSONException e){
-            System.out.print("unsuccessful");
-        }
+        ArrayList<String> patientList = new ArrayList<String >();
+        patientList.addAll(DataAdapter.loadFromFile(getActivity()));
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                UpdateAdverseEventFragment.this.getActivity(),
+                android.R.layout.simple_dropdown_item_1line, patientList);
+        patientNames.setAdapter(adapter);
     }
+
+
     private void addListenerOnButton() {
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -182,28 +154,9 @@ public class UpdateAdverseEventFragment extends Fragment implements Validator.Va
         });
     }
 
-    public void adverseEventsGet(){
-        final List<String> adverseEventList = new ArrayList<String>();
-        String sessionTypes = WriteRead.read(ADVERSEEVENTSFILE, getContext());
-        try {
-            JSONArray jsonarray = new JSONArray(sessionTypes);
-            for (int i = 0; i < jsonarray.length(); i++) {
-                JSONObject jsonobject = jsonarray.getJSONObject(i);
-                String id_name =jsonobject.getString("id")+": "+jsonobject.getString("name");
-                adverseEventList.add(id_name);
-                Log.d(TAG, id_name);
-            }
-           // adverseEventList.add(0, ""); //input[1]);
-            addItemsOnAdverseSpinner(adverseEventList);
-        }
-        catch (JSONException e){
-            System.out.print("unsuccessful");
-        }
-
-    }
-
-    // add items into spinner dynamically
-    public void addItemsOnAdverseSpinner(List<String> sessions) {
+    public void addItemsOnSpinner() {
+        ArrayList<String> sessions = new ArrayList<String>();
+        sessions.addAll(DataAdapter.adverseEventsGet(getActivity()));
         ArrayAdapter<String> sessionSpinnerAdapter = new ArrayAdapter<String>(
                 UpdateAdverseEventFragment.this.getActivity(),
                 android.R.layout.simple_spinner_item, sessions);
@@ -281,16 +234,6 @@ public class UpdateAdverseEventFragment extends Fragment implements Validator.Va
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);

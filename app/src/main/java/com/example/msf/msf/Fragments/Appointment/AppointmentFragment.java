@@ -202,7 +202,7 @@ public class AppointmentFragment extends Fragment implements IAppointmentListVie
             dictionary.addStringField(R.id.personTV, new StringExtractor<Appointment>() {
                 @Override
                 public String getStringValue(Appointment appointment, int position) {
-                    return "Owner: " + appointment.getOwnerName();
+                    return "Owner: " + DataAdapter.loadUserFromFile((long) appointment.getOwner(), getActivity());
                 }
             });
 

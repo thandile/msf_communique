@@ -22,6 +22,7 @@ import com.example.msf.msf.API.BusProvider;
 import com.example.msf.msf.API.Communicator;
 import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.ServerEvent;
+import com.example.msf.msf.DataAdapter;
 import com.example.msf.msf.Dialogs.DateDialog;
 import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.R;
@@ -107,6 +108,13 @@ public class CreateAdmissionFragment extends Fragment implements Validator.Valid
         healthCentre = (EditText) view.findViewById(R.id.healthCentreET);
         notes = (EditText) view.findViewById(R.id.notesET);
         submit = (Button) view.findViewById(R.id.admission_submit);
+        initialiseDialogs();
+        patientsGet();
+        addListenerOnButton();
+        return view;
+    }
+
+    private void initialiseDialogs() {
         admissionDate.setOnFocusChangeListener(new View.OnFocusChangeListener(){
             public void onFocusChange(View view, boolean hasfocus){
                 if(hasfocus){
@@ -116,7 +124,6 @@ public class CreateAdmissionFragment extends Fragment implements Validator.Valid
                 }
             }
         });
-
         dischargeDate.setOnFocusChangeListener(new View.OnFocusChangeListener(){
             public void onFocusChange(View view, boolean hasfocus){
                 if(hasfocus){
@@ -126,10 +133,6 @@ public class CreateAdmissionFragment extends Fragment implements Validator.Valid
                 }
             }
         });
-        patientsGet();
-
-        addListenerOnButton();
-        return view;
     }
 
     private void addListenerOnButton() {
@@ -148,39 +151,22 @@ public class CreateAdmissionFragment extends Fragment implements Validator.Valid
 
 
     public void patientsGet(){
-        final List<String> patientList = new ArrayList<String>();
-        String patients = WriteRead.read(PATIENTINFOFILE, getContext());
-        try{
-            JSONArray jsonarray = new JSONArray(patients);
-            // JSONArray jsonarray = new JSONArray(resp);
-            for (int i = 0; i < jsonarray.length(); i++) {
-                JSONObject jsonobject = jsonarray.getJSONObject(i);
-                String id = jsonobject.getString("id");
-                String fullName = jsonobject.getString("other_names")+" " +
-                        jsonobject.getString("last_name");
-                patientList.add(id+": "+fullName);
-            }
-            Log.d(TAG, patients);
+        ArrayList<String> patientList = new ArrayList<String >();
+        patientList.addAll(DataAdapter.loadFromFile(getActivity()));
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(
                     CreateAdmissionFragment.this.getActivity(),
                     android.R.layout.simple_dropdown_item_1line, patientList);
             patientNames.setAdapter(adapter);
-        }
-        catch (JSONException e){
-            System.out.print("unsuccessful");
-        }
     }
 
     @Override
     public void onValidationSucceeded() {
         prgDialog.show();
-
         String[] patientId = patientNames.getText().toString().split(":");
         String notesText = notes.getText().toString();
         String dischargeDate = this.dischargeDate.getText().toString();
         String admissionDate = this.admissionDate.getText().toString();
         String healthCen = healthCentre.getText().toString();
-        // Log.d(TAG,  counsellingSession +" "+patientId);
         if (AppStatus.getInstance(CreateAdmissionFragment.this.getActivity()).isOnline()) {
             communicator.admissionPost(patientId[0], admissionDate, dischargeDate,
                     healthCen, notesText);//, counsellingSession, notes);
@@ -193,9 +179,6 @@ public class CreateAdmissionFragment extends Fragment implements Validator.Valid
             WriteRead.write(patientId[0]+"admissionPost", patientId[0]+"!"+
                     admissionDate+"!"+ dischargeDate+"!"+ healthCen +"!"+notesText,
                     CreateAdmissionFragment.this.getActivity());
-           /**WriteRead.write("admissionPost",patientId[0]+"!"+ admissionDate+"!"+ dischargeDate+"!"+
-                    healthCen +"!"+notesText,
-                    CreateAdmissionFragment.this.getActivity() );**/
             FragmentManager manager = getActivity().getSupportFragmentManager();
             manager.popBackStack();
         }
@@ -206,8 +189,6 @@ public class CreateAdmissionFragment extends Fragment implements Validator.Valid
         for (ValidationError error : errors) {
             View view = error.getView();
             String message = error.getCollatedErrorMessage(CreateAdmissionFragment.this.getActivity());
-
-            // Display error messages ;)
             if (view instanceof EditText) {
                 ((EditText) view).setError(message);
             } else {
@@ -217,7 +198,6 @@ public class CreateAdmissionFragment extends Fragment implements Validator.Valid
     }
 
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 
@@ -237,17 +217,10 @@ public class CreateAdmissionFragment extends Fragment implements Validator.Valid
     public void onServerEvent(ServerEvent serverEvent){
         prgDialog.hide();
         Toast.makeText(CreateAdmissionFragment.this.getActivity(),
-               "You have successfully added a created a hospital admission",
+               "You have successfully added a hospital admission",
                 Toast.LENGTH_LONG).show();
-
-        //AppointmentFragment appointmentFragment = new AppointmentFragment();
         FragmentManager manager = getActivity().getSupportFragmentManager();
         manager.popBackStack();
-        /**manager.beginTransaction()
-         .replace(R.id.rel_layout_for_frag, appointmentFragment,
-         appointmentFragment.getTag())
-         .addToBackStack(null)
-         .commit();**/
     }
 
     @Subscribe

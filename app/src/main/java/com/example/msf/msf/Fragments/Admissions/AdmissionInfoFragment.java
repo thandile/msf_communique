@@ -20,6 +20,7 @@ import com.example.msf.msf.API.Models.Admission;
 import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.API.ServerEvent;
+import com.example.msf.msf.DataAdapter;
 import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
@@ -116,7 +117,6 @@ public class AdmissionInfoFragment extends Fragment {
 
     public void admissionGet(long admissionID){
         prgDialog.show();
-        //final List<String> patientList = new ArrayList<String>();
         Interface communicatorInterface = Auth.getInterface(LoginActivity.username,
                 LoginActivity.password);
         Callback<Admission> callback = new Callback<Admission>() {
@@ -125,24 +125,20 @@ public class AdmissionInfoFragment extends Fragment {
                 String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
                 try{
                     JSONObject jsonObject = new JSONObject(resp);
-                    String  pName = patientGet(jsonObject.getString("patient"));
+                    String  pName = DataAdapter.patientInfo(Long.parseLong(jsonObject.getString("patient")), getActivity());
                     patientName.setText(pName);
                     Log.d(TAG, "patientName "+jsonObject.getString("patient"));
                     notes.setText(jsonObject.getString("notes"));
+                    healthCentre.setText(jsonObject.getString("health_centre"));
                     admissionDate.setText(jsonObject.getString("admission_date"));
                     if (!jsonObject.getString("discharge_date").equals("null")) {
                         dischargeDate.setText(jsonObject.getString("discharge_date"));
                     }
-                    healthCentre.setText(jsonObject.getString("health_centre"));
-                    //ownerTV.setText(jsonObject.getString("owner"));
-                    //patientTV.setText(jsonObject.getString("patient"));
                 }
                 catch (JSONException e){
                     System.out.print("unsuccessful");
                 }
             }
-
-
             @Override
             public void failure(RetrofitError error) {
                 if(error != null ){
@@ -155,39 +151,11 @@ public class AdmissionInfoFragment extends Fragment {
         prgDialog.hide();
     }
 
-    public String patientGet(String patientID){
-        String patients = WriteRead.read(PATIENTINFOFILE, getContext());
-        String fullName ="";
-        Log.d(TAG, "pName "+patients);
-        try{
-            JSONArray jsonarray = new JSONArray(patients);
-
-            // JSONArray jsonarray = new JSONArray(resp);
-            for (int i = 0; i < jsonarray.length(); i++) {
-                JSONObject jsonobject = jsonarray.getJSONObject(i);
-                String id = jsonobject.getString("id");
-
-                if (patientID.equals(id)) {
-                     fullName = id+": "+jsonobject.getString("other_names") + " " +
-                            jsonobject.getString("last_name");
-                }
-            }
-        }
-        catch (JSONException e){
-            System.out.print("unsuccessful");
-        }
-        return fullName;
-    }
-
-
-
 
     public void editListener() {
         edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //prgDialog.show();
-                String app_id = id;
                 Log.e(TAG, id.toString());
                 String[] admissionInfo = {patientName.getText().toString(),
                         healthCentre.getText().toString(), admissionDate.getText().toString(),
@@ -205,7 +173,6 @@ public class AdmissionInfoFragment extends Fragment {
         });
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(String  data) {
         if (mListener != null) {
             mListener.onFragmentInteraction(data);
@@ -229,18 +196,7 @@ public class AdmissionInfoFragment extends Fragment {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(String data);
     }
 

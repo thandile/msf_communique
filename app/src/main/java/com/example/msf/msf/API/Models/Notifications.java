@@ -19,7 +19,6 @@ public class Notifications {
         this.actorID = actorID;
     }
 
-
    /** public Notifications(String id, String description, String objectID, String recipient, String timestamp, String unread, String verb, String actorID) {
         this.id = id;
         this.description = description;
@@ -33,6 +32,8 @@ public class Notifications {
 
     @SerializedName("id")
     private String id;
+    @SerializedName("actor_object_id")
+    private String actorID;
     @SerializedName("description")
     private String description;
     @SerializedName("action_object_object_id")
@@ -45,8 +46,7 @@ public class Notifications {
     private String unread;
     @SerializedName("verb")
     private String verb;
-    @SerializedName("actor_object_id ")
-    private String actorID;
+
     @SerializedName("message")
     private String message;
     @SerializedName("response_code")

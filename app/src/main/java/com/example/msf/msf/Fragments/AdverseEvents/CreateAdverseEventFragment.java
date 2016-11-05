@@ -23,9 +23,8 @@ import com.example.msf.msf.API.BusProvider;
 import com.example.msf.msf.API.Communicator;
 import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.ServerEvent;
+import com.example.msf.msf.DataAdapter;
 import com.example.msf.msf.Dialogs.DateDialog;
-import com.example.msf.msf.Fragments.Admissions.CreateAdmissionFragment;
-import com.example.msf.msf.Fragments.Counselling.CreateCounsellingFragment;
 import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.AppStatus;
@@ -36,17 +35,12 @@ import com.mobsandgeeks.saripaar.annotation.NotEmpty;
 import com.mobsandgeeks.saripaar.annotation.Select;
 import com.squareup.otto.Subscribe;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class CreateAdverseEventFragment extends Fragment implements Validator.ValidationListener {
 
     public static String PATIENTINFOFILE = "Patients";
-    public static String ADVERSEEVENTSFILE = "AdverseEvents";
     private final String TAG = this.getClass().getSimpleName();
     Button submit;
     Validator validator;
@@ -108,6 +102,14 @@ public class CreateAdverseEventFragment extends Fragment implements Validator.Va
         adverseEvent = (Spinner) view.findViewById(R.id.AdverseEventspinner);
         notes = (EditText) view.findViewById(R.id.noteET);
         submit = (Button) view.findViewById(R.id.adverse_submit);
+        initialiseDialog();
+        patientsGet();
+        addItemsOnSpinner();
+        addListenerOnButton();
+        return view;
+    }
+
+    private void initialiseDialog() {
         eventDate.setOnFocusChangeListener(new View.OnFocusChangeListener(){
             public void onFocusChange(View view, boolean hasfocus){
                 if(hasfocus){
@@ -117,35 +119,17 @@ public class CreateAdverseEventFragment extends Fragment implements Validator.Va
                 }
             }
         });
-        patientsGet();
-        adverseEventsGet();
-        addListenerOnButton();
-        return view;
     }
 
     public void patientsGet(){
-        final List<String> patientList = new ArrayList<String>();
-        String patients = WriteRead.read(PATIENTINFOFILE, getContext());
-        try{
-            JSONArray jsonarray = new JSONArray(patients);
-            // JSONArray jsonarray = new JSONArray(resp);
-            for (int i = 0; i < jsonarray.length(); i++) {
-                JSONObject jsonobject = jsonarray.getJSONObject(i);
-                String id = jsonobject.getString("id");
-                String fullName = jsonobject.getString("other_names")+" " +
-                        jsonobject.getString("last_name");
-                patientList.add(id+": "+fullName);
-            }
-            Log.d(TAG, patients);
+        ArrayList<String> patientList = new ArrayList<String >();
+        patientList.addAll(DataAdapter.loadFromFile(getActivity()));
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(
                     CreateAdverseEventFragment.this.getActivity(),
                     android.R.layout.simple_dropdown_item_1line, patientList);
             patientNames.setAdapter(adapter);
-        }
-        catch (JSONException e){
-            System.out.print("unsuccessful");
-        }
     }
+
     private void addListenerOnButton() {
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -160,28 +144,10 @@ public class CreateAdverseEventFragment extends Fragment implements Validator.Va
         });
     }
 
-    public void adverseEventsGet(){
-        final List<String> adverseEventList = new ArrayList<String>();
-        String sessionTypes = WriteRead.read(ADVERSEEVENTSFILE, getContext());
-        try {
-            JSONArray jsonarray = new JSONArray(sessionTypes);
-            for (int i = 0; i < jsonarray.length(); i++) {
-                JSONObject jsonobject = jsonarray.getJSONObject(i);
-                String id_name =jsonobject.getString("id")+": "+jsonobject.getString("name");
-                adverseEventList.add(id_name);
-                Log.d(TAG, id_name);
-            }
-            adverseEventList.add(0, "");
-            addItemsOnSessionSpinner(adverseEventList);
-        }
-        catch (JSONException e){
-            System.out.print("unsuccessful");
-        }
-
-    }
-
     // add items into spinner dynamically
-    public void addItemsOnSessionSpinner(List<String> sessions) {
+    public void addItemsOnSpinner() {
+        ArrayList<String> sessions = new ArrayList<String>();
+        sessions.addAll(DataAdapter.adverseEventsGet(getActivity()));
         ArrayAdapter<String> sessionSpinnerAdapter = new ArrayAdapter<String>(
                 CreateAdverseEventFragment.this.getActivity(),
                 android.R.layout.simple_spinner_item, sessions);

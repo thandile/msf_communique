@@ -279,7 +279,6 @@ public class NotificationFragment extends Fragment implements INotificationsList
 
     @Override
     public void onNotificationsLoadedSuccess(List<Notifications> list, Response response) {
-
         final ArrayList<Notifications> notificationList = new ArrayList<Notifications>();
         notificationList.addAll(list);
             if (notificationList.size()>0){
@@ -288,7 +287,7 @@ public class NotificationFragment extends Fragment implements INotificationsList
             dictionary.addStringField(R.id.titleTV, new StringExtractor<Notifications>() {
                 @Override
                 public String getStringValue(Notifications admission, int position) {
-                    return admission.getActorID()+" " +admission.getVerb() +" ID - "+admission.getObjectID();
+                    return DataAdapter.loadUserFromFile(Long.parseLong(admission.getActorID()), getActivity())+" " +admission.getVerb() +" ID - "+admission.getObjectID();
                 }
             });
             dictionary.addStringField(R.id.personTV, new StringExtractor<Notifications>() {

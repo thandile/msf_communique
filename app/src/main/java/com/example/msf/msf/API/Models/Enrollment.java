@@ -15,7 +15,7 @@ public class Enrollment {
     @SerializedName("program")
     private int program;
     private String programName;
-    @SerializedName("date_enrolled ")
+    @SerializedName("date_enrolled")
     private String date;
     @SerializedName("comment ")
     private String comment;

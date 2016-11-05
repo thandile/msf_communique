@@ -71,6 +71,27 @@ public class DataAdapter {
         return full_name;
     }
 
+    public static String patientInfo(Long pid, Context context) {
+        String patients = WriteRead.read(PATIENTINFOFILE, context);
+        String full_name = "";
+        try {
+            JSONArray jsonarray = new JSONArray(patients);
+            for (int i = 0; i < jsonarray.length(); i++) {
+                JSONObject jsonobject = jsonarray.getJSONObject(i);
+                if (jsonobject.getString("id").equals("" + pid)) {
+                    String id = jsonobject.getString("id");
+                    final String first_name = jsonobject.getString("other_names");
+                    String last_name = jsonobject.getString("last_name");
+                    full_name = id +": "+first_name + " " + last_name;
+                    break;
+                }
+            }
+        } catch (JSONException e) {
+            System.out.print("unsuccessful");
+        }
+        return full_name;
+    }
+
     public static String eventTypeGet(Long eventID, Context context) {
         String events = WriteRead.read(ADVERSEINFOFILE, context);
         String eventType = "";
@@ -88,6 +109,46 @@ public class DataAdapter {
             System.out.print("unsuccessful");
         }
         return eventType;
+    }
+
+    public static String adverseEventGet(String eventID, Context context){
+        String events = WriteRead.read(ADVERSEINFOFILE, context);
+        String eventType ="";
+        try{
+            JSONArray jsonarray = new JSONArray(events);
+
+            // JSONArray jsonarray = new JSONArray(resp);
+            for (int i = 0; i < jsonarray.length(); i++) {
+                JSONObject jsonobject = jsonarray.getJSONObject(i);
+                String id = jsonobject.getString("id");
+
+                if (eventID.equals(id)) {
+                    eventType = id+":"+jsonobject.getString("name");
+                }
+            }
+        }
+        catch (JSONException e){
+            System.out.print("unsuccessful");
+        }
+        return eventType;
+    }
+
+    public static ArrayList<String> adverseEventsGet(Context context){
+        final ArrayList<String> adverseEventList = new ArrayList<String>();
+        String sessionTypes = WriteRead.read(ADVERSEINFOFILE, context);
+        try {
+            JSONArray jsonarray = new JSONArray(sessionTypes);
+            for (int i = 0; i < jsonarray.length(); i++) {
+                JSONObject jsonobject = jsonarray.getJSONObject(i);
+                String id_name =jsonobject.getString("id")+": "+jsonobject.getString("name");
+                adverseEventList.add(id_name);
+            }
+            //adverseEventList.add(0, "");
+        }
+        catch (JSONException e){
+            System.out.print("unsuccessful");
+        }
+        return adverseEventList;
     }
 
     public static String usernames(Long uid, Context context) {

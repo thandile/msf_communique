@@ -20,6 +20,7 @@ import com.example.msf.msf.API.Models.AdverseEvent;
 import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.API.ServerEvent;
+import com.example.msf.msf.DataAdapter;
 import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
@@ -37,18 +38,13 @@ import retrofit.mime.TypedByteArray;
 
 
 public class AdverseEventInfoFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
     private String id;
     private final String TAG = this.getClass().getSimpleName();
     Button edit;
     TextView adverseEvent, patientName, eventDate, notes;
     private Communicator communicator;
-    // Progress Dialog Object
     ProgressDialog prgDialog;
     private OnFragmentInteractionListener mListener;
     public static String PATIENTINFOFILE = "Patients";
@@ -108,22 +104,18 @@ public class AdverseEventInfoFragment extends Fragment {
                 String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
                 try{
                     JSONObject jsonObject = new JSONObject(resp);
-                    String  pName = patientGet(jsonObject.getString("patient"));
+                    String  pName = DataAdapter.patientInfo(Long.parseLong(jsonObject.getString("patient")), getActivity());
                     patientName.setText(pName);
                     Log.d(TAG, "patientName "+jsonObject.getString("patient"));
                     notes.setText(jsonObject.getString("notes"));
                     eventDate.setText(jsonObject.getString("event_date"));
-                    String event = adverseEventGet(jsonObject.getString("adverse_event_type"));
+                    String event = DataAdapter.adverseEventGet(jsonObject.getString("adverse_event_type"), getActivity());
                     adverseEvent.setText(event);
-                    //ownerTV.setText(jsonObject.getString("owner"));
-                    //patientTV.setText(jsonObject.getString("patient"));
                 }
                 catch (JSONException e){
                     System.out.print("unsuccessful");
                 }
             }
-
-
             @Override
             public void failure(RetrofitError error) {
                 if(error != null ){
@@ -136,62 +128,9 @@ public class AdverseEventInfoFragment extends Fragment {
         prgDialog.hide();
     }
 
-    public String adverseEventGet(String eventID){
-        String events = WriteRead.read(ADVERSEEVENTSFILE, getContext());
-        String eventType ="";
-        Log.d(TAG, "pName "+events);
-        try{
-            JSONArray jsonarray = new JSONArray(events);
-
-            // JSONArray jsonarray = new JSONArray(resp);
-            for (int i = 0; i < jsonarray.length(); i++) {
-                JSONObject jsonobject = jsonarray.getJSONObject(i);
-                String id = jsonobject.getString("id");
-
-                if (eventID.equals(id)) {
-                    eventType = id+":"+jsonobject.getString("name");
-                }
-            }
-
-
-        }
-        catch (JSONException e){
-            System.out.print("unsuccessful");
-        }
-        return eventType;
-    }
-
-    public String patientGet(String patientID){
-        String patients = WriteRead.read(PATIENTINFOFILE, getContext());
-        String fullName ="";
-        Log.d(TAG, "pName "+patients);
-        try{
-            JSONArray jsonarray = new JSONArray(patients);
-
-            // JSONArray jsonarray = new JSONArray(resp);
-            for (int i = 0; i < jsonarray.length(); i++) {
-                JSONObject jsonobject = jsonarray.getJSONObject(i);
-                String id = jsonobject.getString("id");
-
-                if (patientID.equals(id)) {
-                    fullName = id+":"+jsonobject.getString("other_names") + " " +
-                            jsonobject.getString("last_name");
-                }
-            }
-
-
-        }
-        catch (JSONException e){
-            System.out.print("unsuccessful");
-        }
-        return fullName;
-    }
-
-
 
 
     public void editListener() {
-
         edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -236,18 +175,8 @@ public class AdverseEventInfoFragment extends Fragment {
         super.onDetach();
         mListener = null;
     }
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
+
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(String[] data);
     }
 

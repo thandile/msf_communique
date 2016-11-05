@@ -22,6 +22,7 @@ import com.example.msf.msf.API.BusProvider;
 import com.example.msf.msf.API.Communicator;
 import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.ServerEvent;
+import com.example.msf.msf.DataAdapter;
 import com.example.msf.msf.Dialogs.DateDialog;
 import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.R;
@@ -39,14 +40,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link UpdateAdmissionFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link UpdateAdmissionFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class UpdateAdmissionFragment extends Fragment implements Validator.ValidationListener {
 
     private static final String ARG_PARAM1 = "param1";
@@ -74,13 +67,7 @@ public class UpdateAdmissionFragment extends Fragment implements Validator.Valid
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @return A new instance of fragment UpdateAdmissionFragment.
-     */
+
     public static UpdateAdmissionFragment newInstance(String[] param1) {
         UpdateAdmissionFragment fragment = new UpdateAdmissionFragment();
         Bundle args = new Bundle();
@@ -122,6 +109,22 @@ public class UpdateAdmissionFragment extends Fragment implements Validator.Valid
         healthCentre = (EditText) view.findViewById(R.id.healthCentreET);
         notes = (EditText) view.findViewById(R.id.notesET);
         submit = (Button) view.findViewById(R.id.admission_submit);
+        initialiseDialogs();
+        patientsGet();
+        fillTextBoxes();
+        addListenerOnButton();
+        return view;
+    }
+
+    private void fillTextBoxes() {
+        patientNames.setText(input[0], TextView.BufferType.EDITABLE);
+        admissionDate.setText(input[2], TextView.BufferType.EDITABLE);
+        dischargeDate.setText(input[3], TextView.BufferType.EDITABLE);
+        healthCentre.setText(input[1], TextView.BufferType.EDITABLE);
+        notes.setText(input[4], TextView.BufferType.EDITABLE);
+    }
+
+    private void initialiseDialogs() {
         admissionDate.setOnFocusChangeListener(new View.OnFocusChangeListener(){
             public void onFocusChange(View view, boolean hasfocus){
                 if(hasfocus){
@@ -141,14 +144,6 @@ public class UpdateAdmissionFragment extends Fragment implements Validator.Valid
                 }
             }
         });
-        patientsGet();
-        patientNames.setText(input[0], TextView.BufferType.EDITABLE);
-        admissionDate.setText(input[2], TextView.BufferType.EDITABLE);
-        dischargeDate.setText(input[3], TextView.BufferType.EDITABLE);
-        healthCentre.setText(input[1], TextView.BufferType.EDITABLE);
-        notes.setText(input[4], TextView.BufferType.EDITABLE);
-        addListenerOnButton();
-        return view;
     }
 
     public void onButtonPressed(String[] data) {
@@ -173,27 +168,12 @@ public class UpdateAdmissionFragment extends Fragment implements Validator.Valid
 
 
     public void patientsGet(){
-        final List<String> patientList = new ArrayList<String>();
-        String patients = WriteRead.read(PATIENTINFOFILE, getContext());
-        try{
-            JSONArray jsonarray = new JSONArray(patients);
-            // JSONArray jsonarray = new JSONArray(resp);
-            for (int i = 0; i < jsonarray.length(); i++) {
-                JSONObject jsonobject = jsonarray.getJSONObject(i);
-                String id = jsonobject.getString("id");
-                String fullName = jsonobject.getString("other_names")+" " +
-                        jsonobject.getString("last_name");
-                patientList.add(id+": "+fullName);
-            }
-            Log.d(TAG, patients);
+        ArrayList<String> patientList = new ArrayList<String >();
+        patientList.addAll(DataAdapter.loadFromFile(getActivity()));
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(
                     UpdateAdmissionFragment.this.getActivity(),
                     android.R.layout.simple_dropdown_item_1line, patientList);
             patientNames.setAdapter(adapter);
-        }
-        catch (JSONException e){
-            System.out.print("unsuccessful");
-        }
     }
 
     @Override
@@ -254,7 +234,7 @@ public class UpdateAdmissionFragment extends Fragment implements Validator.Valid
     public void onServerEvent(ServerEvent serverEvent){
         prgDialog.hide();
         Toast.makeText(UpdateAdmissionFragment.this.getActivity(),
-                "You have successfully added a created a hospital admission",
+                "You have successfully updated a hospital admission",
                 Toast.LENGTH_LONG).show();
         FragmentManager manager = getActivity().getSupportFragmentManager();
         manager.popBackStack();
