@@ -21,9 +21,15 @@ import static java.security.AccessController.getContext;
 public class WriteRead {
 
 
+    /**
+     * writes a file to a specific directory in internal memory
+     * @param dirName
+     * @param fileName
+     * @param text
+     * @param ctx
+     */
     public static void createDir(String dirName, String fileName, String text, Context ctx){
         if (fileExistance(fileName,ctx)){
-            //Log.d()
         }
         File mydir = ctx.getDir(dirName, Context.MODE_PRIVATE); //Creating an internal dir;
         File fileWithinMyDir = new File(mydir, fileName); //Getting a file within the dir.
@@ -38,9 +44,13 @@ public class WriteRead {
         }
     }
 
-    private final String TAG = this.getClass().getSimpleName();
+    /**
+     * writes files to internal memory
+     * @param fileName
+     * @param text
+     * @param ctx
+     */
     public static void write(String fileName, String text, Context ctx) {
-        //String PATIENTFILE = "my_file";
         FileOutputStream fos;
         try {
             fos = ctx.openFileOutput(fileName, ctx.MODE_PRIVATE);
@@ -51,10 +61,14 @@ public class WriteRead {
         }
     }
 
+    /**
+     * reads files that have been written to internal memory
+     * @param filename
+     * @param ctx
+     * @return file contents
+     */
     public static String read(String filename, Context ctx){
-
         try {
-
             FileInputStream fis = ctx.openFileInput(filename);
             InputStreamReader isr = new InputStreamReader(fis);
             BufferedReader bufferedReader = new BufferedReader(isr);
@@ -70,6 +84,12 @@ public class WriteRead {
         }
     }
 
+    /**
+     * determines if a file by a particular name exists in internal memory
+     * @param FILENAME
+     * @param ctx
+     * @return true or false
+     */
     public static boolean fileExistance(String FILENAME, Context ctx){
         File file = ctx.getFileStreamPath(FILENAME);
         return file.exists();

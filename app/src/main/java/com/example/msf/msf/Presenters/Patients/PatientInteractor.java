@@ -2,10 +2,8 @@ package com.example.msf.msf.Presenters.Patients;
 
 import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.Interface;
-import com.example.msf.msf.API.Models.Outcome;
 import com.example.msf.msf.API.Models.Patients;
 import com.example.msf.msf.LoginActivity;
-import com.example.msf.msf.Presenters.Outcomes.OnOutcomesInteractorFinishedListener;
 
 import java.util.List;
 

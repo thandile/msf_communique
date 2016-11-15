@@ -29,21 +29,23 @@ public class Patients {
     @SerializedName("enrolled_programs")
     private String[] enrolled_programs;
     @SerializedName("treatment_start_date")
-    private String[] treatment_start_date;
+    private String treatment_start_date;
+    @SerializedName("interim_outcome")
+    private String interim_outcome;
 
-    public String[] getInterim_outcome() {
+    public String getInterim_outcome() {
         return interim_outcome;
     }
 
-    public void setInterim_outcome(String[] interim_outcome) {
+    public void setInterim_outcome(String interim_outcome) {
         this.interim_outcome = interim_outcome;
     }
 
-    public String[] getTreatment_start_date() {
+    public String getTreatment_start_date() {
         return treatment_start_date;
     }
 
-    public void setTreatment_start_date(String[] treatment_start_date) {
+    public void setTreatment_start_date(String treatment_start_date) {
         this.treatment_start_date = treatment_start_date;
     }
 
@@ -79,10 +81,10 @@ public class Patients {
         this.sex = sex;
     }
 
-    @SerializedName("interim_outcome")
-    private String[] interim_outcome;
 
-    public Patients(String id, String first_name, String last_name, String sex, String birth_date, String contact_number, String second_contact_number, String third_contact_number, String identifier, String location, String[] enrolled_programs, String[] treatment_start_date, String[] interim_outcome, String reference_health_centre) {
+
+
+    public Patients(String id, String first_name, String last_name, String sex, String birth_date, String contact_number, String second_contact_number, String third_contact_number, String identifier, String location, String[] enrolled_programs, String treatment_start_date, String interim_outcome, String reference_health_centre) {
         this.id = id;
         this.first_name = first_name;
         this.last_name = last_name;

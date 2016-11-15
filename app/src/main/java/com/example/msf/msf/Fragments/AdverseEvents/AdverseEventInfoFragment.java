@@ -20,14 +20,12 @@ import com.example.msf.msf.API.Models.AdverseEvent;
 import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.API.ServerEvent;
-import com.example.msf.msf.DataAdapter;
+import com.example.msf.msf.Utils.DataAdapter;
 import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
-import com.example.msf.msf.Utils.WriteRead;
 import com.squareup.otto.Subscribe;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 

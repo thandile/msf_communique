@@ -24,9 +24,8 @@ import com.example.msf.msf.API.BusProvider;
 import com.example.msf.msf.API.Communicator;
 import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.ServerEvent;
-import com.example.msf.msf.DataAdapter;
+import com.example.msf.msf.Utils.DataAdapter;
 import com.example.msf.msf.Dialogs.DateDialog;
-import com.example.msf.msf.Fragments.Appointment.UpdateAppointmentFragment;
 import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.AppStatus;
@@ -34,12 +33,7 @@ import com.example.msf.msf.Utils.WriteRead;
 import com.mobsandgeeks.saripaar.ValidationError;
 import com.mobsandgeeks.saripaar.Validator;
 import com.mobsandgeeks.saripaar.annotation.NotEmpty;
-import com.mobsandgeeks.saripaar.annotation.Select;
 import com.squareup.otto.Subscribe;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;

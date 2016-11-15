@@ -18,33 +18,22 @@ import android.widget.Toast;
 import com.amigold.fundapter.BindDictionary;
 import com.amigold.fundapter.FunDapter;
 import com.amigold.fundapter.extractors.StringExtractor;
-import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.Models.Counselling;
 import com.example.msf.msf.API.ErrorEvent;
-import com.example.msf.msf.API.Interface;
-import com.example.msf.msf.API.Models.CounsellingSession;
 import com.example.msf.msf.API.ServerEvent;
-import com.example.msf.msf.DataAdapter;
+import com.example.msf.msf.Utils.DataAdapter;
 import com.example.msf.msf.HomeActivity;
-import com.example.msf.msf.LoginActivity;
-import com.example.msf.msf.Presenters.Counselling.CounsellingPresenter;
-import com.example.msf.msf.Presenters.Counselling.ICounsellingListView;
+import com.example.msf.msf.Presenters.Counselling.Lists.CounsellingPresenter;
+import com.example.msf.msf.Presenters.Counselling.Lists.ICounsellingListView;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.AppStatus;
-import com.example.msf.msf.Utils.WriteRead;
 import com.squareup.otto.Subscribe;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
-import retrofit.mime.TypedByteArray;
 
 /**
  * A simple {@link Fragment} subclass.

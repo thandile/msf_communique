@@ -16,24 +16,13 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.example.msf.msf.API.Models.Patients;
-import com.example.msf.msf.DataAdapter;
+import com.example.msf.msf.Utils.DataAdapter;
 import com.example.msf.msf.Fragments.Patient.PatientTabs.TabFragment;
 import com.example.msf.msf.HomeActivity;
-import com.example.msf.msf.Presenters.Patients.IPatientListView;
 import com.example.msf.msf.Presenters.Patients.PatientPresenter;
 import com.example.msf.msf.R;
-import com.example.msf.msf.Utils.WriteRead;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.List;
-
-import retrofit.RetrofitError;
-import retrofit.client.Response;
 
 
 public class PatientFragment extends Fragment {
@@ -64,9 +53,20 @@ public class PatientFragment extends Fragment {
         return view;
     }
 
+    /**@Override
+    public void onResume() {
+        super.onResume();
+        if (AppStatus.getInstance(PatientFragment.this.getActivity()).isOnline()) {
+            DataAdapter.loadFromFile(PatientFragment.this.getActivity());
+        } else {
+            text.setText("You are currently offline, therefore patient outcomes cannot be loaded");
+        }
+    }**/
+
     private void displayPatients() {
         ArrayList<String> patientList = new ArrayList<String>();
         patientList.addAll(DataAdapter.loadFromFile(getActivity()));
+        Log.d(TAG, "patient list size "+patientList.size());
         if (patientList.size()>0) {
             adapter = new ArrayAdapter<String>(PatientFragment.this.getActivity(),
                     android.R.layout.simple_list_item_1, patientList);

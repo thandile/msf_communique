@@ -44,9 +44,10 @@ public class LoginActivity extends AppCompatActivity{
     public static String username = null;
     public static String password = null;
     Context context = this;
+    String uname;
+    String pass;
     private final String TAG = this.getClass().getSimpleName();
-    public static final String SERVER_URL =  "https://agile-beach-31802.herokuapp.com/api/";
-    public static final String NOTIFICATION_URL =  "https://agile-beach-31802.herokuapp.com/";
+
 
     public static final String MyPREFERENCES = "MyLogin" ;
     public static String Username = "usernameKey";
@@ -60,64 +61,45 @@ public class LoginActivity extends AppCompatActivity{
         setContentView(R.layout.activity_login);
         menuFragment = getIntent().getStringExtra("menuFragment");
         Log.d(TAG,"menuFragment "+ menuFragment);
-        // Find Error Msg Text View control by ID
         errorMsg = (TextView)findViewById(R.id.login_error);
-        // Find Email Edit View control by ID
         usernameET = (EditText)findViewById(R.id.loginEmail);
-        // Find Password Edit View control by ID
         pwdET = (EditText)findViewById(R.id.loginPassword);
-        // Instantiate Progress Dialog object
         prgDialog = new ProgressDialog(this);
-        // Set Progress Dialog Text
         prgDialog.setMessage("Please wait...");
-        // Set Cancelable as False
         prgDialog.setCancelable(false);
         login = (Button) findViewById(R.id.btnLogin);
         sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+        pass = sharedpreferences.getString(Password, null);
+        uname = sharedpreferences.getString(Username, null);
+        usernameET.setText(uname);
+        pwdET.setText(pass);
+        loginListener();
+    }
 
-            final String pass = sharedpreferences.getString(Password, null);
-            final String uname = sharedpreferences.getString(Username, null);
-           // Toast.makeText(LoginActivity.this, uname + " " + pass, Toast.LENGTH_SHORT).show();
-            usernameET.setText(uname);
-            pwdET.setText(pass);
-
-
+    private void loginListener() {
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 prgDialog.show();
-
                 username = usernameET.getText().toString();
-                // Get Password Edit View Value
                 password = pwdET.getText().toString();
-
                 if (uname != null) {
                     String pass = sharedpreferences.getString(Password, null);
                     String uname = sharedpreferences.getString(Username, null);
-                    //Toast.makeText(LoginActivity.this, uname + " " + pass, Toast.LENGTH_SHORT).show();
                     if (pass.equals(password) && uname.equals(username)){
-                      //  Toast.makeText(LoginActivity.this, "correct",
-                        //        Toast.LENGTH_SHORT).show();
-
-                            navigateToHomeActivity();
+                        navigateToHomeActivity();
                     }
                     else {
                         prgDialog.hide();
                         Toast.makeText(LoginActivity.this, "Incorrect username/password.",
                                 Toast.LENGTH_SHORT).show();
                     }
-               }
+                }
                 else {
                     usersGet();
                 }
-
             }
         });
-    }
-
-    public boolean fileExistance(String FILENAME){
-        File file = LoginActivity.this.getApplicationContext().getFileStreamPath(FILENAME);
-        return file.exists();
     }
 
     public void usersGet() {
@@ -169,12 +151,7 @@ public class LoginActivity extends AppCompatActivity{
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
@@ -204,7 +181,7 @@ public class LoginActivity extends AppCompatActivity{
     @Subscribe
     public void onErrorEvent(ErrorEvent errorEvent){
         prgDialog.hide();
-        Toast.makeText(LoginActivity.this, "error   " +
+        Toast.makeText(LoginActivity.this,
                 errorEvent.getErrorMsg(), Toast.LENGTH_SHORT).show();
     }
 

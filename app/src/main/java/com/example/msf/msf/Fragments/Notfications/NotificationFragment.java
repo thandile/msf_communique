@@ -1,7 +1,6 @@
 package com.example.msf.msf.Fragments.Notfications;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -26,12 +25,11 @@ import com.amigold.fundapter.FunDapter;
 import com.amigold.fundapter.extractors.StringExtractor;
 import com.example.msf.msf.API.Auth;
 import com.example.msf.msf.API.Communicator;
-import com.example.msf.msf.API.Models.Admission;
 import com.example.msf.msf.API.Models.Notifications;
 import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.API.ServerEvent;
-import com.example.msf.msf.DataAdapter;
+import com.example.msf.msf.Utils.DataAdapter;
 import com.example.msf.msf.Fragments.Admissions.AdmissionInfoFragment;
 import com.example.msf.msf.Fragments.AdverseEvents.AdverseEventInfoFragment;
 import com.example.msf.msf.Fragments.Appointment.AppointmentInfoFragment;
@@ -44,24 +42,17 @@ import com.example.msf.msf.Fragments.Patient.PatientTabs.PatientInfoTab;
 import com.example.msf.msf.Fragments.Regimens.RegimenInfoFragment;
 import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.LoginActivity;
-import com.example.msf.msf.Presenters.Notifications.INotificationsListView;
-import com.example.msf.msf.Presenters.Notifications.NotificationPresenter;
+import com.example.msf.msf.Presenters.Notifications.Lists.INotificationsListView;
+import com.example.msf.msf.Presenters.Notifications.Lists.NotificationPresenter;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.AppStatus;
-import com.example.msf.msf.Utils.WriteRead;
 import com.squareup.otto.Subscribe;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
-import retrofit.mime.TypedByteArray;
 
 public class NotificationFragment extends Fragment implements INotificationsListView{
     // TODO: Rename parameter arguments, choose names that match

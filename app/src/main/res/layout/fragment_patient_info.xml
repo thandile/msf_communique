@@ -37,7 +37,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="First counsellingSession"
+            android:text="First name"
             android:id="@+id/textView6"
             android:textStyle="bold"
             android:textSize="20dp"
@@ -52,7 +52,7 @@
         <TextView
             android:layout_width="104dp"
             android:layout_height="wrap_content"
-            android:text="Last counsellingSession"
+            android:text="Last name"
             android:id="@+id/textView8"
             android:layout_below="@+id/textView6"
             android:layout_marginRight="171dp"

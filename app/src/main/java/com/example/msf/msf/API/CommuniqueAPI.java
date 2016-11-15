@@ -32,7 +32,7 @@ public class CommuniqueAPI {
     }*/
 
     private static String getAbsoluteUrl(String relativeUrl) {
-        return LoginActivity.SERVER_URL + relativeUrl;
+        return "";//LoginActivity.SERVER_URL + relativeUrl;
     }
 
     public static void getCredentials(String u_name, String p_word) {

@@ -1,11 +1,6 @@
 package com.example.msf.msf.Presenters.Patients;
 
-import com.example.msf.msf.API.Models.Outcome;
 import com.example.msf.msf.API.Models.Patients;
-import com.example.msf.msf.Presenters.Outcomes.IOutcomesListView;
-import com.example.msf.msf.Presenters.Outcomes.IOutcomesPresenter;
-import com.example.msf.msf.Presenters.Outcomes.OnOutcomesInteractorFinishedListener;
-import com.example.msf.msf.Presenters.Outcomes.OutcomeInteractor;
 
 import java.util.List;
 

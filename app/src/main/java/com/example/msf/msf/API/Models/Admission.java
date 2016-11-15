@@ -1,6 +1,5 @@
 package com.example.msf.msf.API.Models;
 
-import com.example.msf.msf.DataAdapter;
 import com.google.gson.annotations.SerializedName;
 
 /**

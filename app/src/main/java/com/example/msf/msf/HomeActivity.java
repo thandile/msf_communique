@@ -81,7 +81,26 @@ import com.example.msf.msf.Fragments.Regimens.CreateRegimenFragment;
 import com.example.msf.msf.Fragments.Regimens.RegimenFragment;
 import com.example.msf.msf.Fragments.Regimens.RegimenInfoFragment;
 import com.example.msf.msf.Fragments.Regimens.UpdateRegimenFragment;
+import com.example.msf.msf.Presenters.AdverseEvents.Types.AdverseEventTypePresenter;
+import com.example.msf.msf.Presenters.AdverseEvents.Types.IAdverseEventListView;
+import com.example.msf.msf.Presenters.Counselling.Types.CounsellingPresenter;
+import com.example.msf.msf.Presenters.Counselling.Types.ICounsellingListView;
+import com.example.msf.msf.Presenters.Enrollments.Types.EnrollmentPresenter;
+import com.example.msf.msf.Presenters.Enrollments.Types.IEnrollmentListView;
+import com.example.msf.msf.Presenters.MedicalRecords.Types.IRecordsListView;
+import com.example.msf.msf.Presenters.MedicalRecords.Types.MedicalRecordPresenter;
+import com.example.msf.msf.Presenters.Notifications.Types.INotificationsListView;
+import com.example.msf.msf.Presenters.Notifications.Types.NotificationPresenter;
+import com.example.msf.msf.Presenters.Outcomes.Types.IOutcomesListView;
+import com.example.msf.msf.Presenters.Outcomes.Types.OutcomePresenter;
+import com.example.msf.msf.Presenters.Patients.IPatientListView;
+import com.example.msf.msf.Presenters.Patients.PatientPresenter;
+import com.example.msf.msf.Presenters.Regimens.Types.IRegimenListView;
+import com.example.msf.msf.Presenters.Regimens.Types.RegimenPresenter;
+import com.example.msf.msf.Presenters.Users.IUserListView;
+import com.example.msf.msf.Presenters.Users.UserPresenter;
 import com.example.msf.msf.Utils.AppStatus;
+import com.example.msf.msf.Utils.DataAdapter;
 import com.example.msf.msf.Utils.WriteRead;
 import com.google.firebase.iid.FirebaseInstanceId;
 
@@ -134,7 +153,9 @@ public class HomeActivity extends AppCompatActivity
         OutcomeInfoFragment.OnFragmentInteractionListener,
         UpdateOutcomeFragment.OnFragmentInteractionListener,
         OutcomeTab.OnFragmentInteractionListener,
-        FileUploadFragment.OnFragmentInteractionListener{
+        FileUploadFragment.OnFragmentInteractionListener,
+        IAdverseEventListView, ICounsellingListView, IEnrollmentListView, IOutcomesListView ,
+        IRegimenListView, IUserListView, IRecordsListView, INotificationsListView, IPatientListView{
 
     // flag to load home fragment when user presses back key
     private boolean shouldLoadHomeFragOnBackPress = false;
@@ -158,6 +179,15 @@ public class HomeActivity extends AppCompatActivity
     public static String NOTIFICATIONFILE = "Notifications";
     public static final String MyPREFERENCES = "MyLogin";
     String menuFragment;
+    EnrollmentPresenter enrollmentPresenter;
+    CounsellingPresenter counsellingPresenter;
+    OutcomePresenter outcomePresenter;
+    AdverseEventTypePresenter adverseEventTypePresenter;
+    RegimenPresenter regimenPresenter;
+    NotificationPresenter notificationPresenter;
+    UserPresenter userPresenter;
+    MedicalRecordPresenter medicalRecordPresenter;
+    PatientPresenter patientPresenter;
 
 
 
@@ -168,6 +198,15 @@ public class HomeActivity extends AppCompatActivity
         setContentView(R.layout.activity_home);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        enrollmentPresenter = new EnrollmentPresenter(this);
+        counsellingPresenter = new CounsellingPresenter(this);
+        outcomePresenter = new OutcomePresenter(this);
+        adverseEventTypePresenter = new AdverseEventTypePresenter(this);
+        regimenPresenter = new RegimenPresenter(this);
+        notificationPresenter = new NotificationPresenter(this);
+        userPresenter = new UserPresenter(this);
+        medicalRecordPresenter = new MedicalRecordPresenter(this);
+        patientPresenter = new PatientPresenter(this);
         menuFragment = getIntent().getStringExtra("menuFragment");
         //Log.d(TAG,"menuFragment "+ menuFragment);
         communicator = new Communicator();
@@ -224,12 +263,6 @@ public class HomeActivity extends AppCompatActivity
             drawer.closeDrawers();
             return;
         }
-
-        // This code loads home fragment when back key is pressed
-        // when user is in other fragment than home
-       //if (shouldLoadHomeFragOnBackPress) {
-            // checking if user is on other navigation menu
-            // rather than home
             if (navItemIndex == 0) {
                 navItemIndex = 0;
                // Toast.makeText(HomeActivity.this, ""+navItemIndex, Toast.LENGTH_SHORT).show();
@@ -309,32 +342,32 @@ public class HomeActivity extends AppCompatActivity
 
         if (AppStatus.getInstance(HomeActivity.this.getApplicationContext()).isOnline()) {
             prgDialog.show();
+            HomeActivity.this.deleteFile(PATIENTFILE);
+            patientPresenter.loadPatients();
             // SystemClock.sleep(6500);
             Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 public void run() {
-                    HomeActivity.this.deleteFile(PATIENTFILE);
-                    patientsGet();
                     prgDialog.dismiss();
                 }
             }, 10000);
             HomeActivity.this.deleteFile(SESSIONFILE);
-            sessionTypeGet();
+            counsellingPresenter.loadCounsellingSessions();
             HomeActivity.this.deleteFile(PILOTFILE);
-            pilotsGet();
+            enrollmentPresenter.loadEnrollments();
             HomeActivity.this.deleteFile(USERFILE);
-            usersGet();
+            userPresenter.loadRegimens();
             HomeActivity.this.deleteFile(MEDICALRECORDFILE);
-            recordTypeGet();
+            medicalRecordPresenter.loadMedicalRecords();
             HomeActivity.this.deleteFile(REGIMENFILE);
-            regimensGet();
+            regimenPresenter.loadRegimens();
             HomeActivity.this.deleteFile(ADVERSEEVENTSFILE);
-            adverseEventsGet();
+            adverseEventTypePresenter.loadAdverseEvents();
             HomeActivity.this.deleteFile(OUTCOMEFILE);
-            outcomesGet();
+            outcomePresenter.loadOutcomes();
             HomeActivity.this.deleteFile(NOTIFICATIONFILE);
-            notificationRegGet();
-            setFragment();
+            notificationPresenter.loadNotifications();
+           // setFragment();**/
         }
         else {
             prgDialog.hide();
@@ -346,380 +379,129 @@ public class HomeActivity extends AppCompatActivity
 
     }
 
-    public void setFragment(){
-       // prgDialog.hide();
-        if (navItemIndex==1){
-            NotificationFragment notificationFragment = new NotificationFragment();
-            FragmentManager manager = getSupportFragmentManager();
-            manager.beginTransaction().replace(R.id.rel_layout_for_frag,
-                    notificationFragment,
-                    notificationFragment.getTag())
-                    .addToBackStack(null)
-                    .commit();
-            setToolbarTitle();
-        }
-        else if (navItemIndex==2) {
-            // Handle the camera action
-            navItemIndex = 2;
-            PatientFragment patientFragment = new PatientFragment();
-            FragmentManager manager = getSupportFragmentManager();
-            manager.beginTransaction().replace(R.id.rel_layout_for_frag,
-                    patientFragment,
-                    patientFragment.getTag())
-                    .addToBackStack(null)
-                    .commit();
-            setToolbarTitle();
-        }
-
-        else if (navItemIndex==3) {
-            navItemIndex = 3;
-            AppointmentFragment appointmentFragment = new AppointmentFragment();
-            FragmentManager manager = getSupportFragmentManager();
-            manager.beginTransaction().replace(R.id.rel_layout_for_frag,
-                    appointmentFragment,
-                    appointmentFragment.getTag())
-                    .addToBackStack(null)
-                    .commit();
-            setToolbarTitle();
-        }
-        else if (navItemIndex==4) {
-            navItemIndex = 4;
-            CounsellingFragment counsellingFragment = new CounsellingFragment();
-            FragmentManager manager = getSupportFragmentManager();
-            manager.beginTransaction().replace(R.id.rel_layout_for_frag,
-                    counsellingFragment,
-                    counsellingFragment.getTag())
-                    .addToBackStack(null)
-                    .commit();
-            setToolbarTitle();
-        }
-        else if (navItemIndex==5) {
-            navItemIndex = 5;
-            EnrollmentFragment enrollmentFragment = new EnrollmentFragment();
-            FragmentManager manager = getSupportFragmentManager();
-            manager.beginTransaction().replace(R.id.rel_layout_for_frag,
-                    enrollmentFragment,
-                    enrollmentFragment.getTag())
-                    .addToBackStack(null)
-                    .commit();
-            setToolbarTitle();
-        }
-
-        else if (navItemIndex==6) {
-            navItemIndex = 6;
-            AdmissionFragment admissionFragment = new AdmissionFragment();
-            FragmentManager manager = getSupportFragmentManager();
-            manager.beginTransaction().replace(R.id.rel_layout_for_frag,
-                    admissionFragment,
-                    admissionFragment.getTag())
-                    .addToBackStack(null)
-                    .commit();
-            setToolbarTitle();
-        }
-
-        else if (navItemIndex==7) {
-            navItemIndex = 7;
-            EventsFragment eventsFragment = new EventsFragment();
-            FragmentManager manager = getSupportFragmentManager();
-            manager.beginTransaction().replace(R.id.rel_layout_for_frag,
-                    eventsFragment,
-                    eventsFragment.getTag())
-                    .addToBackStack(null)
-                    .commit();
-            setToolbarTitle();
-        }
-        else if (navItemIndex==8) {
-            navItemIndex = 8;
-            MedicalRecordFragment medicalRecordFragment = new MedicalRecordFragment();
-            FragmentManager manager = getSupportFragmentManager();
-            manager.beginTransaction().replace(R.id.rel_layout_for_frag,
-                    medicalRecordFragment,
-                    medicalRecordFragment.getTag())
-                    .addToBackStack(null)
-                    .commit();
-            setToolbarTitle();
-        }
-        else if (navItemIndex==9){
-            navItemIndex = 9;
-            AdverseEventFragment adverseEventFragment = new AdverseEventFragment();
-            FragmentManager manager = getSupportFragmentManager();
-            manager.beginTransaction().replace(R.id.rel_layout_for_frag,
-                    adverseEventFragment,
-                    adverseEventFragment.getTag())
-                    .addToBackStack(null)
-                    .commit();
-            setToolbarTitle();
-        }
-        else if (navItemIndex==10){
-            navItemIndex = 10;
-            RegimenFragment regimenFragment = new RegimenFragment();
-            FragmentManager manager = getSupportFragmentManager();
-            manager.beginTransaction().replace(R.id.rel_layout_for_frag,
-                    regimenFragment,
-                    regimenFragment.getTag())
-                    .addToBackStack(null)
-                    .commit();
-            setToolbarTitle();
-        }
-        else if (navItemIndex==11){
-            navItemIndex = 11;
-            OutcomeFragment outcomeFragment = new OutcomeFragment();
-            FragmentManager manager = getSupportFragmentManager();
-            manager.beginTransaction().replace(R.id.rel_layout_for_frag,
-                    outcomeFragment,
-                    outcomeFragment.getTag())
-                    .addToBackStack(null)
-                    .commit();
-            setToolbarTitle();
-        }
-        else if (navItemIndex==12){
-            navItemIndex = 12;
-            FileUploadFragment fileUploadFragment = new FileUploadFragment();
-            FragmentManager manager = getSupportFragmentManager();
-            manager.beginTransaction().replace(R.id.rel_layout_for_frag,
-                    fileUploadFragment,
-                    fileUploadFragment.getTag())
-                    .addToBackStack(null)
-                    .commit();
-            setToolbarTitle();
-        }
-    }
-
-    private void adverseEventsGet() {
-        Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
-        Callback<List<AdverseEventType>> callback = new Callback<List<AdverseEventType>>() {
-            @Override
-            public void success(List<AdverseEventType> serverResponse, Response response2) {
-                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
-                WriteRead.write(ADVERSEEVENTSFILE, resp, HomeActivity.this);
-                Log.d(TAG, "read from server");
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                if (error != null) {
-                    Log.e(TAG, error.getMessage());
-                    error.printStackTrace();
-                }
-            }
-        };
-        communicatorInterface.getAdverseEventType(callback);
+    public void setToolbarTitle() {
+        getSupportActionBar().setTitle(activityTitles[navItemIndex]);
     }
 
 
-    public void notificationRegGet(){
-        Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
-        Callback<List<NotificationRegistration>> callback = new Callback<List<NotificationRegistration>>() {
-            JSONArray subscriptionList = new JSONArray();
-            @Override
-            public void success(List<NotificationRegistration> serverResponse, Response response2) {
-                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
-                try {
-                    JSONArray jsonarray = new JSONArray(resp);
-                    if (jsonarray.length() > 0) {
-                        for (int i = 0; i < jsonarray.length(); i++) {
-                            JSONObject jsonobject = jsonarray.getJSONObject(i);
-                            if (jsonobject.getString("user").equals(getUserID(LoginActivity.username))) {
-                                String service = jsonobject.getString("service");
-                                subscriptionList.put(jsonobject);
-                                WriteRead.write(NOTIFICATIONFILE, subscriptionList.toString(), HomeActivity.this);
+    @Override
+    public void onPatientsLoadedSuccess(List<Patients> list, Response response) {
+        String resp = new String(((TypedByteArray) response.getBody()).getBytes());
+        WriteRead.write(PATIENTFILE, resp, HomeActivity.this);
+    }
 
-                            }
-                        }
+    @Override
+    public void onPatientsLoadedFailure(RetrofitError error) {
+
+    }
+
+
+    @Override
+    public void onCounsellingLoadedSuccess(List<SessionDeserialiser> list, Response response) {
+        String resp = new String(((TypedByteArray) response.getBody()).getBytes());
+        WriteRead.write(SESSIONFILE, resp, HomeActivity.this);
+    }
+
+    @Override
+    public void onCounsellingLoadedFailure(RetrofitError error) {
+
+    }
+
+    @Override
+    public void onEnrollmentLoadedSuccess(List<PilotsDeserializer> list, Response response) {
+        String resp = new String(((TypedByteArray) response.getBody()).getBytes());
+        Log.d(TAG, "response " +resp);
+        WriteRead.write(PILOTFILE, resp, HomeActivity.this);
+    }
+
+    @Override
+    public void onEnrollmentLoadedFailure(RetrofitError error) {
+
+    }
+
+    @Override
+    public void onAdverseLoadedSuccess(List<AdverseEventType> list, Response response) {
+        String resp = new String(((TypedByteArray) response.getBody()).getBytes());
+        WriteRead.write(ADVERSEEVENTSFILE, resp, HomeActivity.this);
+    }
+
+    @Override
+    public void onAdverseLoadedFailure(RetrofitError error) {
+
+    }
+
+    @Override
+    public void onOutcomeLoadedSuccess(List<OutcomeType> list, Response response) {
+        String resp = new String(((TypedByteArray) response.getBody()).getBytes());
+        WriteRead.write(OUTCOMEFILE, resp, HomeActivity.this);
+    }
+
+    @Override
+    public void onOutcomeLoadedFailure(RetrofitError error) {
+
+    }
+
+    @Override
+    public void onRecordLoadedSuccess(List<MedicalRecordType> list, Response response) {
+        String resp = new String(((TypedByteArray) response.getBody()).getBytes());
+        WriteRead.write(MEDICALRECORDFILE, resp, HomeActivity.this);
+    }
+
+    @Override
+    public void onRecordLoadedFailure(RetrofitError error) {
+
+    }
+
+    @Override
+    public void onNotificationsLoadedSuccess(List<NotificationRegistration> list, Response response) {
+        JSONArray subscriptionList = new JSONArray();
+        String resp = new String(((TypedByteArray) response.getBody()).getBytes());
+        try {
+            JSONArray jsonarray = new JSONArray(resp);
+            if (jsonarray.length() > 0) {
+                for (int i = 0; i < jsonarray.length(); i++) {
+                    JSONObject jsonobject = jsonarray.getJSONObject(i);
+                    if (jsonobject.getString("user").equals(DataAdapter.getUserID(LoginActivity.username, this))) {
+                        String service = jsonobject.getString("service");
+                        subscriptionList.put(jsonobject);
+                        WriteRead.write(NOTIFICATIONFILE, subscriptionList.toString(), HomeActivity.this);
+
                     }
-                } catch (JSONException e) {
-                    System.out.print("unsuccessful");
-                }
-            }
-                        @Override
-                        public void failure(RetrofitError error) {
-                            if(error != null ){
-                                Log.e(TAG, error.getMessage());
-                                error.printStackTrace();
-                            }
-                        }
-                    };
-                    communicatorInterface.getNotificationReg(callback);
-                }
-
-    public String getUserID(String username){
-        String user = "";
-        String users = WriteRead.read(USERFILE, HomeActivity.this);
-        try{
-            JSONArray jsonarray = new JSONArray(users);
-            for (int i = 0; i < jsonarray.length(); i++) {
-                JSONObject jsonObject = jsonarray.getJSONObject(i);
-                if (jsonObject.getString("username").equals(username)) {
-                    Log.d(TAG, "userid"+ username);
-                    String id = jsonObject.getString("id");
-                    // String username = jsonObject.getString("username");
-                    user =  id;
-                    break;
                 }
             }
         }
-        catch (JSONException e){
+        catch (JSONException e) {
             System.out.print("unsuccessful");
         }
-        Log.d(TAG, "username"+user);
-        return user;
+
+
     }
 
+    @Override
+    public void onNotificationsLoadedFailure(RetrofitError error) {
 
-    private void outcomesGet() {
-        Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
-        Callback<List<OutcomeType>> callback = new Callback<List<OutcomeType>>() {
-            @Override
-            public void success(List<OutcomeType> serverResponse, Response response2) {
-                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
-                WriteRead.write(OUTCOMEFILE, resp, HomeActivity.this);
-                Log.d(TAG, "read from server");
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                if (error != null) {
-                    Log.e(TAG, error.getMessage());
-                    error.printStackTrace();
-                }
-            }
-        };
-        communicatorInterface.getOutcomeTypes(callback);
     }
 
-
-    public void patientsGet(){
-        Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
-
-        // showing refresh animation before making http call
-        Callback<List<Patients>> callback = new Callback<List<Patients>>() {
-            @Override
-            public void success(List<Patients> serverResponse, Response response2) {
-                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
-                WriteRead.write(PATIENTFILE, resp, HomeActivity.this);
-                // stopping swipe refresh
-                Log.d(TAG, "read from server");
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                if (error != null) {
-                    Log.e(TAG, error.getMessage());
-                    error.printStackTrace();
-                }
-            }
-        };
-        communicatorInterface.getPatients(callback);
+    @Override
+    public void onRegimenLoadedSuccess(List<Drug> list, Response response) {
+        String resp = new String(((TypedByteArray) response.getBody()).getBytes());
+        WriteRead.write(REGIMENFILE, resp, HomeActivity.this);
     }
 
-    public void sessionTypeGet(){
-        Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
-        Callback<List<SessionDeserialiser>> callback = new Callback<List<SessionDeserialiser>>() {
-            @Override
-            public void success(List<SessionDeserialiser> serverResponse, Response response2) {
-                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
-                WriteRead.write(SESSIONFILE, resp, HomeActivity.this);
-                Log.d(TAG, "read from server");
-            }
+    @Override
+    public void onRegimenLoadedFailure(RetrofitError error) {
 
-            @Override
-            public void failure(RetrofitError error) {
-                if (error != null) {
-                    Log.e(TAG, error.getMessage());
-                    error.printStackTrace();
-                }
-            }
-        };
-        communicatorInterface.getSessions(callback);
     }
 
-    public void usersGet(){
-        final Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
-        Callback<List<Users>> callback = new Callback<List<Users>>() {
-            @Override
-            public void success(List<Users> serverResponse, Response response2) {
-                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
-                WriteRead.write(USERFILE, resp, HomeActivity.this);
-                Log.d(TAG, "read from server");
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                if(error != null ){
-                    Log.e(TAG, error.getMessage());
-                    error.printStackTrace();
-                }
-            }
-        };
-        communicatorInterface.getUsers(callback);
+    @Override
+    public void onUserLoadedSuccess(List<Users> list, Response response) {
+        String resp = new String(((TypedByteArray) response.getBody()).getBytes());
+        WriteRead.write(USERFILE, resp, HomeActivity.this);
     }
 
-    public void pilotsGet(){
-        final List<String>pilotNames = new ArrayList<String>();
-        Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
-        Callback<List<PilotsDeserializer>> callback = new Callback<List<PilotsDeserializer>>() {
-            @Override
-            public void success(List<PilotsDeserializer> serverResponse, Response response2) {
-                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
-                WriteRead.write(PILOTFILE, resp, HomeActivity.this);
-                //outcomesGet();
-                //swipeRefreshLayout.setRefreshing(false);
-            }
+    @Override
+    public void onUserLoadedFailure(RetrofitError error) {
 
-            @Override
-            public void failure(RetrofitError error) {
-                if (error != null) {
-                    Log.e(TAG, error.getMessage());
-                    error.printStackTrace();
-                }
-                // swipeRefreshLayout.setRefreshing(false);
-            }
-        };
-        communicatorInterface.getPilots(callback);
-        Log.d(TAG, "read from server");
-    }
-
-
-    public void recordTypeGet(){
-        final Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
-        Callback<List<MedicalRecordType>> callback = new Callback<List<MedicalRecordType>>() {
-            @Override
-            public void success(List<MedicalRecordType> serverResponse, Response response2) {
-                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
-                WriteRead.write(MEDICALRECORDFILE, resp, HomeActivity.this);
-                Log.d(TAG, "read from server");
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                if(error != null ){
-                    Log.e(TAG, error.getMessage());
-                    error.printStackTrace();
-                }
-            }
-        };
-        communicatorInterface.getMedicalReportTypes(callback);
-    }
-
-    public void regimensGet(){
-        final Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
-        Callback<List<Drug>> callback = new Callback<List<Drug>>() {
-            @Override
-            public void success(List<Drug> serverResponse, Response response2) {
-                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
-                WriteRead.write(REGIMENFILE, resp, HomeActivity.this);
-                Log.d(TAG, "read from server");
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                if(error != null ){
-                    Log.e(TAG, error.getMessage());
-                    error.printStackTrace();
-                }
-            }
-        };
-        communicatorInterface.getDrugs(callback);
     }
 
     public void onDestroy() {
@@ -899,10 +681,6 @@ public class HomeActivity extends AppCompatActivity
         return true;
     }
 
-    public void setToolbarTitle() {
-        getSupportActionBar().setTitle(activityTitles[navItemIndex]);
-    }
-
     @Override
     public void onFragmentInteraction(String data) {
     }
@@ -916,5 +694,6 @@ public class HomeActivity extends AppCompatActivity
     public void onFragmentInteraction(Uri uri) {
 
     }
+
 
 }

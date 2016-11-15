@@ -23,7 +23,7 @@ import com.example.msf.msf.API.BusProvider;
 import com.example.msf.msf.API.Communicator;
 import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.ServerEvent;
-import com.example.msf.msf.DataAdapter;
+import com.example.msf.msf.Utils.DataAdapter;
 import com.example.msf.msf.Dialogs.DateDialog;
 import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.R;
@@ -147,6 +147,7 @@ public class CreateAdverseEventFragment extends Fragment implements Validator.Va
     // add items into spinner dynamically
     public void addItemsOnSpinner() {
         ArrayList<String> sessions = new ArrayList<String>();
+        //Log.d(TAG, DataAdapter.adverseEventsGet(getActivity()));
         sessions.addAll(DataAdapter.adverseEventsGet(getActivity()));
         ArrayAdapter<String> sessionSpinnerAdapter = new ArrayAdapter<String>(
                 CreateAdverseEventFragment.this.getActivity(),

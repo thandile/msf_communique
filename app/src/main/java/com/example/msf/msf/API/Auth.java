@@ -14,12 +14,15 @@ import retrofit.client.OkClient;
  * Created by Thandile on 2016/09/16.
  */
 public class Auth {
+    public static final String SERVER_URL =  "https://drtbdemo.herokuapp.com/api/"; //https://agile-beach-31802.herokuapp.com/api/";
+    //public static final String NOTIFICATION_URL =  "https://agile-beach-31802.herokuapp.com/";
+
     public static final OkHttpClient clientOkHttp = new OkHttpClient();
     //static private String credentials = LoginActivity.username+":"+ LoginActivity.password;
     public static Interface getInterface(String username, String password) {
         String credentials = username+":"+password;
         RestAdapter.Builder builder = new RestAdapter.Builder()
-                .setEndpoint(LoginActivity.SERVER_URL)
+                .setEndpoint(SERVER_URL)
                 .setLogLevel(RestAdapter.LogLevel.FULL)
                 .setClient(new OkClient(clientOkHttp));
         clientOkHttp.setReadTimeout(60, TimeUnit.SECONDS);
@@ -41,7 +44,7 @@ public class Auth {
         return communicatorInterface;
     }
 
-    public static Interface getNotificationInterface(String username, String password) {
+    /**public static Interface getNotificationInterface(String username, String password) {
         String credentials = username+":"+password;
         RestAdapter.Builder builder = new RestAdapter.Builder()
                 .setEndpoint(LoginActivity.NOTIFICATION_URL)
@@ -62,5 +65,5 @@ public class Auth {
         RestAdapter adapter = builder.build();
         Interface communicatorInterface = adapter.create(Interface.class);
         return communicatorInterface;
-    }
+    }**/
 }

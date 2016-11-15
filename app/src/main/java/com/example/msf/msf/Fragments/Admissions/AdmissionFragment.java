@@ -20,7 +20,7 @@ import com.amigold.fundapter.extractors.StringExtractor;
 import com.example.msf.msf.API.Models.Admission;
 import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.ServerEvent;
-import com.example.msf.msf.DataAdapter;
+import com.example.msf.msf.Utils.DataAdapter;
 import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.Presenters.Admissions.AdmissionPresenter;
 import com.example.msf.msf.Presenters.Admissions.IAdmissionListView;
