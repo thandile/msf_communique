@@ -69,7 +69,7 @@
             android:id="@+id/last_nameTV" />
 
         <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Patient Identifier"
         android:id="@+id/textView81"
@@ -94,8 +94,6 @@
             android:text="Birth date"
             android:id="@+id/textView7"
             android:layout_below="@+id/textView8"
-            android:layout_marginRight="171dp"
-            android:layout_marginEnd="171dp"
             android:textStyle="bold"
             android:textSize="20dp"
             android:paddingTop="10dp"
