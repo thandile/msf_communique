@@ -2,6 +2,7 @@ package com.example.msf.msf.Dialogs;
 
 /**
  * Created by Thandile on 2016/09/22.
+ * class that creates the time picker
  */
 
 import java.util.Calendar;

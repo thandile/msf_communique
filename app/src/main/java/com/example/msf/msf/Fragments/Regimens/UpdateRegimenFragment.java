@@ -162,7 +162,6 @@ public class UpdateRegimenFragment extends Fragment implements Validator.Validat
 
     @Override
     public void onValidationSucceeded() {
-
         prgDialog.show();
         String[] patientId = patientNames.getText().toString().split(":");
         List<String> drugs = drugsSpinner.getSelectedStrings();//.split(":");
@@ -182,7 +181,7 @@ public class UpdateRegimenFragment extends Fragment implements Validator.Validat
         String endDate = endDateET.getText().toString();
         Log.d(TAG,  "regimen" +" "+drugIDs);
         if (AppStatus.getInstance(UpdateRegimenFragment.this.getActivity()).isOnline()) {
-            communicator.regimenDelete(Long.parseLong(input[5]));
+            //communicator.regimenDelete(Long.parseLong(input[5]));
             communicator.regimenPost(patientId[0], notes, drugIDs, startdate,
                     endDate);//, counsellingSession, notes);
         }
@@ -223,7 +222,6 @@ public class UpdateRegimenFragment extends Fragment implements Validator.Validat
         String patients = WriteRead.read(PATIENTFILE, getContext());
         try{
             JSONArray jsonarray = new JSONArray(patients);
-            // JSONArray jsonarray = new JSONArray(resp);
             for (int i = 0; i < jsonarray.length(); i++) {
                 JSONObject jsonobject = jsonarray.getJSONObject(i);
                 String id = jsonobject.getString("input");
@@ -266,7 +264,6 @@ public class UpdateRegimenFragment extends Fragment implements Validator.Validat
     }
 
     public void addListenerOnButton() {
-
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -310,7 +307,6 @@ public class UpdateRegimenFragment extends Fragment implements Validator.Validat
 
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(String[] data) {
         if (mListener != null) {
             mListener.onFragmentInteraction(data);

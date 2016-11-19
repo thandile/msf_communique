@@ -2,6 +2,7 @@ package com.example.msf.msf.API;
 
 /**
  * Created by Thandile on 2016/07/27.
+ * Class that returns the error if communication with server fails
  */
 public class ErrorEvent {
     private int errorCode;

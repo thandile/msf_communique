@@ -28,17 +28,6 @@ public class DataAdapter {
     public static String REGIMENINFOFILE = "Drugs";
 
 
-    static String AD = "admission";
-    static String AE = "adverse event";
-    static String AP = "appointment";
-    static String CS = "counselling session";
-    static String MR = "medical report";
-    static String EV = "event";
-    static String PA = "patient";
-    static String PO = "patient outcome";
-    static String EN = "enroll";
-    static String RE = "regimen";
-
 
     static String ADMISSIONS = "AD";
     static String ADVERSE_EVENTS = "AE";

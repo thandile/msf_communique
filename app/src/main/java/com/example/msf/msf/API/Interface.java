@@ -36,9 +36,13 @@ import retrofit.http.Path;
 
 /**
  * Created by Thandile on 2016/09/19.
+ * Class that contains all the url endpoints.
  */
 public interface Interface {
 
+    /***
+     * section contains all the methods with endpoints to get information from the server
+     */
     @GET("/programs/")
     void getPilots(Callback<List<PilotsDeserializer>> serverResponseCallback);
 
@@ -160,6 +164,9 @@ public interface Interface {
     void getOutcomeType(@Path("id") long outcomeTypeID,
             Callback<OutcomeType> serverResponseCallback);
 
+    /***
+     * section contains all the methods with endpoints to post information to the server
+     */
     @FormUrlEncoded
     @POST("/notificationRegistration/")
     void postNotificationReg(@Field("service") String service,
@@ -279,6 +286,9 @@ public interface Interface {
                    @Field("date_ended") String endDate,
                    Callback<Regimen> serverResponseCallback);
 
+    /***
+     * section contains all the methods with endpoints to update information on the server
+     */
     @Multipart
     @PUT("/regimen/{id}/")
     void updateRegimen(@Path("id") long regimenId,
@@ -412,6 +422,9 @@ public interface Interface {
                    @Part("end_time") String endTime,
                    Callback<Events> serverResponseCallback);
 
+    /***
+     * section contains all the methods with endpoints to delete information on the server
+     */
     @DELETE("/regimen/{id}/")
     void deleteRegimen(@Path("id") long regimenId,
                        Callback<Regimen> serverResponseCallback);

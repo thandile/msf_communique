@@ -2,6 +2,7 @@ package com.example.msf.msf.Utils;
 
 /**
  * Created by Thandile on 2016/10/07.
+ * class creates a spinner from which multiple items can be picked
  */
 
 import android.app.AlertDialog;

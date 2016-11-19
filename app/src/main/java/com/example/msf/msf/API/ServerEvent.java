@@ -6,8 +6,10 @@ import com.example.msf.msf.API.Models.*;
 
 /**
  * Created by Thandile on 2016/07/27.
+ * Class that returns the message from server is communication is successful
  */
 public class ServerEvent {
+
     private Users Users;
     private PilotsDeserializer PilotsDeserializer;
     private PatientsDeserialiser PatientsDeserialiser;

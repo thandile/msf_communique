@@ -21,6 +21,10 @@ import java.io.File;
 
 public class OfflineUploads {
 
+    /**
+     * uploads the regimen information captured offline
+     * @param context
+     */
     public static void regimen(Context context) {
         File mydir = context.getFilesDir();
         String[] filesForUpload = mydir.list();
@@ -41,13 +45,16 @@ public class OfflineUploads {
                     Log.i("NET", "drugsReplace with 1 " + drugsReplace);
                     drugIDs[0] = drugsReplace;
                 }
-                //Log.i("NET", drugIDs[0] + " " + drugIDs[1]);
                 communicator.regimenPost(input[0], input[1], drugIDs, input[3], input[4]);
                 context.deleteFile(filesForUpload[i]);
             }
         }
     }
 
+    /**
+     * uploads the regimen information captured offline
+     * @param context
+     */
     public static void regimenUpdate(Context context) {
         File mydir = context.getFilesDir();
         String[] filesForUpload = mydir.list();
@@ -68,13 +75,16 @@ public class OfflineUploads {
                     Log.i("NET", "drugsReplace with 1 " + drugsReplace);
                     drugIDs[0] = drugsReplace;
                 }
-                //Log.i("NET", drugIDs[0] + " " + drugIDs[1]);
                 communicator.regimenUpdate(Long.parseLong(input[5]), input[0], input[1], drugIDs, input[3], input[4]);
                 context.deleteFile(filesForUpload[i]);
             }
         }
     }
 
+    /**
+     * uploads the admission information captured offline
+     * @param context
+     */
     public static void admission(Context context) {
         File mydir = context.getFilesDir();
         String[] filesForUpload = mydir.list();
@@ -91,6 +101,10 @@ public class OfflineUploads {
         }
     }
 
+    /**
+     * uploads the admission information captured offline
+     * @param context
+     */
     public static void admissionUpdate(Context context) {
         File mydir = context.getFilesDir();
         Log.i("NET", mydir.toString());
@@ -109,6 +123,10 @@ public class OfflineUploads {
         }
     }
 
+    /**
+     * uploads the appointment information captured offline
+     * @param context
+     */
     public static void appointment(Context context) {
         File mydir = context.getFilesDir();
         Log.i("NET", mydir.toString());
@@ -132,17 +150,13 @@ public class OfflineUploads {
                 }
                 context.deleteFile(filesForUpload[i]);
             }
-       /** if (WriteRead.fileExistance("appointmentPost", context)) {
-         String file = WriteRead.read("appointmentPost", context);
-         Log.i("NET", "file text " + file);
-         String[] input = file.split("!");
-
-         //Log.i("NET", drugIDs[0] + " " + drugIDs[1]);
-         communicator.appointmentPost(input[0], input[1], input[2], input[3], input[4],
-         input[5], input[6]);**/
          }
     }
 
+    /**
+     * uploads the appointment information captured offline
+     * @param context
+     */
     public static void appointmentUpdate(Context context) {
 
         File mydir = context.getFilesDir();
@@ -155,13 +169,16 @@ public class OfflineUploads {
                 String[] input = file.split("!");
                 Log.i("NET", "" + input.length);
                 if (input.length == 7) {
-                    communicator.appointmentUpdate(Long.parseLong(input[7]), input[0], input[1], input[2], input[3], input[4],
+                    communicator.appointmentUpdate(Long.parseLong(input[7]), input[0], input[1],
+                            input[2], input[3], input[4],
                             input[5], input[6]);
                 } else if (input.length == 6) {
-                    communicator.appointmentUpdate(Long.parseLong(input[7]), input[0], input[1], input[2], input[3], input[4],
+                    communicator.appointmentUpdate(Long.parseLong(input[7]), input[0], input[1],
+                            input[2], input[3], input[4],
                             input[5], "");
                 } else {
-                    communicator.appointmentUpdate(Long.parseLong(input[7]), input[0], input[1], input[2], input[3], input[4],
+                    communicator.appointmentUpdate(Long.parseLong(input[7]), input[0], input[1],
+                            input[2], input[3], input[4],
                             "", "");
                 }
                 context.deleteFile(filesForUpload[i]);
@@ -169,6 +186,10 @@ public class OfflineUploads {
         }
     }
 
+    /**
+     * uploads the enrollment information captured offline
+     * @param context
+     */
     public static void enrollment(Context context) {
         File mydir = context.getFilesDir();
         String[] filesForUpload = mydir.list();
@@ -178,13 +199,16 @@ public class OfflineUploads {
                 String file = WriteRead.read(filesForUpload[i], context);
                 Log.i("NET", "file text " + file);
                 String[] input = file.split("!");
-                //Log.i("NET", drugIDs[0] + " " + drugIDs[1]);
                 communicator.enrollmentPost(input[0], input[1], input[2], input[3]);
                 context.deleteFile("enrollmentPost");
             }
         }
     }
 
+    /**
+     * uploads the enrollment information captured offline
+     * @param context
+     */
     public static void enrollmentUpdate(Context context) {
         File mydir = context.getFilesDir();
         String[] filesForUpload = mydir.list();
@@ -201,23 +225,29 @@ public class OfflineUploads {
         }
     }
 
+    /**
+     * uploads the event information captured offline
+     * @param context
+     */
     public static void event(Context context) {
         File mydir = context.getFilesDir();
         String[] filesForUpload = mydir.list();
         Communicator communicator = new Communicator();
         for (int i = 0; i< filesForUpload.length; i++) {
             if (filesForUpload[i].contains("eventPost")) {
-                //if (WriteRead.fileExistance("eventPost", context)) {
                 String file = WriteRead.read(filesForUpload[i], context);
                 Log.i("NET", "file text " + file);
                 String[] input = file.split("!");
-                //Log.i("NET", drugIDs[0] + " " + drugIDs[1]);
                 communicator.eventPost(input[0], input[1], input[2], input[3], input[4]);
                 context.deleteFile(filesForUpload[i]);
             }
         }
     }
 
+    /**
+     * uploads the event information captured offline
+     * @param context
+     */
     public static void eventUpdate(Context context) {
         File mydir = context.getFilesDir();
         String[] filesForUpload = mydir.list();
@@ -227,7 +257,6 @@ public class OfflineUploads {
                 String file = WriteRead.read(filesForUpload[i], context);
                 Log.i("NET", "file text " + file);
                 String[] input = file.split("!");
-                //Log.i("NET", drugIDs[0] + " " + drugIDs[1]);
                 communicator.eventUpdate(Long.parseLong(input[4]), input[0], input[1], input[2],
                         input[3], input[4]);
                 context.deleteFile(filesForUpload[i]);
@@ -236,7 +265,10 @@ public class OfflineUploads {
     }
 
 
-
+    /**
+     * uploads the counselling information captured offline
+     * @param context
+     */
     public static void counselling(Context context) {
         File mydir = context.getFilesDir();
         String[] filesForUpload = mydir.list();
@@ -252,6 +284,10 @@ public class OfflineUploads {
         }
     }
 
+    /**
+     * uploads the counselling information captured offline
+     * @param context
+     */
     public static void counsellingUpdate(Context context) {
         File mydir = context.getFilesDir();
         String[] filesForUpload = mydir.list();
@@ -261,14 +297,16 @@ public class OfflineUploads {
                 String file = WriteRead.read(filesForUpload[i], context);
                 Log.i("NET", "file text " + file);
                 String[] input = file.split("!");
-
-                //Log.i("NET", drugIDs[0] + " " + drugIDs[1]);
                 communicator.counsellingUpdate(Long.parseLong(input[3]), input[0], input[1], input[2]);
                 context.deleteFile(filesForUpload[i]);
             }
         }
     }
 
+    /**
+     * uploads the medical information captured offline
+     * @param context
+     */
     public static void medicalReport(Context context) {
         File mydir = context.getFilesDir();
         String[] filesForUpload = mydir.list();
@@ -278,13 +316,16 @@ public class OfflineUploads {
                 String file = WriteRead.read(filesForUpload[i], context);
                 Log.i("NET", "file text " + file);
                 String[] input = file.split("!");
-
-                //Log.i("NET", drugIDs[0] + " " + drugIDs[1]);
                 communicator.reportPost(input[0], input[1], input[2], input[3]);
                 context.deleteFile(filesForUpload[i]);
             }
         }
     }
+
+    /**
+     * uploads the medical information captured offline
+     * @param context
+     */
     public static void medicalReportUpdate(Context context) {
         File mydir = context.getFilesDir();
         String[] filesForUpload = mydir.list();
@@ -294,8 +335,6 @@ public class OfflineUploads {
                 String file = WriteRead.read(filesForUpload[i], context);
                 Log.i("NET", "file text " + file);
                 String[] input = file.split("!");
-
-                //Log.i("NET", drugIDs[0] + " " + drugIDs[1]);
                 communicator.reportUpdate(Long.parseLong(input[4]), input[0], input[1], input[2],
                         input[3]);
                 context.deleteFile(filesForUpload[i]);
@@ -303,6 +342,10 @@ public class OfflineUploads {
         }
     }
 
+    /**
+     * uploads the adverse event information captured offline
+     * @param context
+     */
     public static void adverseEvent(Context context) {
         File mydir = context.getFilesDir();
         String[] filesForUpload = mydir.list();
@@ -313,14 +356,16 @@ public class OfflineUploads {
                 String file = WriteRead.read(filesForUpload[i], context);
                 Log.i("NET", "file text " + file);
                 String[] input = file.split("!");
-
-                //Log.i("NET", drugIDs[0] + " " + drugIDs[1]);
                 communicator.adverseEventPost(input[0], input[1], input[2], input[3]);
                 context.deleteFile(filesForUpload[i]);
             }
         }
     }
 
+    /**
+     * uploads the adverse event information captured offline
+     * @param context
+     */
     public static void adverseEventUpdate(Context context) {
         File mydir = context.getFilesDir();
         String[] filesForUpload = mydir.list();
@@ -330,8 +375,6 @@ public class OfflineUploads {
                 String file = WriteRead.read(filesForUpload[i], context);
                 Log.i("NET", "file text " + file);
                 String[] input = file.split("!");
-
-                //Log.i("NET", drugIDs[0] + " " + drugIDs[1]);
                 communicator.adverseEventUpdate(Long.parseLong(input[4]), input[0], input[1],
                         input[2], input[3]);
                 context.deleteFile(filesForUpload[i]);
@@ -340,6 +383,10 @@ public class OfflineUploads {
     }
 
 
+    /**
+     * uploads the patient outcome information captured offline
+     * @param context
+     */
     public static void patientOutcome(Context context) {
         File mydir = context.getFilesDir();
         String[] filesForUpload = mydir.list();
@@ -349,14 +396,16 @@ public class OfflineUploads {
                 String file = WriteRead.read(filesForUpload[i], context);
                 Log.i("NET", "file text " + file);
                 String[] input = file.split("!");
-
-                //Log.i("NET", drugIDs[0] + " " + drugIDs[1]);
                 communicator.outcomePost(input[0], input[1], input[2], input[3]);
                 context.deleteFile(filesForUpload[i]);
             }
         }
     }
 
+    /**
+     * uploads the patient outcome information captured offline
+     * @param context
+     */
     public static void patientOutcomeUpdate(Context context) {
         File mydir = context.getFilesDir();
         String[] filesForUpload = mydir.list();
@@ -366,8 +415,6 @@ public class OfflineUploads {
                 String file = WriteRead.read(filesForUpload[i], context);
                 Log.i("NET", "file text " + file);
                 String[] input = file.split("!");
-
-                //Log.i("NET", drugIDs[0] + " " + drugIDs[1]);
                 communicator.OutcomeUpdate(Long.parseLong(input[4]), input[0], input[1], input[2],
                         input[3]);
                 context.deleteFile(filesForUpload[i]);
@@ -378,7 +425,6 @@ public class OfflineUploads {
 
     @Subscribe
     public void onServerEvent(ServerEvent serverEvent){
-        
     }
 
     @Subscribe

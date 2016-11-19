@@ -108,10 +108,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 import retrofit.mime.TypedByteArray;
@@ -157,9 +155,7 @@ public class HomeActivity extends AppCompatActivity
         IAdverseEventListView, ICounsellingListView, IEnrollmentListView, IOutcomesListView ,
         IRegimenListView, IUserListView, IRecordsListView, INotificationsListView, IPatientListView{
 
-    // flag to load home fragment when user presses back key
-    private boolean shouldLoadHomeFragOnBackPress = false;
-    // index to identify current nav menu item
+
     public static int navItemIndex = 0;
     private final String TAG = this.getClass().getSimpleName();
     Communicator communicator;
@@ -177,7 +173,6 @@ public class HomeActivity extends AppCompatActivity
     public static String MEDICALRECORDFILE = "MedicalRecords";
     public static String OUTCOMEFILE = "Outcomes";
     public static String NOTIFICATIONFILE = "Notifications";
-    public static final String MyPREFERENCES = "MyLogin";
     String menuFragment;
     EnrollmentPresenter enrollmentPresenter;
     CounsellingPresenter counsellingPresenter;
@@ -208,15 +203,12 @@ public class HomeActivity extends AppCompatActivity
         medicalRecordPresenter = new MedicalRecordPresenter(this);
         patientPresenter = new PatientPresenter(this);
         menuFragment = getIntent().getStringExtra("menuFragment");
-        //Log.d(TAG,"menuFragment "+ menuFragment);
         communicator = new Communicator();
         prgDialog = new ProgressDialog(HomeActivity.this);
         // Set Progress Dialog Text
         prgDialog.setMessage("Please wait...");
         // Set Cancelable as False
         prgDialog.setCancelable(false);
-        //FirebaseMessaging.getInstance().subscribeToTopic("test");
-        //String token =
         String token = FirebaseInstanceId.getInstance().getToken();
         Log.d(TAG, "TOKEN "+FirebaseInstanceId.getInstance().getToken());
         communicator.registrationPost(token);
@@ -252,7 +244,6 @@ public class HomeActivity extends AppCompatActivity
         }
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
     }
 
 
@@ -275,9 +266,6 @@ public class HomeActivity extends AppCompatActivity
                 setToolbarTitle();
                 return;
             }
-       /** else{
-                setToolbarTitle();
-            }**/
         super.onBackPressed();
     }
 
@@ -291,8 +279,6 @@ public class HomeActivity extends AppCompatActivity
             getMenuInflater().inflate(R.menu.notification_settings, menu);
         }
         getMenuInflater().inflate(R.menu.home, menu);
-
-
         return true;
     }
 
@@ -315,12 +301,9 @@ public class HomeActivity extends AppCompatActivity
             String uname = sharedpreferences.getString(LoginActivity.Username, null);
             LoginActivity.username = null;
             LoginActivity.password = null;
-            //HomeActivity.this.deleteFile(MyPREFERENCES);**/
             Intent intent = new Intent(getApplicationContext(),LoginActivity.class);
             startActivity(intent);
-            //onDestroy();
             return true;
-
         }
         if (id == R.id.menuRefresh){
             refresh();
@@ -344,7 +327,6 @@ public class HomeActivity extends AppCompatActivity
             prgDialog.show();
             HomeActivity.this.deleteFile(PATIENTFILE);
             patientPresenter.loadPatients();
-            // SystemClock.sleep(6500);
             Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 public void run() {
@@ -367,7 +349,6 @@ public class HomeActivity extends AppCompatActivity
             outcomePresenter.loadOutcomes();
             HomeActivity.this.deleteFile(NOTIFICATIONFILE);
             notificationPresenter.loadNotifications();
-           // setFragment();**/
         }
         else {
             prgDialog.hide();
@@ -376,7 +357,6 @@ public class HomeActivity extends AppCompatActivity
                     Toast.LENGTH_LONG).show();
             Log.v("Home", "############################You are not online!!!!");
         }
-
     }
 
     public void setToolbarTitle() {
@@ -438,7 +418,6 @@ public class HomeActivity extends AppCompatActivity
 
     @Override
     public void onOutcomeLoadedFailure(RetrofitError error) {
-
     }
 
     @Override
@@ -516,7 +495,6 @@ public class HomeActivity extends AppCompatActivity
         int id = item.getItemId();
         if (id == R.id.nav_home) {
             navItemIndex = 0;
-            // Handle the camera action
             HomeFragment home = new HomeFragment();
             FragmentManager manager = getSupportFragmentManager();
             manager.beginTransaction().replace(R.id.rel_layout_for_frag,
@@ -538,7 +516,6 @@ public class HomeActivity extends AppCompatActivity
             setToolbarTitle();
         }
         else if (id == R.id.nav_patients) {
-            // Handle the camera action
             navItemIndex = 2;
             PatientFragment patientFragment = new PatientFragment();
             FragmentManager manager = getSupportFragmentManager();
@@ -676,7 +653,6 @@ public class HomeActivity extends AppCompatActivity
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
-        // refresh toolbar menu
         invalidateOptionsMenu();
         return true;
     }

@@ -118,8 +118,6 @@ public class LoginActivity extends AppCompatActivity{
             @Override
             public void failure(RetrofitError error) {
                 if (error != null) {
-                   // prgDialog.hide();
-                    //Toast.makeText(getApplicationContext(), "Incorrect username/password", Toast.LENGTH_LONG).show();
                     Log.e(TAG, error.getMessage());
                     error.printStackTrace();
                 }

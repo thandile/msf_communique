@@ -14,11 +14,16 @@ import retrofit.client.OkClient;
  * Created by Thandile on 2016/09/16.
  */
 public class Auth {
-    public static final String SERVER_URL =  "https://drtbdemo.herokuapp.com/api/"; //https://agile-beach-31802.herokuapp.com/api/";
-    //public static final String NOTIFICATION_URL =  "https://agile-beach-31802.herokuapp.com/";
+    public static final String SERVER_URL = "https://evening-dawn-42680.herokuapp.com/api/"; // "https://drtbdemo.herokuapp.com/api/"; //https://agile-beach-31802.herokuapp.com/api/";
 
     public static final OkHttpClient clientOkHttp = new OkHttpClient();
-    //static private String credentials = LoginActivity.username+":"+ LoginActivity.password;
+
+    /**
+     * Function to authenticate any communication with the server.
+     * @param username
+     * @param password
+     * @return The interface that verifies the authentication
+     */
     public static Interface getInterface(String username, String password) {
         String credentials = username+":"+password;
         RestAdapter.Builder builder = new RestAdapter.Builder()

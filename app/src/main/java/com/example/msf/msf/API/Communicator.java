@@ -23,6 +23,7 @@ import retrofit2.Retrofit;
 
 /**
  * Created by Thandile on 2016/07/26.
+ * Class with the functions that post, put, get and delete data on the server
  */
 public class Communicator {
     private static  final String TAG = "Communicator";
@@ -179,31 +180,6 @@ public class Communicator {
     }
 
 
-    public void pilotPost(String program, String description){
-        Callback<AddPilotResponse> callback = new Callback<AddPilotResponse>() {
-
-            @Override
-            public void success(AddPilotResponse serverResponse, Response response2) {
-                if(serverResponse.getResponseCode() == 0){
-                    BusProvider.getInstance().post(produceServerEventPilots(serverResponse));
-                }else{
-                    BusProvider.getInstance().post(produceErrorEvent(serverResponse.getResponseCode(),
-                            serverResponse.getDescription()));
-                }
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                if(error != null ){
-                    Log.e(TAG, error.getMessage());
-                    error.printStackTrace();
-                }
-                BusProvider.getInstance().post(produceErrorEvent(-200,error.getMessage()));
-            }
-        };
-        communicatorInterface.postPilots(program, description, callback);
-    }
-
     public void enrollmentPost(String patient, String comment, String program, String date){
         Callback<Enrollment> callback = new Callback<Enrollment>() {
 
@@ -303,29 +279,6 @@ public class Communicator {
         communicatorInterface.postAdverseEvent(patientID, adverse_event_type, event_date, notes, callback);
     }
 
-    public void emergencyContactPost(String name, String email){
-        Callback<EmergencyContact> callback = new Callback<EmergencyContact>() {
-            @Override
-            public void success(EmergencyContact serverResponse, Response response2) {
-                if(serverResponse.getResponseCode() == 0){
-                    BusProvider.getInstance().post(produceEmergencyContactServerResponse(serverResponse));
-                }else{
-                    BusProvider.getInstance().post(produceErrorEvent(serverResponse.getResponseCode(),
-                            serverResponse.getMessage()));
-                }
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                if(error != null ){
-                    Log.e(TAG, error.getMessage());
-                    error.printStackTrace();
-                }
-                BusProvider.getInstance().post(produceErrorEvent(-200,error.getMessage()));
-            }
-        };
-        communicatorInterface.postEmergencyContact(name, email, callback);
-    }
 
 
     public void appointmentPost(String patientId, String owner, String notes, String date,
@@ -583,30 +536,6 @@ public class Communicator {
         communicatorInterface.updateAdverseEvent(id, patientID, adverse_event_type, event_date, notes, callback);
     }
 
-    public void emergencyContactUpdate(long id, String name, String email){
-        Callback<EmergencyContact> callback = new Callback<EmergencyContact>() {
-            @Override
-            public void success(EmergencyContact serverResponse, Response response2) {
-                if(serverResponse.getResponseCode() == 0){
-                    BusProvider.getInstance().post(produceEmergencyContactServerResponse(serverResponse));
-                }else{
-                    BusProvider.getInstance().post(produceErrorEvent(serverResponse.getResponseCode(),
-                            serverResponse.getMessage()));
-                }
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                if(error != null ){
-                    Log.e(TAG, error.getMessage());
-                    error.printStackTrace();
-                }
-                BusProvider.getInstance().post(produceErrorEvent(-200,error.getMessage()));
-            }
-        };
-        communicatorInterface.updateEmergencyContact(id, name, email, callback);
-    }
-
 
     public void patientUpdate(long id, String firstName, String lastName, String identifier, String facility, String dob,
                               String sex, String contact1, String contact2, String contact3, String location, String outcome,
@@ -637,31 +566,6 @@ public class Communicator {
     }
 
 
-    public void patientDelete(final long patientId){
-        Callback<Users> callback = new Callback<Users>() {
-            @Override
-            public void success(Users serverResponse, Response response2) {
-                ///if(serverResponse.getResponseCode() == 0){
-                    BusProvider.getInstance().post(produceServerEvent(serverResponse));
-                /**}else{
-                    BusProvider.getInstance().post(produceErrorEvent(serverResponse.getResponseCode(),
-                            serverResponse.getMessage()));
-                }**/
-                Log.d(TAG,"Success, patient deleted "+ patientId);
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                if(error != null ){
-                    Log.e(TAG, error.getMessage());
-                    error.printStackTrace();
-                }
-                BusProvider.getInstance().post(produceErrorEvent(-200,error.getMessage()));
-            }
-        };
-        communicatorInterface.deletePatient(patientId, callback);
-    }
-
     public void OutcomeUpdate(long id, String patient, String outcomeType, String outcomeDate,
                               String notes){
         Callback<Outcome> callback = new Callback<Outcome>() {
@@ -689,41 +593,11 @@ public class Communicator {
     }
 
 
-    public void outcomeDelete(final long outcomeID){
-        Callback<Outcome> callback = new Callback<Outcome>() {
-            @Override
-            public void success(Outcome serverResponse, Response response2) {
-                ///if(serverResponse.getResponseCode() == 0){
-                BusProvider.getInstance().post(produceOutcomeServerResponse(serverResponse));
-                /**}else{
-                 BusProvider.getInstance().post(produceErrorEvent(serverResponse.getResponseCode(),
-                 serverResponse.getMessage()));
-                 }**/
-                Log.d(TAG,"Success, patient deleted "+ outcomeID);
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                if(error != null ){
-                    Log.e(TAG, error.getMessage());
-                    error.printStackTrace();
-                }
-                BusProvider.getInstance().post(produceErrorEvent(-200,error.getMessage()));
-            }
-        };
-        communicatorInterface.deleteOutcome(outcomeID, callback);
-    }
-
     public void appointmentDelete(final long appointmentID){
         Callback<Appointment> callback = new Callback<Appointment>() {
             @Override
             public void success(Appointment serverResponse, Response response2) {
-                //if(serverResponse.getResponseCode() == 0){
-                    BusProvider.getInstance().post(produceAppointmentServerEvent(serverResponse));
-               // }else{
-                  //  BusProvider.getInstance().post(produceErrorEvent(serverResponse.getResponseCode(),
-                           // serverResponse.getMessage()));
-               // }**/
+                BusProvider.getInstance().post(produceAppointmentServerEvent(serverResponse));
                 Log.d(TAG,"Success, appointment deleted "+ appointmentID);
             }
 
@@ -740,6 +614,17 @@ public class Communicator {
     }
 
 
+    /**
+     * function to update an appointment
+     * @param appointmentID
+     * @param appointmentType
+     * @param owner
+     * @param patientId
+     * @param date
+     * @param startTime
+     * @param endTime
+     * @param notes
+     */
     public void appointmentUpdate(long appointmentID, String appointmentType, String owner,
                                   String patientId, String date, String startTime, String endTime,
                                   String notes){
@@ -754,7 +639,6 @@ public class Communicator {
                             serverResponse.getMessage()));
                 }
             }
-
             @Override
             public void failure(RetrofitError error) {
                 if(error != null ){
@@ -768,27 +652,15 @@ public class Communicator {
                 appointmentType, endTime, startTime, callback);
     }
 
-    public void enrollmentDelete(final long enrollmentID){
-        Callback<Enrollment> callback = new Callback<Enrollment>() {
-            @Override
-            public void success(Enrollment serverResponse, Response response2) {
-                //if(serverResponse.getResponseCode() == 0){
-                BusProvider.getInstance().post(produceEnrollmentServerEvent(serverResponse));
-                Log.d(TAG,"Success, enrollment deleted "+ enrollmentID);
-            }
 
-            @Override
-            public void failure(RetrofitError error) {
-                if(error != null ){
-                    Log.e(TAG, error.getMessage());
-                    error.printStackTrace();
-                }
-                BusProvider.getInstance().post(produceErrorEvent(-200,error.getMessage()));
-            }
-        };
-        communicatorInterface.deleteEnrollment(enrollmentID, callback);
-    }
-
+    /**
+     * function to update a patient's pilot enrollment
+     * @param enrollmentID
+     * @param patient
+     * @param comment
+     * @param program
+     * @param date
+     */
     public void enrollmentUpdate(long enrollmentID, String patient, String comment,
                                   String program, String date){
         Callback<Enrollment> callback = new Callback<Enrollment>() {
@@ -802,7 +674,6 @@ public class Communicator {
                             serverResponse.getMessage()));
                 }
             }
-
             @Override
             public void failure(RetrofitError error) {
                 if(error != null ){
@@ -815,40 +686,23 @@ public class Communicator {
         communicatorInterface.updateEnrollments(enrollmentID, patient, comment, program, date, callback);
     }
 
-    public void counsellingDelete(final long counsellingID){
-        Callback<Counselling> callback = new Callback<Counselling>() {
-            @Override
-            public void success(Counselling serverResponse, Response response2) {
-                //if(serverResponse.getResponseCode() == 0){
-                BusProvider.getInstance().post(produceCounsellingServerEvent(serverResponse));
-                // }else{
-                //  BusProvider.getInstance().post(produceErrorEvent(serverResponse.getResponseCode(),
-                // serverResponse.getMessage()));
-                // }**/
-                Log.d(TAG,"Success, appointment deleted "+ counsellingID);
-            }
 
-            @Override
-            public void failure(RetrofitError error) {
-                if(error != null ){
-                    Log.e(TAG, error.getMessage());
-                    error.printStackTrace();
-                }
-                BusProvider.getInstance().post(produceErrorEvent(-200,error.getMessage()));
-            }
-        };
-        communicatorInterface.deleteSession(counsellingID, callback);
-    }
-
+    /**
+     * function to update counselling information
+     * @param counsellingID
+     * @param patient
+     * @param sessionType
+     * @param notes
+     */
     public void counsellingUpdate(long counsellingID, String  patient, String  sessionType,
-                                  String notes){
+                                  String notes) {
         Callback<Counselling> callback = new Callback<Counselling>() {
 
             @Override
             public void success(Counselling serverResponse, Response response2) {
-                if(serverResponse.getResponseCode() == 0){
+                if (serverResponse.getResponseCode() == 0) {
                     BusProvider.getInstance().post(produceCounsellingServerEvent(serverResponse));
-                }else{
+                } else {
                     BusProvider.getInstance().post(produceErrorEvent(serverResponse.getResponseCode(),
                             serverResponse.getMessage()));
                 }
@@ -856,49 +710,26 @@ public class Communicator {
 
             @Override
             public void failure(RetrofitError error) {
-                if(error != null ){
+                if (error != null) {
                     Log.e(TAG, error.getMessage());
                     error.printStackTrace();
                 }
-                BusProvider.getInstance().post(produceErrorEvent(-200,error.getMessage()));
+                BusProvider.getInstance().post(produceErrorEvent(-200, error.getMessage()));
             }
         };
         communicatorInterface.updateCounselling(counsellingID, patient, sessionType, notes, callback);
     }
 
 
-    public void reportDelete(long reportID){
-        Callback<MedicalRecord> callback = new Callback<MedicalRecord>() {
-
-            @Override
-            public void success(MedicalRecord serverResponse, Response response2) {
-                //if(serverResponse.getResponseCode() == 0){
-                    BusProvider.getInstance().post(produceMRecordServerEvent(serverResponse));
-               /** }else{
-                    BusProvider.getInstance().post(produceErrorEvent(serverResponse.getResponseCode(),
-                            serverResponse.getMessage()));
-                }**/
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                if(error != null ){
-                    Log.e(TAG, error.getMessage());
-                    error.printStackTrace();
-                }
-                BusProvider.getInstance().post(produceErrorEvent(-200,error.getMessage()));
-            }
-        };
-        communicatorInterface.deleteMedicalReport(reportID, callback);
-    }
-
-
+    /**
+     * function to delete an event
+     * @param eventID
+     */
     public void eventDelete(long eventID){
         Callback<Events> callback = new Callback<Events>() {
             @Override
             public void success(Events serverResponse, Response response2) {
-               // if(serverResponse.getResponseCode() == 0){
-                    BusProvider.getInstance().post(produceEventServerResponse(serverResponse));
+                BusProvider.getInstance().post(produceEventServerResponse(serverResponse));
             }
 
             @Override
@@ -913,62 +744,16 @@ public class Communicator {
         communicatorInterface.deleteEvent(eventID, callback);
     }
 
-    public void admissionDelete(long admissionID){
-        Callback<Admission> callback = new Callback<Admission>() {
-            @Override
-            public void success(Admission serverResponse, Response response2) {
-                //if(serverResponse.getResponseCode() == 0){
-                    BusProvider.getInstance().post(produceAdmissionServerResponse(serverResponse));
-              /**  }else{
-                    BusProvider.getInstance().post(produceErrorEvent(serverResponse.getResponseCode(),
-                            serverResponse.getMessage()));
-                }**/
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                if(error != null ){
-                    Log.e(TAG, error.getMessage());
-                    error.printStackTrace();
-                }
-                BusProvider.getInstance().post(produceErrorEvent(-200,error.getMessage()));
-            }
-        };
-        communicatorInterface.deleteAdmissions(admissionID, callback);
-    }
-
-    public void adverseEventDelete(long id){
-        Callback<AdverseEvent> callback = new Callback<AdverseEvent>() {
-            @Override
-            public void success(AdverseEvent serverResponse, Response response2) {
-                    BusProvider.getInstance().post(produceAdverseEventServerResponse(serverResponse));
-
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                if(error != null ){
-                    Log.e(TAG, error.getMessage());
-                    error.printStackTrace();
-                }
-                BusProvider.getInstance().post(produceErrorEvent(-200,error.getMessage()));
-            }
-        };
-        communicatorInterface.deleteAdverseEvent(id, callback);
-    }
-
+    /**
+     * function to delete the notifications a user is subscribed to
+     * @param id
+     */
     public void notificationRegDelete(long id){
         Callback<NotificationRegistration> callback = new Callback<NotificationRegistration>() {
             @Override
             public void success(NotificationRegistration serverResponse, Response response2) {
-               // if(serverResponse.getResponseCode() == 0){
                 BusProvider.getInstance().post(produceNotificationRegServerResponse(serverResponse));
-                //}else{
-                  //  BusProvider.getInstance().post(produceErrorEvent(serverResponse.getResponseCode(),
-                     //       serverResponse.getMessage()));
-               // }
             }
-
             @Override
             public void failure(RetrofitError error) {
                 if(error != null ){
@@ -981,7 +766,10 @@ public class Communicator {
         communicatorInterface.deleteNotificationReg(id, callback);
     }
 
-
+    /**
+     * function to delete patient medication
+     * @param regimenID
+     */
     public void regimenDelete(long regimenID){
         Callback<Regimen> callback = new Callback<Regimen>() {
             @Override
@@ -1002,10 +790,19 @@ public class Communicator {
         communicatorInterface.deleteRegimen(regimenID, callback);
     }
 
+
+    /**
+     * function to update patient medication
+     * @param regimenID
+     * @param patient
+     * @param notes
+     * @param drugs
+     * @param dateStarted
+     * @param dateEnded
+     */
     public void regimenUpdate(long regimenID, String  patient, String notes, String[] drugs, String dateStarted,
                               String dateEnded){
         Callback<Regimen> callback = new Callback<Regimen>() {
-
             @Override
             public void success(Regimen serverResponse, Response response2) {
                 if(serverResponse.getResponseCode() == 0){
@@ -1015,7 +812,6 @@ public class Communicator {
                             serverResponse.getMessage()));
                 }
             }
-
             @Override
             public void failure(RetrofitError error) {
                 if(error != null ){
@@ -1045,10 +841,6 @@ public class Communicator {
         return new ErrorEvent(errorCode, errorMsg);
     }
 
-    @Produce
-    public ServerEvent produceServerEventPilots(AddPilotResponse AddPilotResponse) {
-        return new ServerEvent(AddPilotResponse);
-    }
 
     @Produce
     public ServerEvent produceCounsellingServerEvent(Counselling Counselling) {
@@ -1091,10 +883,6 @@ public class Communicator {
         return new ServerEvent(Regimen);
     }
 
-    @Produce
-    public ServerEvent produceEmergencyContactServerResponse(EmergencyContact EmergencyContact){
-        return new ServerEvent(EmergencyContact);
-    }
 
     @Produce
     public ServerEvent produceOutcomeServerResponse(Outcome Outcome){
