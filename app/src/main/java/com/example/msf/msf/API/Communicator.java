@@ -32,6 +32,10 @@ public class Communicator {
     List<String> patientNames = new ArrayList<String>();
     Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
 
+    /**
+     * function to post notification registration IDs to server
+     * @param regID
+     */
     public void registrationPost(String regID){
         String type = "android";
         String name = LoginActivity.username;
@@ -59,6 +63,11 @@ public class Communicator {
         communicatorInterface.postRegistration(regID, type, name, callback);
     }
 
+    /**
+     * function to register for a notification
+     * @param service
+     * @param user
+     */
     public void notificationRegPost(String service, String user){
         Callback<NotificationRegistration> callback = new Callback<NotificationRegistration>() {
             @Override
@@ -84,7 +93,14 @@ public class Communicator {
     }
 
 
-
+    /**
+     * function to post new patient information to server
+     * @param firstName
+     * @param lastName
+     * @param facility
+     * @param dob
+     * @param sex
+     */
     public void patientPost(String firstName, String lastName, String facility, String dob, String sex){
 
         Callback<Users> callback = new Callback<Users>() {
@@ -112,6 +128,10 @@ public class Communicator {
     }
 
 
+    /**
+     * function to get the pilot programs from server
+     * @return
+     */
     public List<String> pilotsGet(){
         Callback<List<PilotsDeserializer>> callback = new Callback<List<PilotsDeserializer>>() {
             @Override
@@ -144,7 +164,10 @@ public class Communicator {
     }
 
 
-
+    /**
+     * function to get the patient list from the server
+     * @return
+     */
     public List<String> patientsGet(){
         Callback<List<Patients>> callback = new Callback<List<Patients>>() {
             @Override
@@ -180,6 +203,13 @@ public class Communicator {
     }
 
 
+    /**
+     * function to post pilot enrollments to the server
+     * @param patient
+     * @param comment
+     * @param program
+     * @param date
+     */
     public void enrollmentPost(String patient, String comment, String program, String date){
         Callback<Enrollment> callback = new Callback<Enrollment>() {
 
@@ -206,6 +236,14 @@ public class Communicator {
     }
 
 
+    /**
+     * function to post an event to the server
+     * @param name
+     * @param description
+     * @param date
+     * @param startTime
+     * @param endTime
+     */
     public void eventPost(String name, String description, String date, String startTime, String endTime){
         Callback<Events> callback = new Callback<Events>() {
             @Override
@@ -565,7 +603,14 @@ public class Communicator {
                 contact2, contact3, txStart, location, outcome, callback);
     }
 
-
+    /**
+     * function to update patient outcome
+     * @param id
+     * @param patient
+     * @param outcomeType
+     * @param outcomeDate
+     * @param notes
+     */
     public void OutcomeUpdate(long id, String patient, String outcomeType, String outcomeDate,
                               String notes){
         Callback<Outcome> callback = new Callback<Outcome>() {
@@ -593,6 +638,10 @@ public class Communicator {
     }
 
 
+    /**
+     * function to delete an appointment
+     * @param appointmentID
+     */
     public void appointmentDelete(final long appointmentID){
         Callback<Appointment> callback = new Callback<Appointment>() {
             @Override

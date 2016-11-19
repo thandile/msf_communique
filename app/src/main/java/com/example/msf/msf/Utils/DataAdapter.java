@@ -42,6 +42,12 @@ public class DataAdapter {
 
     public DataAdapter(){}
 
+    /**
+     * reads patient information from file saved on device
+     * @param pid
+     * @param context
+     * @return
+     */
     public static String getPatientInfo(Long pid, Context context) {
         String patients = WriteRead.read(PATIENTINFOFILE, context);
         String full_name = "";
@@ -62,6 +68,12 @@ public class DataAdapter {
         return full_name;
     }
 
+    /**
+     * reads patient information from file saved on device
+     * @param pid
+     * @param context
+     * @return
+     */
     public static String patientInfo(Long pid, Context context) {
         String patients = WriteRead.read(PATIENTINFOFILE, context);
         String full_name = "";
@@ -83,6 +95,12 @@ public class DataAdapter {
         return full_name;
     }
 
+    /**
+     * reads event information from file saved on device
+     * @param eventID
+     * @param context
+     * @return
+     */
     public static String eventTypeGet(Long eventID, Context context) {
         String events = WriteRead.read(ADVERSEINFOFILE, context);
         String eventType = "";
@@ -102,18 +120,22 @@ public class DataAdapter {
         return eventType;
     }
 
-    public static String adverseEventGet(String eventID, Context context){
+    /**
+     * reads patient adverse event from file saved on device
+     * @param adverseID
+     * @param context
+     * @return
+     */
+    public static String adverseEventGet(String adverseID, Context context){
         String events = WriteRead.read(ADVERSEINFOFILE, context);
         String eventType ="";
         try{
             JSONArray jsonarray = new JSONArray(events);
-
-            // JSONArray jsonarray = new JSONArray(resp);
             for (int i = 0; i < jsonarray.length(); i++) {
                 JSONObject jsonobject = jsonarray.getJSONObject(i);
                 String id = jsonobject.getString("id");
 
-                if (eventID.equals(id)) {
+                if (adverseID.equals(id)) {
                     eventType = id+":"+jsonobject.getString("name");
                 }
             }
@@ -124,6 +146,11 @@ public class DataAdapter {
         return eventType;
     }
 
+    /**
+     * reads adverse event information from file saved on device
+     * @param context
+     * @return
+     */
     public static ArrayList<String> adverseEventsGet(Context context){
         final ArrayList<String> adverseEventList = new ArrayList<String>();
         String sessionTypes = WriteRead.read(ADVERSEINFOFILE, context);
@@ -142,6 +169,11 @@ public class DataAdapter {
         return adverseEventList;
     }
 
+    /**
+     * reads user information from file saved on device
+     * @param context
+     * @return
+     */
     public static ArrayList<String> ownersGet(Context context){
         final ArrayList<String> userList = new ArrayList<String>();
         String sessionTypes = WriteRead.read(USERINFOFILE, context);
@@ -159,6 +191,12 @@ public class DataAdapter {
         return userList;
     }
 
+    /**
+     * reads user information from file saved on device
+     * @param uid
+     * @param context
+     * @return
+     */
     public static String usernames(Long uid, Context context) {
         String user = "";
         String users = WriteRead.read(USERINFOFILE, context);
@@ -180,6 +218,12 @@ public class DataAdapter {
     }
 
 
+    /**
+     * reads counselling session information from file saved on device
+     * @param sid
+     * @param context
+     * @return
+     */
     public static String sessionTypeLoad(Long sid, Context context) {
         String session = "";
         String sessionTypes = WriteRead.read(SESSIONTYPEFILE, context);
@@ -199,6 +243,11 @@ public class DataAdapter {
         return session;
     }
 
+    /**
+     * reads counselling session information from file saved on device
+     * @param context
+     * @return
+     */
     public static ArrayList<String> sessionGet(Context context){
         final ArrayList<String> sessionList = new ArrayList<String>();
         String sessionTypes = WriteRead.read(SESSIONTYPEFILE, context);
@@ -217,6 +266,12 @@ public class DataAdapter {
         return sessionList;
     }
 
+    /**
+     * reads pilot information from file saved on device
+     * @param pid
+     * @param context
+     * @return
+     */
     public static String loadPilots(Long pid, Context context){
         String pilots = WriteRead.read(PILOTINFOFILE, context);
         String pilot ="";
@@ -235,6 +290,12 @@ public class DataAdapter {
         return pilot;
     }
 
+    /**
+     * reads patient outcome information from file saved on device
+     * @param pid
+     * @param context
+     * @return
+     */
     public static String loadOutcomes(Long pid, Context context){
         String pilots = WriteRead.read(OUTCOMEFILE, context);
         String pilot ="";
@@ -253,6 +314,11 @@ public class DataAdapter {
         return pilot;
     }
 
+    /**
+     * reads notification subscription information from file saved on device
+     * @param context
+     * @return
+     */
     public static ArrayList<String> subscriptionID(Context context){
         String user = "";
         ArrayList<String> list = new ArrayList<String >();
@@ -307,6 +373,12 @@ public class DataAdapter {
     }
 
 
+    /**
+     * reads user information from file saved on device
+     * @param uid
+     * @param context
+     * @return
+     */
     public static String loadUserFromFile(Long uid, Context context){
         String user = "";
         String users = WriteRead.read(USERINFOFILE, context);
@@ -328,6 +400,12 @@ public class DataAdapter {
         return user;
     }
 
+    /**
+     * reads user id information from file saved on device
+     * @param username
+     * @param context
+     * @return
+     */
     public static String getUserID(String username, Context context){
         String user = "";
         String users = WriteRead.read(USERINFOFILE, context);
@@ -348,6 +426,12 @@ public class DataAdapter {
         return user;
     }
 
+    /**
+     * reads medical record information from file saved on device
+     * @param uid
+     * @param context
+     * @return
+     */
     public static String loadRecordTypeFromFile(Long uid, Context context){
         String user = "";
         String users = WriteRead.read(MEDICALRECORDFILE, context);
@@ -369,6 +453,11 @@ public class DataAdapter {
         return user;
     }
 
+    /**
+     * reads patinet list from file saved on device
+     * @param context
+     * @return
+     */
     public static ArrayList<String> loadFromFile(Context context){
         String patients = WriteRead.read(PATIENTINFOFILE, context);
         ArrayList<String> patientList = new ArrayList<>();
@@ -390,6 +479,12 @@ public class DataAdapter {
         return patientList;
     }
 
+    /**
+     * reads medication information from file saved on device
+     * @param did
+     * @param context
+     * @return
+     */
     public static String[]  loadDrugs(String[] did, Context context){
         String drugs = WriteRead.read(REGIMENINFOFILE, context);
         String[] drug = new String[did.length];
