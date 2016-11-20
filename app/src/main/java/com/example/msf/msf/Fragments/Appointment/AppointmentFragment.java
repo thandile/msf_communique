@@ -3,6 +3,7 @@ package com.example.msf.msf.Fragments.Appointment;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -26,12 +27,11 @@ import com.example.msf.msf.API.Models.Appointment;
 import com.example.msf.msf.API.ErrorEvent;
 import com.example.msf.msf.API.ServerEvent;
 import com.example.msf.msf.LoginActivity;
-import com.example.msf.msf.Utils.DataAdapter;
 import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.Presenters.Appointments.AppointmentPresenter;
-import com.example.msf.msf.Presenters.Appointments.IAppointmentListView;
 import com.example.msf.msf.R;
 import com.example.msf.msf.Utils.AppStatus;
+import com.example.msf.msf.Utils.DataAdapter;
 import com.example.msf.msf.Utils.WriteRead;
 import com.squareup.otto.Subscribe;
 
@@ -90,28 +90,18 @@ public class AppointmentFragment extends Fragment {
         else {
             text.setText("You are currently offline, therefore upcoming appointments cannot be loaded");
         }
-
         all = (RadioButton) view.findViewById(R.id.allRadioButton);
         own = (RadioButton) view.findViewById(R.id.ownRadioButton);
         appointmentLV = (ListView) view.findViewById(R.id.appointmentLV);
-        appointmentLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                TextView idTV = (TextView) view.findViewById(R.id.idTV);
-                String id = idTV.getText().toString().split(" ")[1];
-                Log.e(TAG, id.toString());
-                AppointmentInfoFragment appointmentListFragment = new AppointmentInfoFragment().newInstance(id);
-                FragmentManager manager = getActivity().getSupportFragmentManager();
+        listViewListener();
+        radioGroup = (RadioGroup) view.findViewById(R.id.radioGroup);
+        radioListener();
+        fab = (FloatingActionButton) view.findViewById(R.id.btnFloatingAction);
+        fabListener();
+        return view;
+    }
 
-                manager.beginTransaction()
-                        .replace(R.id.rel_layout_for_frag, appointmentListFragment,
-                                appointmentListFragment.getTag())
-                        .addToBackStack(null)
-                        .commit();
-            }
-        });
-
-        RadioGroup radioGroup = (RadioGroup) view.findViewById(R.id.radioGroup);
+    private void radioListener() {
         radioGroup .setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -125,13 +115,14 @@ public class AppointmentFragment extends Fragment {
                 }
             }
         });
+    }
 
-
-        fab = (FloatingActionButton) view.findViewById(R.id.btnFloatingAction);
+    private void fabListener() {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CreateAppointmentFragment createAppointmentFragment = new CreateAppointmentFragment();
+                CreateAppointmentFragment createAppointmentFragment =
+                        new CreateAppointmentFragment();
                 FragmentManager manager = getActivity().getSupportFragmentManager();
                 manager.beginTransaction()
                         .replace(R.id.rel_layout_for_frag, createAppointmentFragment,
@@ -140,13 +131,34 @@ public class AppointmentFragment extends Fragment {
                         .commit();
             }
         });
-        return view;
+    }
+
+    private void listViewListener() {
+        appointmentLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                TextView idTV = (TextView) view.findViewById(R.id.idTV);
+                String id = idTV.getText().toString().split(" ")[1];
+                Log.e(TAG, id.toString());
+                AppointmentInfoFragment appointmentListFragment =
+                        new AppointmentInfoFragment().newInstance(id);
+                FragmentManager manager = getActivity().getSupportFragmentManager();
+
+                manager.beginTransaction()
+                        .replace(R.id.rel_layout_for_frag, appointmentListFragment,
+                                appointmentListFragment.getTag())
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
+
     }
 
     public void appointmentsGet(final String app){
         prgDialog.show();
         final ArrayList<Appointment> appointmentList = new ArrayList<Appointment>();
-        Interface communicatorInterface = Auth.getInterface(LoginActivity.username, LoginActivity.password);
+        Interface communicatorInterface = Auth.getInterface(LoginActivity.username,
+                LoginActivity.password);
         Callback<List<Appointment>> callback = new Callback<List<Appointment>>() {
             @Override
             public void success(List<Appointment> serverResponse, Response response2) {
@@ -154,23 +166,30 @@ public class AppointmentFragment extends Fragment {
                 try{
                     JSONArray jsonarray = new JSONArray(resp);
                     if (jsonarray.length()>0) {
+                        Log.d(TAG,"date halla");
                         for (int i = 0; i < jsonarray.length(); i++) {
                             JSONObject jsonobject = jsonarray.getJSONObject(i);
                             String date = jsonobject.getString("appointment_date");
-                            Log.d(TAG,"date "+ date + " " +df.format(dateobj) + " "+ df.format(dateobj).compareTo(date));
-                            if (df.format(dateobj).compareTo(date)>=0) {
+                            Log.d(TAG,"date "+ date + " " +df.format(dateobj) + " "+
+                                    df.format(dateobj).compareTo(date));
+                            if (df.format(dateobj).compareTo(date)<=0) {
                                 if (app.equals("own")) {
-                                    String owner = loadUserFromFile(Long.parseLong(jsonobject.getString("owner")));
+                                    String owner = DataAdapter.loadUserFromFile(
+                                            Long.parseLong(jsonobject.getString("owner")),
+                                            AppointmentFragment.this.getActivity());
                                     if (owner.equals(LoginActivity.username)) {
                                         int id = Integer.parseInt(jsonobject.getString("id"));
 
                                         String startTime = jsonobject.getString("start_time");
                                         String endTime = jsonobject.getString("end_time");
-                                        String patient = getPatientInfo(Long.parseLong(jsonobject.getString("patient")));
+                                        String patient = DataAdapter.getPatientInfo(
+                                                Long.parseLong(jsonobject.getString("patient")),
+                                                AppointmentFragment.this.getActivity());
                                         String title = jsonobject.getString("title");
                                         String notes = jsonobject.getString("notes");
 
-                                        Appointment appointment = new Appointment(id, date, owner, patient, startTime, title,
+                                        Appointment appointment = new Appointment(id, date, owner,
+                                                patient, startTime, title,
                                                 notes, endTime);
                                         //userGet(owner);
                                         appointmentList.add(appointment);
@@ -178,14 +197,19 @@ public class AppointmentFragment extends Fragment {
                                 }
                                 else{
                                     int id = Integer.parseInt(jsonobject.getString("id"));
-                                    String owner = loadUserFromFile(Long.parseLong(jsonobject.getString("owner")));
+                                    String owner = DataAdapter.loadUserFromFile(
+                                            Long.parseLong(jsonobject.getString("owner")),
+                                            AppointmentFragment.this.getActivity());
                                     String startTime = jsonobject.getString("start_time");
                                     String endTime = jsonobject.getString("end_time");
-                                    String patient = getPatientInfo(Long.parseLong(jsonobject.getString("patient")));
+                                    String patient = DataAdapter.getPatientInfo(
+                                            Long.parseLong(jsonobject.getString("patient")),
+                                            AppointmentFragment.this.getActivity());
                                     String title = jsonobject.getString("title");
                                     String notes = jsonobject.getString("notes");
 
-                                    Appointment appointment = new Appointment(id, date, owner, patient, startTime, title,
+                                    Appointment appointment = new Appointment(id, date, owner,
+                                            patient, startTime, title,
                                             notes, endTime);
                                     //userGet(owner);
                                     appointmentList.add(appointment);
@@ -251,54 +275,6 @@ public class AppointmentFragment extends Fragment {
         };
         communicatorInterface.getAppointments(callback);
         prgDialog.hide();
-    }
-
-
-
-    public String loadUserFromFile(Long uid){
-        String user = "";
-        String users = WriteRead.read(USERINFOFILE, getContext());
-        try{
-            JSONArray jsonarray = new JSONArray(users);
-            for (int i = 0; i < jsonarray.length(); i++) {
-                JSONObject jsonObject = jsonarray.getJSONObject(i);
-                if (jsonObject.getString("id").equals("" + uid)) {
-                    Log.d(TAG, "userid"+ uid);
-                    int id = Integer.parseInt(jsonObject.getString("id"));
-                    String username = jsonObject.getString("username");
-                    user =  username;
-                    break;
-                }
-            }
-        }
-        catch (JSONException e){
-            System.out.print("unsuccessful");
-        }
-        Log.d(TAG, "username"+user);
-        return user;
-    }
-
-
-
-    public String getPatientInfo(Long pid) {
-        String patients = WriteRead.read(PATIENTINFOFILE, getContext());
-        String full_name = "";
-        try {
-            JSONArray jsonarray = new JSONArray(patients);
-            for (int i = 0; i < jsonarray.length(); i++) {
-                JSONObject jsonobject = jsonarray.getJSONObject(i);
-                Log.d(TAG, "ID: " + jsonobject.getString("id"));
-                if (jsonobject.getString("id").equals(""+pid)) {
-                    final String first_name = jsonobject.getString("other_names");
-                    String last_name = jsonobject.getString("last_name");
-                    full_name = first_name + " " + last_name;
-                    break;
-                }
-            }
-        } catch (JSONException e) {
-            System.out.print("unsuccessful");
-        }
-        return full_name;
     }
 
 

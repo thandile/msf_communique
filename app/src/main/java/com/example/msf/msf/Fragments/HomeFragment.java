@@ -128,7 +128,7 @@ public class HomeFragment extends Fragment {
                         for (int i = 0; i < jsonarray.length(); i++) {
                             JSONObject jsonobject = jsonarray.getJSONObject(i);
                             String date = jsonobject.getString("appointment_date");
-                            if (df.format(dateobj).compareTo(date)>=0) {
+                            if (df.format(dateobj).compareTo(date)<=0) {
                                 String owner = loadUserFromFile(Long.parseLong(jsonobject.getString("owner")));
                                 if (owner.equals(LoginActivity.username)) {
                                     int id = Integer.parseInt(jsonobject.getString("id"));

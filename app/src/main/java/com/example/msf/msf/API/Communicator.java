@@ -128,80 +128,6 @@ public class Communicator {
     }
 
 
-    /**
-     * function to get the pilot programs from server
-     * @return
-     */
-    public List<String> pilotsGet(){
-        Callback<List<PilotsDeserializer>> callback = new Callback<List<PilotsDeserializer>>() {
-            @Override
-            public void success(List<PilotsDeserializer> serverResponse, Response response2) {
-                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
-                try{
-
-                    JSONArray jsonarray = new JSONArray(resp);
-                    for (int i = 0; i < jsonarray.length(); i++) {
-                        JSONObject jsonobject = jsonarray.getJSONObject(i);
-                        pilotNames.add(jsonobject.getString("name"));
-                    }
-                }
-                catch (JSONException e){
-                    System.out.print("unsuccessful");
-                }
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                if(error != null ){
-                    Log.e(TAG, error.getMessage());
-                    error.printStackTrace();
-                }
-                // BusProvider.getInstance().post(produceErrorEvent(-200,error.getDescription()));
-            }
-        };
-        communicatorInterface.getPilots(callback);
-        return pilotNames;
-    }
-
-
-    /**
-     * function to get the patient list from the server
-     * @return
-     */
-    public List<String> patientsGet(){
-        Callback<List<Patients>> callback = new Callback<List<Patients>>() {
-            @Override
-            public void success(List<Patients> serverResponse, Response response2) {
-                String resp = new String(((TypedByteArray) response2.getBody()).getBytes());
-                try{
-                    JSONArray jsonarray = new JSONArray(resp);
-                    for (int i = 0; i < jsonarray.length(); i++) {
-                        JSONObject jsonobject = jsonarray.getJSONObject(i);
-                        String fullName = jsonobject.getString("first_name")+" "
-                                +jsonobject.getString("last_name");
-                        patientNames.add(fullName);
-                        //description = jsonobject.getString("description");
-                        //Log.d(TAG,"Success" + " Response  "+name);
-                    }
-                }
-                catch (JSONException e){
-                    System.out.print("unsuccessful");
-                }
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                if(error != null ){
-                    Log.e(TAG, error.getMessage());
-                    error.printStackTrace();
-                }
-                // BusProvider.getInstance().post(produceErrorEvent(-200,error.getDescription()));
-            }
-        };
-        communicatorInterface.getPatients(callback);
-        return patientNames;
-    }
-
 
     /**
      * function to post pilot enrollments to the server
@@ -268,6 +194,14 @@ public class Communicator {
         communicatorInterface.postEvent(name, description, date, startTime, endTime, callback);
     }
 
+    /**
+     * function to post hospital admissions to the server
+     * @param patientID
+     * @param admissionDate
+     * @param dischargeDate
+     * @param healthCentre
+     * @param notes
+     */
     public void admissionPost(String patientID, String admissionDate, String dischargeDate, String healthCentre, String notes){
         Callback<Admission> callback = new Callback<Admission>() {
             @Override
@@ -292,7 +226,13 @@ public class Communicator {
         communicatorInterface.postAdmissions(patientID, admissionDate, dischargeDate, healthCentre, notes, callback);
     }
 
-
+    /**
+     * function to post adverse events
+     * @param patientID
+     * @param adverse_event_type
+     * @param event_date
+     * @param notes
+     */
     public void adverseEventPost(String patientID, String adverse_event_type, String event_date, String notes){
         Callback<AdverseEvent> callback = new Callback<AdverseEvent>() {
             @Override
@@ -318,11 +258,19 @@ public class Communicator {
     }
 
 
-
+    /**
+     * function to post appointments
+     * @param patientId
+     * @param owner
+     * @param notes
+     * @param date
+     * @param appointmentType
+     * @param endTime
+     * @param startTime
+     */
     public void appointmentPost(String patientId, String owner, String notes, String date,
                                 String appointmentType, String endTime, String startTime){
         Callback<Enrollment> callback = new Callback<Enrollment>() {
-
             @Override
             public void success(Enrollment serverResponse, Response response2) {
                 if(serverResponse.getResponseCode() == 0){
@@ -347,6 +295,12 @@ public class Communicator {
     }
 
 
+    /**
+     * function to post counselling sessions
+     * @param patient
+     * @param sessionType
+     * @param notes
+     */
     public void counsellingPost(String patient, String sessionType, String notes){
         Callback<Counselling> callback = new Callback<Counselling>() {
 
@@ -373,6 +327,13 @@ public class Communicator {
     }
 
 
+    /**
+     * function to post medical records
+     * @param title
+     * @param reportType
+     * @param patient
+     * @param notes
+     */
     public void reportPost(String title, String reportType, String patient, String notes){
         Callback<MedicalRecord> callback = new Callback<MedicalRecord>() {
 
@@ -398,6 +359,14 @@ public class Communicator {
         communicatorInterface.postMedicalReport(title, reportType, patient, notes, callback);
     }
 
+    /**
+     * function to post patient regimens
+     * @param patient
+     * @param notes
+     * @param drugs
+     * @param dateStarted
+     * @param dateEnded
+     */
     public void regimenPost(String  patient, String notes, String[] drugs, String dateStarted,
                              String dateEnded){
         Callback<Regimen> callback = new Callback<Regimen>() {
@@ -424,6 +393,13 @@ public class Communicator {
         communicatorInterface.postRegimen(patient, notes, drugs, dateStarted, dateEnded, callback);
     }
 
+    /**
+     * function to post patient outcomes
+     * @param patient
+     * @param outcomeType
+     * @param outcomeDate
+     * @param notes
+     */
     public void outcomePost(String  patient, String outcomeType, String outcomeDate, String notes ){
         Callback<Outcome> callback = new Callback<Outcome>() {
 
@@ -450,6 +426,14 @@ public class Communicator {
     }
 
 
+    /**
+     * function to update medical reports
+     * @param reportID
+     * @param title
+     * @param reportType
+     * @param patient
+     * @param notes
+     */
     public void reportUpdate(long reportID, String title, String reportType, String patient, String notes){
         Callback<MedicalRecord> callback = new Callback<MedicalRecord>() {
 
@@ -475,6 +459,13 @@ public class Communicator {
         communicatorInterface.updateMedicalReport(reportID, title, reportType, patient, notes, callback);
     }
 
+    /**
+     * function to update notification subscriptions
+     * @param notificationID
+     * @param recipient
+     * @param verb
+     * @param actor
+     */
     public void notificationUpdate(long notificationID, String recipient, String verb, String actor){
         String unread = "false";
         Callback<Notifications> callback = new Callback<Notifications>() {
@@ -502,6 +493,15 @@ public class Communicator {
     }
 
 
+    /**
+     * function to update events
+     * @param eventID
+     * @param name
+     * @param description
+     * @param date
+     * @param startTime
+     * @param endTime
+     */
     public void eventUpdate(long eventID, String name, String description, String date, String startTime, String endTime){
         Callback<Events> callback = new Callback<Events>() {
             @Override
@@ -526,6 +526,15 @@ public class Communicator {
         communicatorInterface.updateEvent(eventID, name, description, date, startTime, endTime, callback);
     }
 
+    /**
+     * function to update hospital admissions
+     * @param admissionID
+     * @param patientID
+     * @param admissionDate
+     * @param dischargeDate
+     * @param healthCentre
+     * @param notes
+     */
     public void admissionUpdate(long admissionID, String patientID, String admissionDate, String dischargeDate, String healthCentre, String notes){
         Callback<Admission> callback = new Callback<Admission>() {
             @Override
@@ -550,6 +559,14 @@ public class Communicator {
         communicatorInterface.updateAdmissions(admissionID, patientID, admissionDate, dischargeDate, healthCentre, notes, callback);
     }
 
+    /**
+     * function to update adverse events
+     * @param id
+     * @param patientID
+     * @param adverse_event_type
+     * @param event_date
+     * @param notes
+     */
     public void adverseEventUpdate(long id, String patientID, String adverse_event_type, String event_date, String notes){
         Callback<AdverseEvent> callback = new Callback<AdverseEvent>() {
             @Override
@@ -575,6 +592,22 @@ public class Communicator {
     }
 
 
+    /**
+     * function to update patient information
+     * @param id
+     * @param firstName
+     * @param lastName
+     * @param identifier
+     * @param facility
+     * @param dob
+     * @param sex
+     * @param contact1
+     * @param contact2
+     * @param contact3
+     * @param location
+     * @param outcome
+     * @param txStart
+     */
     public void patientUpdate(long id, String firstName, String lastName, String identifier, String facility, String dob,
                               String sex, String contact1, String contact2, String contact3, String location, String outcome,
                               String txStart){
