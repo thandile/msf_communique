@@ -21,6 +21,7 @@ import com.example.msf.msf.API.Models.Appointment;
 import com.example.msf.msf.API.Models.Events;
 import com.example.msf.msf.API.Interface;
 import com.example.msf.msf.Fragments.Appointment.AppointmentInfoFragment;
+import com.example.msf.msf.Fragments.Events.EventInfoFragment;
 import com.example.msf.msf.HomeActivity;
 import com.example.msf.msf.LoginActivity;
 import com.example.msf.msf.R;
@@ -73,6 +74,39 @@ public class HomeFragment extends Fragment {
         text2 = (TextView) view.findViewById(R.id.defaultText2);
         appointmentLV = (ListView) view.findViewById(R.id.appointmentLV);
         eventsLV = (ListView) view.findViewById(R.id.eventsLV);
+        appointmentsListener();
+        eventsListener();
+        if (AppStatus.getInstance(HomeFragment.this.getActivity()).isOnline()) {
+            appointmentsGet();
+            eventsGet();
+        }
+        else {
+            text.setText("You are currently offline, therefore your upcoming appointments cannot be loaded");
+        }
+
+        return view;
+    }
+
+    private void eventsListener() {
+        eventsLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                TextView idTV = (TextView) view.findViewById(R.id.idTV);
+                String id = idTV.getText().toString().split(" ")[1];
+                Log.e(TAG, id.toString());
+                EventInfoFragment appointmentListFragment = new EventInfoFragment().newInstance(id);
+                FragmentManager manager = getActivity().getSupportFragmentManager();
+
+                manager.beginTransaction()
+                        .replace(R.id.rel_layout_for_frag, appointmentListFragment,
+                                appointmentListFragment.getTag())
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
+    }
+
+    private void appointmentsListener() {
         appointmentLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -87,31 +121,8 @@ public class HomeFragment extends Fragment {
                                 appointmentListFragment.getTag())
                         .addToBackStack(null)
                         .commit();
-                //intent.putExtra(EXTRA_MESSAGE,id);
-                //startActivity(intent);
             }
         });
-        if (AppStatus.getInstance(HomeFragment.this.getActivity()).isOnline()) {
-            appointmentsGet();
-            eventsGet();
-        }
-        else {
-            text.setText("You are currently offline, therefore your upcoming appointments cannot be loaded");
-        }
-        /**fab = (FloatingActionButton) view.findViewById(R.id.btnFloatingAction);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                CreateAppointmentFragment createAppointmentFragment = new CreateAppointmentFragment();
-                FragmentManager manager = getActivity().getSupportFragmentManager();
-                manager.beginTransaction()
-                        .replace(R.id.rel_layout_for_frag, createAppointmentFragment,
-                                createAppointmentFragment.getTag())
-                        .addToBackStack(null)
-                        .commit();
-            }
-        });**/
-        return view;
     }
 
     public void appointmentsGet(){
@@ -167,7 +178,7 @@ public class HomeFragment extends Fragment {
                         dictionary.addStringField(R.id.personTV, new StringExtractor<Appointment>() {
                             @Override
                             public String getStringValue(Appointment appointment, int position) {
-                                return "Owner: "+appointment.getOwnerName();
+                                return "Patient: "+appointment.getPatientName();
                             }
                         });
 

@@ -4,6 +4,7 @@ package com.example.msf.msf.Fragments.Notfications;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -279,6 +280,8 @@ public class NotificationSettingsFragment extends Fragment {
     public void onServerEvent(ServerEvent serverEvent){
         prgDialog.hide();
         Toast.makeText(NotificationSettingsFragment.this.getActivity(), "Settings saved!", Toast.LENGTH_SHORT).show();
+        FragmentManager manager = getActivity().getSupportFragmentManager();
+        manager.popBackStackImmediate();
     }
 
     @Subscribe

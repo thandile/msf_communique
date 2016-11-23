@@ -188,7 +188,7 @@ public class RegimenInfoFragment extends Fragment {
                 String id = jsonobject.getString("id");
 
                 if (patientID.equals(id)) {
-                    fullName = id+":"+jsonobject.getString("other_names") + " " +
+                    fullName = id+": "+jsonobject.getString("other_names") + " " +
                             jsonobject.getString("last_name");
                 }
             }

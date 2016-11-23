@@ -157,6 +157,7 @@ public class UpdateAdverseEventFragment extends Fragment implements Validator.Va
         sessionSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         adverseEvent.setAdapter(sessionSpinnerAdapter);
         ArrayAdapter myAdap = (ArrayAdapter) adverseEvent.getAdapter();
+        Log.d(TAG, input[0]+" "+input[1]);
         int spinnerPosition = myAdap.getPosition(input[1]);
         adverseEvent.setSelection(spinnerPosition);
     }

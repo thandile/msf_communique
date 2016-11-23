@@ -160,7 +160,6 @@ public class UpdateOutcomeFragment extends Fragment implements Validator.Validat
         String patients = WriteRead.read(PATIENTFILE, getContext());
         try{
             JSONArray jsonarray = new JSONArray(patients);
-            // JSONArray jsonarray = new JSONArray(resp);
             for (int i = 0; i < jsonarray.length(); i++) {
                 JSONObject jsonobject = jsonarray.getJSONObject(i);
                 String id = jsonobject.getString("id");

@@ -41,17 +41,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link UpdateAppointmentFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link UpdateAppointmentFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class UpdateAppointmentFragment extends Fragment implements Validator.ValidationListener {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+
     Validator validator;
     private static final String ARG_PARAM1 = "param1";
     public static String USERINFOFILE = "Users";
@@ -74,7 +65,6 @@ public class UpdateAppointmentFragment extends Fragment implements Validator.Val
     Spinner users;
     ProgressDialog prgDialog;
     private Communicator communicator;
-    // TODO: Rename and change types of parameters
     private String[] mParam1;
 
     private OnFragmentInteractionListener mListener;
@@ -83,14 +73,6 @@ public class UpdateAppointmentFragment extends Fragment implements Validator.Val
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @return A new instance of fragment UpdateAppointmentFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static UpdateAppointmentFragment newInstance(String[] param1) {
         UpdateAppointmentFragment fragment = new UpdateAppointmentFragment();
         Bundle args = new Bundle();
@@ -290,6 +272,7 @@ public class UpdateAppointmentFragment extends Fragment implements Validator.Val
                 UpdateAppointmentFragment.this.getActivity(),
                 android.R.layout.simple_dropdown_item_1line, appointmentList);
         patientNames.setAdapter(adapter);
+
     }
 
 
@@ -305,6 +288,7 @@ public class UpdateAppointmentFragment extends Fragment implements Validator.Val
         users.setAdapter(sessionSpinnerAdapter);
         ArrayAdapter myAdap = (ArrayAdapter) users.getAdapter();
         int spinnerPosition = myAdap.getPosition(mParam1[1]);
+        Log.d(TAG, "param 1: " +mParam1[1]);
         users.setSelection(spinnerPosition);
     }
 

@@ -181,7 +181,7 @@ public class UpdateRegimenFragment extends Fragment implements Validator.Validat
         String endDate = endDateET.getText().toString();
         Log.d(TAG,  "regimen" +" "+drugIDs);
         if (AppStatus.getInstance(UpdateRegimenFragment.this.getActivity()).isOnline()) {
-            //communicator.regimenDelete(Long.parseLong(input[5]));
+            communicator.regimenDelete(Long.parseLong(input[5]));
             communicator.regimenPost(patientId[0], notes, drugIDs, startdate,
                     endDate);//, counsellingSession, notes);
         }
@@ -220,16 +220,18 @@ public class UpdateRegimenFragment extends Fragment implements Validator.Validat
     public void patientsGet(){
         final List<String> patientList = new ArrayList<String>();
         String patients = WriteRead.read(PATIENTFILE, getContext());
+        Log.d(TAG,"patient namezo "+ patients);
         try{
             JSONArray jsonarray = new JSONArray(patients);
             for (int i = 0; i < jsonarray.length(); i++) {
                 JSONObject jsonobject = jsonarray.getJSONObject(i);
-                String id = jsonobject.getString("input");
+                String id = jsonobject.getString("id");
+
                 String fullName = jsonobject.getString("other_names")+" " +
                         jsonobject.getString("last_name");
                 patientList.add(id+": "+fullName);
             }
-            Log.d(TAG, patients);
+
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(
                     UpdateRegimenFragment.this.getActivity(),
                     android.R.layout.simple_dropdown_item_1line, patientList);
@@ -254,7 +256,7 @@ public class UpdateRegimenFragment extends Fragment implements Validator.Validat
                 Log.d(TAG,"drugList "+ name);
                 drugList.add(id+": "+name);
             }
-            drugList.add(0, "");
+           // drugList.add(0, "");
             drugsSpinner.setItems(drugList);
             drugsSpinner.setSelection(input[3].split(", "));
         }
@@ -293,7 +295,7 @@ public class UpdateRegimenFragment extends Fragment implements Validator.Validat
     public void onServerEvent(ServerEvent serverEvent){
         prgDialog.hide();
         Toast.makeText(UpdateRegimenFragment.this.getActivity(),
-                "You have successfully added a created a new appointment",
+                "You have successfully added edited a patient's regimen",
                 Toast.LENGTH_LONG).show();
         FragmentManager manager = getActivity().getSupportFragmentManager();
         manager.popBackStack();

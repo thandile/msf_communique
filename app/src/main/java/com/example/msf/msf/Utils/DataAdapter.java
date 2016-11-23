@@ -136,7 +136,7 @@ public class DataAdapter {
                 String id = jsonobject.getString("id");
 
                 if (adverseID.equals(id)) {
-                    eventType = id+":"+jsonobject.getString("name");
+                    eventType = id+": "+jsonobject.getString("name");
                 }
             }
         }

@@ -211,6 +211,8 @@ public class AppointmentFragment extends Fragment {
                                     Appointment appointment = new Appointment(id, date, owner,
                                             patient, startTime, title,
                                             notes, endTime);
+                                    Log.d(TAG, owner);
+
                                     //userGet(owner);
                                     appointmentList.add(appointment);
                                 }
@@ -231,7 +233,7 @@ public class AppointmentFragment extends Fragment {
                         dictionary.addStringField(R.id.personTV, new StringExtractor<Appointment>() {
                             @Override
                             public String getStringValue(Appointment appointment, int position) {
-                                return "Owner: "+appointment.getOwnerName();
+                                return "Patient: "+appointment.getPatientName();
                             }
                         });
 

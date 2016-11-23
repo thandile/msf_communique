@@ -149,6 +149,7 @@ public class CreateAdverseEventFragment extends Fragment implements Validator.Va
         ArrayList<String> sessions = new ArrayList<String>();
         //Log.d(TAG, DataAdapter.adverseEventsGet(getActivity()));
         sessions.addAll(DataAdapter.adverseEventsGet(getActivity()));
+        sessions.add(0, "");
         ArrayAdapter<String> sessionSpinnerAdapter = new ArrayAdapter<String>(
                 CreateAdverseEventFragment.this.getActivity(),
                 android.R.layout.simple_spinner_item, sessions);

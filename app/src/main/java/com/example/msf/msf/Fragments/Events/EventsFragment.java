@@ -170,7 +170,7 @@ public class EventsFragment extends Fragment implements IEventsListView {
                         dictionary.addStringField(R.id.dateTV, new StringExtractor<Events>() {
                             @Override
                             public String getStringValue(Events event, int position) {
-                                return event.getEventDate();
+                                return "Date: "+event.getEventDate();
                             }
                         });
 
