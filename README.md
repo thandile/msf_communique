@@ -17,3 +17,8 @@ The information that can be collected and stored on the application includes:
 * Clone your fork of the project locally. At the command line:
   * git clone https://github.com/your_username/msf_communique/ If you prefer not to use the command line, you can use Android Studio to create a new project from version control using https://github.com/your_username/msf_communique/
 * Open the project in the folder of your clone from Android Studio. To run the project, click on the green arrow at the top of the screen. The emulator is very slow so it is best to use a physical device when possible.
+
+
+## Note ##
+
+The server URL can be changed in the communique-androidapp\app\src\main\java\com\example\msf\msf\API\AUth file ("SERVER_URL" variable). This URL determines where your data will be hosted.  
