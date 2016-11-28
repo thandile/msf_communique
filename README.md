@@ -20,5 +20,4 @@ The information that can be collected and stored on the application includes:
 
 
 ## Note ##
-
 The server URL can be changed in the communique-androidapp\app\src\main\java\com\example\msf\msf\API\AUth file ("SERVER_URL" variable). This URL determines where your data will be hosted.  
