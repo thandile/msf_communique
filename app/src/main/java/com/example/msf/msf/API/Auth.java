@@ -14,7 +14,7 @@ import retrofit.client.OkClient;
  * Created by Thandile on 2016/09/16.
  */
 public class Auth {
-    public static final String SERVER_URL = "https://evening-dawn-42680.herokuapp.com/api/"; // "https://drtbdemo.herokuapp.com/api/"; //https://agile-beach-31802.herokuapp.com/api/";
+    public static final String SERVER_URL = "https://drtbapp.msfkzndb.org.za/api/";
 
     public static final OkHttpClient clientOkHttp = new OkHttpClient();
 
